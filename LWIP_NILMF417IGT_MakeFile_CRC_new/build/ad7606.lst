@@ -1,0 +1,2238 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ad7606.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.ini7606Paras,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	ini7606Paras:
+  26              	.LVL0:
+  27              	.LFB189:
+  28              		.file 1 "Core/Src/ad7606.c"
+   1:Core/Src/ad7606.c **** #include "ad7606.h"
+   2:Core/Src/ad7606.c **** #include "usart.h"
+   3:Core/Src/ad7606.c **** #include "string.h"
+   4:Core/Src/ad7606.c **** #include "FFT_MATH.h"
+   5:Core/Src/ad7606.c **** #include "rtc.h"
+   6:Core/Src/ad7606.c **** 
+   7:Core/Src/ad7606.c **** #include "dma.h"
+   8:Core/Src/ad7606.c **** #include "sdio.h"
+   9:Core/Src/ad7606.c **** #include "ScreenGui.h"
+  10:Core/Src/ad7606.c **** 
+  11:Core/Src/ad7606.c **** #include "arm_math.h"
+  12:Core/Src/ad7606.c **** #include "arm_const_structs.h"
+  13:Core/Src/ad7606.c **** 
+  14:Core/Src/ad7606.c **** #include "err.h"
+  15:Core/Src/ad7606.c **** #include "crc.h"
+  16:Core/Src/ad7606.c **** 
+  17:Core/Src/ad7606.c **** // #include "arm_t"
+  18:Core/Src/ad7606.c **** 
+  19:Core/Src/ad7606.c **** /*******************************************************
+  20:Core/Src/ad7606.c ****  *
+  21:Core/Src/ad7606.c ****  * Declare a struct variable in ur app_code.c as bellow
+  22:Core/Src/ad7606.c ****  * AD7606Dev ad7606dev;
+  23:Core/Src/ad7606.c ****  * and initialize it.
+  24:Core/Src/ad7606.c ****  *
+  25:Core/Src/ad7606.c ****  ********************************************************/
+  26:Core/Src/ad7606.c **** 
+  27:Core/Src/ad7606.c **** // short adcBuf[testCHs];                       0x08000000
+  28:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH1PingData[bufLen] = {0};
+  29:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH2PingData[bufLen] = {0};
+  30:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH3PingData[bufLen] = {0};
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 2
+
+
+  31:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH4PingData[bufLen] = {0};
+  32:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH5PingData[bufLen] = {0};
+  33:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH6PingData[bufLen] = {0};
+  34:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH7PingData[bufLen] = {0};
+  35:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH8PingData[bufLen] = {0};
+  36:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH1PongData[bufLen] = {0};
+  37:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH2PongData[bufLen] = {0};
+  38:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH3PongData[bufLen] = {0};
+  39:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH4PongData[bufLen] = {0};
+  40:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH5PongData[bufLen] = {0};
+  41:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH6PongData[bufLen] = {0};
+  42:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH7PongData[bufLen] = {0};
+  43:Core/Src/ad7606.c **** __attribute__((section(".__malloc"))) short AdcCH8PongData[bufLen] = {0};
+  44:Core/Src/ad7606.c **** 
+  45:Core/Src/ad7606.c **** uint8_t SendDataBuffIndex = 0;
+  46:Core/Src/ad7606.c **** __attribute__((section(".ccmram"))) uint8_t SendDataBuff[30][SendBufLen];
+  47:Core/Src/ad7606.c **** 
+  48:Core/Src/ad7606.c **** // __attribute__((section(".__malloc"))) uint16_t SendDataBuff[50][SendBufLen];
+  49:Core/Src/ad7606.c **** 
+  50:Core/Src/ad7606.c **** int16_t pingPongFlag = 0;
+  51:Core/Src/ad7606.c **** int16_t anaFlag = 0;
+  52:Core/Src/ad7606.c **** 
+  53:Core/Src/ad7606.c **** RTC_DateTypeDef GetData;
+  54:Core/Src/ad7606.c **** 
+  55:Core/Src/ad7606.c **** RTC_TimeTypeDef GetTime;
+  56:Core/Src/ad7606.c **** 
+  57:Core/Src/ad7606.c **** uint32_t SendCount;
+  58:Core/Src/ad7606.c **** uint32_t SendErrCount;
+  59:Core/Src/ad7606.c **** 
+  60:Core/Src/ad7606.c **** uint8_t Muin;
+  61:Core/Src/ad7606.c **** 
+  62:Core/Src/ad7606.c **** char *NowTimeCopy;
+  63:Core/Src/ad7606.c **** 
+  64:Core/Src/ad7606.c **** int count;
+  65:Core/Src/ad7606.c **** 
+  66:Core/Src/ad7606.c **** short temp;
+  67:Core/Src/ad7606.c **** 
+  68:Core/Src/ad7606.c **** HAL_StatusTypeDef DMA_status;
+  69:Core/Src/ad7606.c **** 
+  70:Core/Src/ad7606.c **** static void ini7606Paras(AD7606Dev *dev)
+  71:Core/Src/ad7606.c **** {
+  29              		.loc 1 71 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  72:Core/Src/ad7606.c ****     dev->baseaddr = 0x60000000;
+  34              		.loc 1 72 5 view .LVU1
+  35              		.loc 1 72 19 is_stmt 0 view .LVU2
+  36 0000 4FF0C043 		mov	r3, #1610612736
+  37 0004 0360     		str	r3, [r0]
+  73:Core/Src/ad7606.c ****     dev->interface = AD7606_PARALLEL;
+  38              		.loc 1 73 5 is_stmt 1 view .LVU3
+  39              		.loc 1 73 20 is_stmt 0 view .LVU4
+  40 0006 00F50050 		add	r0, r0, #8192
+  41              	.LVL1:
+  42              		.loc 1 73 20 view .LVU5
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 3
+
+
+  43 000a 0123     		movs	r3, #1
+  44 000c 0371     		strb	r3, [r0, #4]
+  74:Core/Src/ad7606.c ****     dev->range = AD7606_10V;
+  45              		.loc 1 74 5 is_stmt 1 view .LVU6
+  46              		.loc 1 74 16 is_stmt 0 view .LVU7
+  47 000e 0223     		movs	r3, #2
+  48 0010 4371     		strb	r3, [r0, #5]
+  75:Core/Src/ad7606.c ****     dev->osr = AD7606_OSR_64;
+  49              		.loc 1 75 5 is_stmt 1 view .LVU8
+  50              		.loc 1 75 14 is_stmt 0 view .LVU9
+  51 0012 0623     		movs	r3, #6
+  52 0014 8371     		strb	r3, [r0, #6]
+  76:Core/Src/ad7606.c **** }
+  53              		.loc 1 76 1 view .LVU10
+  54 0016 7047     		bx	lr
+  55              		.cfi_endproc
+  56              	.LFE189:
+  58              		.section	.text.ad7606ini,"ax",%progbits
+  59              		.align	1
+  60              		.global	ad7606ini
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	ad7606ini:
+  66              	.LVL2:
+  67              	.LFB190:
+  77:Core/Src/ad7606.c **** 
+  78:Core/Src/ad7606.c **** void ad7606ini(AD7606Dev *dev)
+  79:Core/Src/ad7606.c **** {
+  68              		.loc 1 79 1 is_stmt 1 view -0
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              		.loc 1 79 1 is_stmt 0 view .LVU12
+  73 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+  74              	.LCFI0:
+  75              		.cfi_def_cfa_offset 24
+  76              		.cfi_offset 3, -24
+  77              		.cfi_offset 4, -20
+  78              		.cfi_offset 5, -16
+  79              		.cfi_offset 6, -12
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 0446     		mov	r4, r0
+  80:Core/Src/ad7606.c ****     NowTimeCopy = (char *)malloc(20 * sizeof(char));
+  83              		.loc 1 80 5 is_stmt 1 view .LVU13
+  84              		.loc 1 80 27 is_stmt 0 view .LVU14
+  85 0004 1420     		movs	r0, #20
+  86              	.LVL3:
+  87              		.loc 1 80 27 view .LVU15
+  88 0006 FFF7FEFF 		bl	malloc
+  89              	.LVL4:
+  90              		.loc 1 80 17 view .LVU16
+  91 000a 5B4B     		ldr	r3, .L9
+  92 000c 1860     		str	r0, [r3]
+  81:Core/Src/ad7606.c ****     memset(NowTimeCopy, 0, sizeof(NowTimeCopy[0]));
+  93              		.loc 1 81 5 is_stmt 1 view .LVU17
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 4
+
+
+  94 000e 0025     		movs	r5, #0
+  95 0010 0570     		strb	r5, [r0]
+  82:Core/Src/ad7606.c ****     count = 0;
+  96              		.loc 1 82 5 view .LVU18
+  97              		.loc 1 82 11 is_stmt 0 view .LVU19
+  98 0012 5A4B     		ldr	r3, .L9+4
+  99 0014 1D60     		str	r5, [r3]
+  83:Core/Src/ad7606.c ****     SendCount = 0;
+ 100              		.loc 1 83 5 is_stmt 1 view .LVU20
+ 101              		.loc 1 83 15 is_stmt 0 view .LVU21
+ 102 0016 5A4B     		ldr	r3, .L9+8
+ 103 0018 1D60     		str	r5, [r3]
+  84:Core/Src/ad7606.c ****     SendErrCount = 0;
+ 104              		.loc 1 84 5 is_stmt 1 view .LVU22
+ 105              		.loc 1 84 18 is_stmt 0 view .LVU23
+ 106 001a 5A4B     		ldr	r3, .L9+12
+ 107 001c 1D60     		str	r5, [r3]
+  85:Core/Src/ad7606.c ****     Muin = 0;
+ 108              		.loc 1 85 5 is_stmt 1 view .LVU24
+ 109              		.loc 1 85 10 is_stmt 0 view .LVU25
+ 110 001e 5A4B     		ldr	r3, .L9+16
+ 111 0020 1D70     		strb	r5, [r3]
+  86:Core/Src/ad7606.c ****     memset(AdcCH1PingData, 0, sizeof(AdcCH1PingData));
+ 112              		.loc 1 86 5 is_stmt 1 view .LVU26
+ 113 0022 5A4F     		ldr	r7, .L9+20
+ 114 0024 4FF40066 		mov	r6, #2048
+ 115 0028 3246     		mov	r2, r6
+ 116 002a 2946     		mov	r1, r5
+ 117 002c 3846     		mov	r0, r7
+ 118 002e FFF7FEFF 		bl	memset
+ 119              	.LVL5:
+  87:Core/Src/ad7606.c ****     memset(AdcCH2PingData, 0, sizeof(AdcCH2PingData));
+ 120              		.loc 1 87 5 view .LVU27
+ 121 0032 3246     		mov	r2, r6
+ 122 0034 2946     		mov	r1, r5
+ 123 0036 B819     		adds	r0, r7, r6
+ 124 0038 FFF7FEFF 		bl	memset
+ 125              	.LVL6:
+  88:Core/Src/ad7606.c ****     memset(AdcCH3PingData, 0, sizeof(AdcCH3PingData));
+ 126              		.loc 1 88 5 view .LVU28
+ 127 003c 544F     		ldr	r7, .L9+24
+ 128 003e 3246     		mov	r2, r6
+ 129 0040 2946     		mov	r1, r5
+ 130 0042 A7F1F800 		sub	r0, r7, #248
+ 131 0046 FFF7FEFF 		bl	memset
+ 132              	.LVL7:
+  89:Core/Src/ad7606.c ****     memset(AdcCH4PingData, 0, sizeof(AdcCH4PingData));
+ 133              		.loc 1 89 5 view .LVU29
+ 134 004a 3246     		mov	r2, r6
+ 135 004c 2946     		mov	r1, r5
+ 136 004e 07F5E160 		add	r0, r7, #1800
+ 137 0052 FFF7FEFF 		bl	memset
+ 138              	.LVL8:
+  90:Core/Src/ad7606.c ****     memset(AdcCH5PingData, 0, sizeof(AdcCH5PingData));
+ 139              		.loc 1 90 5 view .LVU30
+ 140 0056 3246     		mov	r2, r6
+ 141 0058 2946     		mov	r1, r5
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 5
+
+
+ 142 005a 07F60870 		addw	r0, r7, #3848
+ 143 005e FFF7FEFF 		bl	memset
+ 144              	.LVL9:
+  91:Core/Src/ad7606.c ****     memset(AdcCH6PingData, 0, sizeof(AdcCH6PingData));
+ 145              		.loc 1 91 5 view .LVU31
+ 146 0062 4C4F     		ldr	r7, .L9+28
+ 147 0064 3246     		mov	r2, r6
+ 148 0066 2946     		mov	r1, r5
+ 149 0068 07F5C260 		add	r0, r7, #1552
+ 150 006c FFF7FEFF 		bl	memset
+ 151              	.LVL10:
+  92:Core/Src/ad7606.c ****     memset(AdcCH7PingData, 0, sizeof(AdcCH7PingData));
+ 152              		.loc 1 92 5 view .LVU32
+ 153 0070 3246     		mov	r2, r6
+ 154 0072 2946     		mov	r1, r5
+ 155 0074 07F56160 		add	r0, r7, #3600
+ 156 0078 FFF7FEFF 		bl	memset
+ 157              	.LVL11:
+  93:Core/Src/ad7606.c ****     memset(AdcCH8PingData, 0, sizeof(AdcCH8PingData));
+ 158              		.loc 1 93 5 view .LVU33
+ 159 007c 464F     		ldr	r7, .L9+32
+ 160 007e 3246     		mov	r2, r6
+ 161 0080 2946     		mov	r1, r5
+ 162 0082 07F5A360 		add	r0, r7, #1304
+ 163 0086 FFF7FEFF 		bl	memset
+ 164              	.LVL12:
+  94:Core/Src/ad7606.c **** 
+  95:Core/Src/ad7606.c ****     memset(AdcCH1PongData, 0, sizeof(AdcCH1PingData));
+ 165              		.loc 1 95 5 view .LVU34
+ 166 008a 3246     		mov	r2, r6
+ 167 008c 2946     		mov	r1, r5
+ 168 008e 07F61850 		addw	r0, r7, #3352
+ 169 0092 FFF7FEFF 		bl	memset
+ 170              	.LVL13:
+  96:Core/Src/ad7606.c ****     memset(AdcCH2PongData, 0, sizeof(AdcCH2PongData));
+ 171              		.loc 1 96 5 view .LVU35
+ 172 0096 414F     		ldr	r7, .L9+36
+ 173 0098 3246     		mov	r2, r6
+ 174 009a 2946     		mov	r1, r5
+ 175 009c 07F58460 		add	r0, r7, #1056
+ 176 00a0 FFF7FEFF 		bl	memset
+ 177              	.LVL14:
+  97:Core/Src/ad7606.c ****     memset(AdcCH3PongData, 0, sizeof(AdcCH3PongData));
+ 178              		.loc 1 97 5 view .LVU36
+ 179 00a4 3246     		mov	r2, r6
+ 180 00a6 2946     		mov	r1, r5
+ 181 00a8 07F54260 		add	r0, r7, #3104
+ 182 00ac FFF7FEFF 		bl	memset
+ 183              	.LVL15:
+  98:Core/Src/ad7606.c ****     memset(AdcCH4PongData, 0, sizeof(AdcCH4PongData));
+ 184              		.loc 1 98 5 view .LVU37
+ 185 00b0 3B4F     		ldr	r7, .L9+40
+ 186 00b2 3246     		mov	r2, r6
+ 187 00b4 2946     		mov	r1, r5
+ 188 00b6 07F54A70 		add	r0, r7, #808
+ 189 00ba FFF7FEFF 		bl	memset
+ 190              	.LVL16:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 6
+
+
+  99:Core/Src/ad7606.c ****     memset(AdcCH6PongData, 0, sizeof(AdcCH6PongData));
+ 191              		.loc 1 99 5 view .LVU38
+ 192 00be 3246     		mov	r2, r6
+ 193 00c0 2946     		mov	r1, r5
+ 194 00c2 07F62830 		addw	r0, r7, #2856
+ 195 00c6 FFF7FEFF 		bl	memset
+ 196              	.LVL17:
+ 100:Core/Src/ad7606.c ****     memset(AdcCH7PongData, 0, sizeof(AdcCH7PongData));
+ 197              		.loc 1 100 5 view .LVU39
+ 198 00ca 364F     		ldr	r7, .L9+44
+ 199 00cc 3246     		mov	r2, r6
+ 200 00ce 2946     		mov	r1, r5
+ 201 00d0 07F50C70 		add	r0, r7, #560
+ 202 00d4 FFF7FEFF 		bl	memset
+ 203              	.LVL18:
+ 101:Core/Src/ad7606.c ****     memset(AdcCH8PongData, 0, sizeof(AdcCH8PongData));
+ 204              		.loc 1 101 5 view .LVU40
+ 205 00d8 3246     		mov	r2, r6
+ 206 00da 2946     		mov	r1, r5
+ 207 00dc 07F52360 		add	r0, r7, #2608
+ 208 00e0 FFF7FEFF 		bl	memset
+ 209              	.LVL19:
+ 102:Core/Src/ad7606.c **** 
+ 103:Core/Src/ad7606.c ****     // memset(SendVIBuffT, 0, sizeof(SendVIBuffT));
+ 104:Core/Src/ad7606.c **** 
+ 105:Core/Src/ad7606.c ****     int i;
+ 210              		.loc 1 105 5 view .LVU41
+ 106:Core/Src/ad7606.c **** 
+ 107:Core/Src/ad7606.c ****     ini7606Paras(dev);
+ 211              		.loc 1 107 5 view .LVU42
+ 212 00e4 2046     		mov	r0, r4
+ 213 00e6 FFF7FEFF 		bl	ini7606Paras
+ 214              	.LVL20:
+ 108:Core/Src/ad7606.c **** 
+ 109:Core/Src/ad7606.c ****     /// set rang
+ 110:Core/Src/ad7606.c ****     if (dev->range == AD7606_10V)
+ 215              		.loc 1 110 5 view .LVU43
+ 216              		.loc 1 110 12 is_stmt 0 view .LVU44
+ 217 00ea 04F50053 		add	r3, r4, #8192
+ 218 00ee 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 219              		.loc 1 110 8 view .LVU45
+ 220 00f0 022B     		cmp	r3, #2
+ 221 00f2 1AD0     		beq	.L8
+ 111:Core/Src/ad7606.c ****     {
+ 112:Core/Src/ad7606.c ****         HAL_GPIO_WritePin(ADC_RANG_GPIO_Port, ADC_RANG_Pin, GPIO_PIN_SET);
+ 113:Core/Src/ad7606.c ****     }
+ 114:Core/Src/ad7606.c ****     else
+ 115:Core/Src/ad7606.c ****     {
+ 116:Core/Src/ad7606.c ****         HAL_GPIO_WritePin(ADC_RANG_GPIO_Port, ADC_RANG_Pin, GPIO_PIN_RESET);
+ 222              		.loc 1 116 9 is_stmt 1 view .LVU46
+ 223 00f4 0022     		movs	r2, #0
+ 224 00f6 4FF48071 		mov	r1, #256
+ 225 00fa 2B48     		ldr	r0, .L9+48
+ 226 00fc FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 227              	.LVL21:
+ 228              	.L4:
+ 117:Core/Src/ad7606.c ****     }
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 7
+
+
+ 118:Core/Src/ad7606.c **** 
+ 119:Core/Src/ad7606.c ****     /// set osr
+ 120:Core/Src/ad7606.c ****     // if (dev->osr == AD7606_OSR_64)
+ 121:Core/Src/ad7606.c ****     // {
+ 122:Core/Src/ad7606.c ****     //     HAL_GPIO_WritePin(ADC_OS0_GPIO_Port, ADC_OS0_Pin, GPIO_PIN_SET);
+ 123:Core/Src/ad7606.c ****     //     HAL_GPIO_WritePin(ADC_OS1_GPIO_Port, ADC_OS1_Pin, GPIO_PIN_RESET);
+ 124:Core/Src/ad7606.c ****     //     HAL_GPIO_WritePin(ADC_OS2_GPIO_Port, ADC_OS2_Pin, GPIO_PIN_SET);
+ 125:Core/Src/ad7606.c ****     // }
+ 126:Core/Src/ad7606.c ****     HAL_GPIO_WritePin(ADC_OS0_GPIO_Port, ADC_OS0_Pin, GPIO_PIN_SET);
+ 229              		.loc 1 126 5 view .LVU47
+ 230 0100 2A4D     		ldr	r5, .L9+52
+ 231 0102 0122     		movs	r2, #1
+ 232 0104 4FF40051 		mov	r1, #8192
+ 233 0108 2846     		mov	r0, r5
+ 234 010a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 235              	.LVL22:
+ 127:Core/Src/ad7606.c ****     HAL_GPIO_WritePin(ADC_OS1_GPIO_Port, ADC_OS1_Pin, GPIO_PIN_RESET);
+ 236              		.loc 1 127 5 view .LVU48
+ 237 010e 0022     		movs	r2, #0
+ 238 0110 4FF48041 		mov	r1, #16384
+ 239 0114 2846     		mov	r0, r5
+ 240 0116 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 241              	.LVL23:
+ 128:Core/Src/ad7606.c ****     HAL_GPIO_WritePin(ADC_OS2_GPIO_Port, ADC_OS2_Pin, GPIO_PIN_RESET);
+ 242              		.loc 1 128 5 view .LVU49
+ 243 011a 0022     		movs	r2, #0
+ 244 011c 4FF40041 		mov	r1, #32768
+ 245 0120 2846     		mov	r0, r5
+ 246 0122 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 247              	.LVL24:
+ 129:Core/Src/ad7606.c **** 
+ 130:Core/Src/ad7606.c ****     /// clear bufs.
+ 131:Core/Src/ad7606.c ****     for (i = 0; i < DataBufLen; i++)
+ 248              		.loc 1 131 5 view .LVU50
+ 249              		.loc 1 131 12 is_stmt 0 view .LVU51
+ 250 0126 0023     		movs	r3, #0
+ 251              		.loc 1 131 5 view .LVU52
+ 252 0128 0BE0     		b	.L5
+ 253              	.LVL25:
+ 254              	.L8:
+ 112:Core/Src/ad7606.c ****     }
+ 255              		.loc 1 112 9 is_stmt 1 view .LVU53
+ 256 012a 0122     		movs	r2, #1
+ 257 012c 4FF48071 		mov	r1, #256
+ 258 0130 1D48     		ldr	r0, .L9+48
+ 259 0132 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 260              	.LVL26:
+ 261 0136 E3E7     		b	.L4
+ 262              	.LVL27:
+ 263              	.L6:
+ 132:Core/Src/ad7606.c ****     {
+ 133:Core/Src/ad7606.c ****         dev->dataBuf[i] = 0;
+ 264              		.loc 1 133 9 discriminator 3 view .LVU54
+ 265              		.loc 1 133 25 is_stmt 0 discriminator 3 view .LVU55
+ 266 0138 04EB4302 		add	r2, r4, r3, lsl #1
+ 267 013c 0021     		movs	r1, #0
+ 268 013e 9180     		strh	r1, [r2, #4]	@ movhi
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 8
+
+
+ 131:Core/Src/ad7606.c ****     {
+ 269              		.loc 1 131 33 is_stmt 1 discriminator 3 view .LVU56
+ 131:Core/Src/ad7606.c ****     {
+ 270              		.loc 1 131 34 is_stmt 0 discriminator 3 view .LVU57
+ 271 0140 0133     		adds	r3, r3, #1
+ 272              	.LVL28:
+ 273              	.L5:
+ 131:Core/Src/ad7606.c ****     {
+ 274              		.loc 1 131 17 is_stmt 1 discriminator 1 view .LVU58
+ 131:Core/Src/ad7606.c ****     {
+ 275              		.loc 1 131 5 is_stmt 0 discriminator 1 view .LVU59
+ 276 0142 B3F5805F 		cmp	r3, #4096
+ 277 0146 F7DB     		blt	.L6
+ 134:Core/Src/ad7606.c ****     }
+ 135:Core/Src/ad7606.c **** 
+ 136:Core/Src/ad7606.c ****     HAL_GPIO_WritePin(ADC_STANDBY_GPIO_Port, ADC_STANDBY_Pin, GPIO_PIN_SET);
+ 278              		.loc 1 136 5 is_stmt 1 view .LVU60
+ 279 0148 0122     		movs	r2, #1
+ 280 014a 4FF40041 		mov	r1, #32768
+ 281 014e 1848     		ldr	r0, .L9+56
+ 282 0150 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 283              	.LVL29:
+ 137:Core/Src/ad7606.c ****     HAL_Delay(2);
+ 284              		.loc 1 137 5 view .LVU61
+ 285 0154 0220     		movs	r0, #2
+ 286 0156 FFF7FEFF 		bl	HAL_Delay
+ 287              	.LVL30:
+ 138:Core/Src/ad7606.c ****     HAL_GPIO_WritePin(ADC_RST_GPIO_Port, ADC_RST_Pin, GPIO_PIN_SET);
+ 288              		.loc 1 138 5 view .LVU62
+ 289 015a 164C     		ldr	r4, .L9+60
+ 290              	.LVL31:
+ 291              		.loc 1 138 5 is_stmt 0 view .LVU63
+ 292 015c 0122     		movs	r2, #1
+ 293 015e 4021     		movs	r1, #64
+ 294 0160 2046     		mov	r0, r4
+ 295 0162 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 296              	.LVL32:
+ 139:Core/Src/ad7606.c ****     HAL_Delay(20);
+ 297              		.loc 1 139 5 is_stmt 1 view .LVU64
+ 298 0166 1420     		movs	r0, #20
+ 299 0168 FFF7FEFF 		bl	HAL_Delay
+ 300              	.LVL33:
+ 140:Core/Src/ad7606.c ****     HAL_GPIO_WritePin(ADC_RST_GPIO_Port, ADC_RST_Pin, GPIO_PIN_RESET);
+ 301              		.loc 1 140 5 view .LVU65
+ 302 016c 0022     		movs	r2, #0
+ 303 016e 4021     		movs	r1, #64
+ 304 0170 2046     		mov	r0, r4
+ 305 0172 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 306              	.LVL34:
+ 141:Core/Src/ad7606.c **** }
+ 307              		.loc 1 141 1 is_stmt 0 view .LVU66
+ 308 0176 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 309              	.L10:
+ 310              		.align	2
+ 311              	.L9:
+ 312 0178 00000000 		.word	.LANCHOR0
+ 313 017c 00000000 		.word	.LANCHOR1
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 9
+
+
+ 314 0180 00000000 		.word	.LANCHOR2
+ 315 0184 00000000 		.word	.LANCHOR3
+ 316 0188 00000000 		.word	.LANCHOR4
+ 317 018c 00000000 		.word	.LANCHOR5
+ 318 0190 F8100000 		.word	.LANCHOR6
+ 319 0194 F0210000 		.word	.LANCHOR7
+ 320 0198 E8320000 		.word	.LANCHOR8
+ 321 019c E0430000 		.word	.LANCHOR9
+ 322 01a0 D8540000 		.word	.LANCHOR10
+ 323 01a4 D0650000 		.word	.LANCHOR11
+ 324 01a8 00000240 		.word	1073872896
+ 325 01ac 00040240 		.word	1073873920
+ 326 01b0 001C0240 		.word	1073880064
+ 327 01b4 000C0240 		.word	1073875968
+ 328              		.cfi_endproc
+ 329              	.LFE190:
+ 331              		.section	.text.get_AD7606,"ax",%progbits
+ 332              		.align	1
+ 333              		.global	get_AD7606
+ 334              		.syntax unified
+ 335              		.thumb
+ 336              		.thumb_func
+ 338              	get_AD7606:
+ 339              	.LFB191:
+ 142:Core/Src/ad7606.c **** 
+ 143:Core/Src/ad7606.c **** void get_AD7606(void)
+ 144:Core/Src/ad7606.c **** {
+ 340              		.loc 1 144 1 is_stmt 1 view -0
+ 341              		.cfi_startproc
+ 342              		@ args = 0, pretend = 0, frame = 0
+ 343              		@ frame_needed = 0, uses_anonymous_args = 0
+ 344 0000 30B5     		push	{r4, r5, lr}
+ 345              	.LCFI1:
+ 346              		.cfi_def_cfa_offset 12
+ 347              		.cfi_offset 4, -12
+ 348              		.cfi_offset 5, -8
+ 349              		.cfi_offset 14, -4
+ 145:Core/Src/ad7606.c **** 
+ 146:Core/Src/ad7606.c ****     static int bufPtr = 0;
+ 350              		.loc 1 146 5 view .LVU68
+ 147:Core/Src/ad7606.c **** 
+ 148:Core/Src/ad7606.c ****     if (pingPongFlag)
+ 351              		.loc 1 148 5 view .LVU69
+ 352              		.loc 1 148 9 is_stmt 0 view .LVU70
+ 353 0002 3C4B     		ldr	r3, .L16
+ 354 0004 B3F90010 		ldrsh	r1, [r3]
+ 355              		.loc 1 148 8 view .LVU71
+ 356 0008 0029     		cmp	r1, #0
+ 357 000a 38D0     		beq	.L12
+ 149:Core/Src/ad7606.c ****     {
+ 150:Core/Src/ad7606.c ****         AdcCH1PingData[bufPtr] = AD7606Addr;
+ 358              		.loc 1 150 9 is_stmt 1 view .LVU72
+ 359              		.loc 1 150 23 is_stmt 0 view .LVU73
+ 360 000c 3A4C     		ldr	r4, .L16+4
+ 361 000e 2268     		ldr	r2, [r4]
+ 362              		.loc 1 150 34 view .LVU74
+ 363 0010 4FF0C043 		mov	r3, #1610612736
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 10
+
+
+ 364 0014 1D88     		ldrh	r5, [r3]
+ 365              		.loc 1 150 32 view .LVU75
+ 366 0016 3948     		ldr	r0, .L16+8
+ 367 0018 20F81250 		strh	r5, [r0, r2, lsl #1]	@ movhi
+ 151:Core/Src/ad7606.c ****         AdcCH2PingData[bufPtr] = AD7606Addr;
+ 368              		.loc 1 151 9 is_stmt 1 view .LVU76
+ 369              		.loc 1 151 34 is_stmt 0 view .LVU77
+ 370 001c 1D88     		ldrh	r5, [r3]
+ 371              		.loc 1 151 32 view .LVU78
+ 372 001e 00EB4200 		add	r0, r0, r2, lsl #1
+ 373 0022 A0F80058 		strh	r5, [r0, #2048]	@ movhi
+ 152:Core/Src/ad7606.c ****         AdcCH3PingData[bufPtr] = AD7606Addr;
+ 374              		.loc 1 152 9 is_stmt 1 view .LVU79
+ 375              		.loc 1 152 34 is_stmt 0 view .LVU80
+ 376 0026 1D88     		ldrh	r5, [r3]
+ 377              		.loc 1 152 32 view .LVU81
+ 378 0028 3548     		ldr	r0, .L16+12
+ 379 002a 00EB4200 		add	r0, r0, r2, lsl #1
+ 380 002e 20F8F85C 		strh	r5, [r0, #-248]	@ movhi
+ 153:Core/Src/ad7606.c ****         AdcCH4PingData[bufPtr] = AD7606Addr;
+ 381              		.loc 1 153 9 is_stmt 1 view .LVU82
+ 382              		.loc 1 153 34 is_stmt 0 view .LVU83
+ 383 0032 1D88     		ldrh	r5, [r3]
+ 384              		.loc 1 153 32 view .LVU84
+ 385 0034 A0F80857 		strh	r5, [r0, #1800]	@ movhi
+ 154:Core/Src/ad7606.c ****         AdcCH5PingData[bufPtr] = AD7606Addr;
+ 386              		.loc 1 154 9 is_stmt 1 view .LVU85
+ 387              		.loc 1 154 34 is_stmt 0 view .LVU86
+ 388 0038 1D88     		ldrh	r5, [r3]
+ 389              		.loc 1 154 32 view .LVU87
+ 390 003a A0F8085F 		strh	r5, [r0, #3848]	@ movhi
+ 155:Core/Src/ad7606.c ****         AdcCH6PingData[bufPtr] = AD7606Addr;
+ 391              		.loc 1 155 9 is_stmt 1 view .LVU88
+ 392              		.loc 1 155 34 is_stmt 0 view .LVU89
+ 393 003e 1D88     		ldrh	r5, [r3]
+ 394              		.loc 1 155 32 view .LVU90
+ 395 0040 3048     		ldr	r0, .L16+16
+ 396 0042 00EB4200 		add	r0, r0, r2, lsl #1
+ 397 0046 A0F81056 		strh	r5, [r0, #1552]	@ movhi
+ 156:Core/Src/ad7606.c ****         AdcCH7PingData[bufPtr] = AD7606Addr;
+ 398              		.loc 1 156 9 is_stmt 1 view .LVU91
+ 399              		.loc 1 156 34 is_stmt 0 view .LVU92
+ 400 004a 1D88     		ldrh	r5, [r3]
+ 401              		.loc 1 156 32 view .LVU93
+ 402 004c A0F8105E 		strh	r5, [r0, #3600]	@ movhi
+ 157:Core/Src/ad7606.c ****         AdcCH8PingData[bufPtr++] = AD7606Addr;
+ 403              		.loc 1 157 9 is_stmt 1 view .LVU94
+ 404              		.loc 1 157 30 is_stmt 0 view .LVU95
+ 405 0050 501C     		adds	r0, r2, #1
+ 406 0052 2060     		str	r0, [r4]
+ 407              		.loc 1 157 36 view .LVU96
+ 408 0054 1C88     		ldrh	r4, [r3]
+ 409              		.loc 1 157 34 view .LVU97
+ 410 0056 2C4B     		ldr	r3, .L16+20
+ 411 0058 03EB4202 		add	r2, r3, r2, lsl #1
+ 412 005c A2F81845 		strh	r4, [r2, #1304]	@ movhi
+ 158:Core/Src/ad7606.c ****         if (bufPtr == bufLen)
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 11
+
+
+ 413              		.loc 1 158 9 is_stmt 1 view .LVU98
+ 414              		.loc 1 158 12 is_stmt 0 view .LVU99
+ 415 0060 B0F5806F 		cmp	r0, #1024
+ 416 0064 00D0     		beq	.L15
+ 417              	.L11:
+ 159:Core/Src/ad7606.c ****         {
+ 160:Core/Src/ad7606.c ****             bufPtr = 0;
+ 161:Core/Src/ad7606.c ****             pingPongFlag = 1 - pingPongFlag;
+ 162:Core/Src/ad7606.c ****             anaFlag = 1;
+ 163:Core/Src/ad7606.c ****         }
+ 164:Core/Src/ad7606.c ****     }
+ 165:Core/Src/ad7606.c ****     else
+ 166:Core/Src/ad7606.c ****     {
+ 167:Core/Src/ad7606.c ****         AdcCH1PongData[bufPtr] = AD7606Addr;
+ 168:Core/Src/ad7606.c ****         AdcCH2PongData[bufPtr] = AD7606Addr;
+ 169:Core/Src/ad7606.c ****         AdcCH3PongData[bufPtr] = AD7606Addr;
+ 170:Core/Src/ad7606.c ****         AdcCH4PongData[bufPtr] = AD7606Addr;
+ 171:Core/Src/ad7606.c ****         AdcCH5PongData[bufPtr] = AD7606Addr;
+ 172:Core/Src/ad7606.c ****         AdcCH6PongData[bufPtr] = AD7606Addr;
+ 173:Core/Src/ad7606.c ****         AdcCH7PongData[bufPtr] = AD7606Addr;
+ 174:Core/Src/ad7606.c ****         AdcCH8PongData[bufPtr++] = AD7606Addr;
+ 175:Core/Src/ad7606.c ****         if (bufPtr == bufLen)
+ 176:Core/Src/ad7606.c ****         {
+ 177:Core/Src/ad7606.c ****             bufPtr = 0;
+ 178:Core/Src/ad7606.c ****             pingPongFlag = 1 - pingPongFlag;
+ 179:Core/Src/ad7606.c ****             anaFlag = 1;
+ 180:Core/Src/ad7606.c ****         }
+ 181:Core/Src/ad7606.c ****     }
+ 182:Core/Src/ad7606.c **** }
+ 418              		.loc 1 182 1 view .LVU100
+ 419 0066 30BD     		pop	{r4, r5, pc}
+ 420              	.L15:
+ 160:Core/Src/ad7606.c ****             pingPongFlag = 1 - pingPongFlag;
+ 421              		.loc 1 160 13 is_stmt 1 view .LVU101
+ 160:Core/Src/ad7606.c ****             pingPongFlag = 1 - pingPongFlag;
+ 422              		.loc 1 160 20 is_stmt 0 view .LVU102
+ 423 0068 234B     		ldr	r3, .L16+4
+ 424 006a 0022     		movs	r2, #0
+ 425 006c 1A60     		str	r2, [r3]
+ 161:Core/Src/ad7606.c ****             anaFlag = 1;
+ 426              		.loc 1 161 13 is_stmt 1 view .LVU103
+ 161:Core/Src/ad7606.c ****             anaFlag = 1;
+ 427              		.loc 1 161 30 is_stmt 0 view .LVU104
+ 428 006e C1F10101 		rsb	r1, r1, #1
+ 161:Core/Src/ad7606.c ****             anaFlag = 1;
+ 429              		.loc 1 161 26 view .LVU105
+ 430 0072 204B     		ldr	r3, .L16
+ 431 0074 1980     		strh	r1, [r3]	@ movhi
+ 162:Core/Src/ad7606.c ****         }
+ 432              		.loc 1 162 13 is_stmt 1 view .LVU106
+ 162:Core/Src/ad7606.c ****         }
+ 433              		.loc 1 162 21 is_stmt 0 view .LVU107
+ 434 0076 254B     		ldr	r3, .L16+24
+ 435 0078 0122     		movs	r2, #1
+ 436 007a 1A80     		strh	r2, [r3]	@ movhi
+ 437 007c F3E7     		b	.L11
+ 438              	.L12:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 12
+
+
+ 167:Core/Src/ad7606.c ****         AdcCH2PongData[bufPtr] = AD7606Addr;
+ 439              		.loc 1 167 9 is_stmt 1 view .LVU108
+ 167:Core/Src/ad7606.c ****         AdcCH2PongData[bufPtr] = AD7606Addr;
+ 440              		.loc 1 167 23 is_stmt 0 view .LVU109
+ 441 007e 1E4D     		ldr	r5, .L16+4
+ 442 0080 2B68     		ldr	r3, [r5]
+ 167:Core/Src/ad7606.c ****         AdcCH2PongData[bufPtr] = AD7606Addr;
+ 443              		.loc 1 167 34 view .LVU110
+ 444 0082 4FF0C042 		mov	r2, #1610612736
+ 445 0086 1488     		ldrh	r4, [r2]
+ 167:Core/Src/ad7606.c ****         AdcCH2PongData[bufPtr] = AD7606Addr;
+ 446              		.loc 1 167 32 view .LVU111
+ 447 0088 1F48     		ldr	r0, .L16+20
+ 448 008a 00EB4300 		add	r0, r0, r3, lsl #1
+ 449 008e A0F8184D 		strh	r4, [r0, #3352]	@ movhi
+ 168:Core/Src/ad7606.c ****         AdcCH3PongData[bufPtr] = AD7606Addr;
+ 450              		.loc 1 168 9 is_stmt 1 view .LVU112
+ 168:Core/Src/ad7606.c ****         AdcCH3PongData[bufPtr] = AD7606Addr;
+ 451              		.loc 1 168 34 is_stmt 0 view .LVU113
+ 452 0092 1488     		ldrh	r4, [r2]
+ 168:Core/Src/ad7606.c ****         AdcCH3PongData[bufPtr] = AD7606Addr;
+ 453              		.loc 1 168 32 view .LVU114
+ 454 0094 1E48     		ldr	r0, .L16+28
+ 455 0096 00EB4300 		add	r0, r0, r3, lsl #1
+ 456 009a A0F82044 		strh	r4, [r0, #1056]	@ movhi
+ 169:Core/Src/ad7606.c ****         AdcCH4PongData[bufPtr] = AD7606Addr;
+ 457              		.loc 1 169 9 is_stmt 1 view .LVU115
+ 169:Core/Src/ad7606.c ****         AdcCH4PongData[bufPtr] = AD7606Addr;
+ 458              		.loc 1 169 34 is_stmt 0 view .LVU116
+ 459 009e 1488     		ldrh	r4, [r2]
+ 169:Core/Src/ad7606.c ****         AdcCH4PongData[bufPtr] = AD7606Addr;
+ 460              		.loc 1 169 32 view .LVU117
+ 461 00a0 A0F8204C 		strh	r4, [r0, #3104]	@ movhi
+ 170:Core/Src/ad7606.c ****         AdcCH5PongData[bufPtr] = AD7606Addr;
+ 462              		.loc 1 170 9 is_stmt 1 view .LVU118
+ 170:Core/Src/ad7606.c ****         AdcCH5PongData[bufPtr] = AD7606Addr;
+ 463              		.loc 1 170 34 is_stmt 0 view .LVU119
+ 464 00a4 1488     		ldrh	r4, [r2]
+ 170:Core/Src/ad7606.c ****         AdcCH5PongData[bufPtr] = AD7606Addr;
+ 465              		.loc 1 170 32 view .LVU120
+ 466 00a6 1B48     		ldr	r0, .L16+32
+ 467 00a8 00EB4300 		add	r0, r0, r3, lsl #1
+ 468 00ac A0F82843 		strh	r4, [r0, #808]	@ movhi
+ 171:Core/Src/ad7606.c ****         AdcCH6PongData[bufPtr] = AD7606Addr;
+ 469              		.loc 1 171 9 is_stmt 1 view .LVU121
+ 171:Core/Src/ad7606.c ****         AdcCH6PongData[bufPtr] = AD7606Addr;
+ 470              		.loc 1 171 34 is_stmt 0 view .LVU122
+ 471 00b0 B2F800E0 		ldrh	lr, [r2]
+ 171:Core/Src/ad7606.c ****         AdcCH6PongData[bufPtr] = AD7606Addr;
+ 472              		.loc 1 171 32 view .LVU123
+ 473 00b4 184C     		ldr	r4, .L16+36
+ 474 00b6 04EB430C 		add	ip, r4, r3, lsl #1
+ 475 00ba ACF838E1 		strh	lr, [ip, #312]	@ movhi
+ 172:Core/Src/ad7606.c ****         AdcCH7PongData[bufPtr] = AD7606Addr;
+ 476              		.loc 1 172 9 is_stmt 1 view .LVU124
+ 172:Core/Src/ad7606.c ****         AdcCH7PongData[bufPtr] = AD7606Addr;
+ 477              		.loc 1 172 34 is_stmt 0 view .LVU125
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 13
+
+
+ 478 00be 1488     		ldrh	r4, [r2]
+ 172:Core/Src/ad7606.c ****         AdcCH7PongData[bufPtr] = AD7606Addr;
+ 479              		.loc 1 172 32 view .LVU126
+ 480 00c0 A0F8284B 		strh	r4, [r0, #2856]	@ movhi
+ 173:Core/Src/ad7606.c ****         AdcCH8PongData[bufPtr++] = AD7606Addr;
+ 481              		.loc 1 173 9 is_stmt 1 view .LVU127
+ 173:Core/Src/ad7606.c ****         AdcCH8PongData[bufPtr++] = AD7606Addr;
+ 482              		.loc 1 173 34 is_stmt 0 view .LVU128
+ 483 00c4 1488     		ldrh	r4, [r2]
+ 173:Core/Src/ad7606.c ****         AdcCH8PongData[bufPtr++] = AD7606Addr;
+ 484              		.loc 1 173 32 view .LVU129
+ 485 00c6 1548     		ldr	r0, .L16+40
+ 486 00c8 00EB4300 		add	r0, r0, r3, lsl #1
+ 487 00cc A0F83042 		strh	r4, [r0, #560]	@ movhi
+ 174:Core/Src/ad7606.c ****         if (bufPtr == bufLen)
+ 488              		.loc 1 174 9 is_stmt 1 view .LVU130
+ 174:Core/Src/ad7606.c ****         if (bufPtr == bufLen)
+ 489              		.loc 1 174 30 is_stmt 0 view .LVU131
+ 490 00d0 0133     		adds	r3, r3, #1
+ 491 00d2 2B60     		str	r3, [r5]
+ 174:Core/Src/ad7606.c ****         if (bufPtr == bufLen)
+ 492              		.loc 1 174 36 view .LVU132
+ 493 00d4 1288     		ldrh	r2, [r2]
+ 174:Core/Src/ad7606.c ****         if (bufPtr == bufLen)
+ 494              		.loc 1 174 34 view .LVU133
+ 495 00d6 A0F8302A 		strh	r2, [r0, #2608]	@ movhi
+ 175:Core/Src/ad7606.c ****         {
+ 496              		.loc 1 175 9 is_stmt 1 view .LVU134
+ 175:Core/Src/ad7606.c ****         {
+ 497              		.loc 1 175 12 is_stmt 0 view .LVU135
+ 498 00da B3F5806F 		cmp	r3, #1024
+ 499 00de C2D1     		bne	.L11
+ 177:Core/Src/ad7606.c ****             pingPongFlag = 1 - pingPongFlag;
+ 500              		.loc 1 177 13 is_stmt 1 view .LVU136
+ 177:Core/Src/ad7606.c ****             pingPongFlag = 1 - pingPongFlag;
+ 501              		.loc 1 177 20 is_stmt 0 view .LVU137
+ 502 00e0 0022     		movs	r2, #0
+ 503 00e2 2A60     		str	r2, [r5]
+ 178:Core/Src/ad7606.c ****             anaFlag = 1;
+ 504              		.loc 1 178 13 is_stmt 1 view .LVU138
+ 178:Core/Src/ad7606.c ****             anaFlag = 1;
+ 505              		.loc 1 178 30 is_stmt 0 view .LVU139
+ 506 00e4 C1F10101 		rsb	r1, r1, #1
+ 178:Core/Src/ad7606.c ****             anaFlag = 1;
+ 507              		.loc 1 178 26 view .LVU140
+ 508 00e8 024B     		ldr	r3, .L16
+ 509 00ea 1980     		strh	r1, [r3]	@ movhi
+ 179:Core/Src/ad7606.c ****         }
+ 510              		.loc 1 179 13 is_stmt 1 view .LVU141
+ 179:Core/Src/ad7606.c ****         }
+ 511              		.loc 1 179 21 is_stmt 0 view .LVU142
+ 512 00ec 074B     		ldr	r3, .L16+24
+ 513 00ee 0122     		movs	r2, #1
+ 514 00f0 1A80     		strh	r2, [r3]	@ movhi
+ 515              		.loc 1 182 1 view .LVU143
+ 516 00f2 B8E7     		b	.L11
+ 517              	.L17:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 14
+
+
+ 518              		.align	2
+ 519              	.L16:
+ 520 00f4 00000000 		.word	.LANCHOR12
+ 521 00f8 00000000 		.word	.LANCHOR13
+ 522 00fc 00000000 		.word	.LANCHOR5
+ 523 0100 F8100000 		.word	.LANCHOR6
+ 524 0104 F0210000 		.word	.LANCHOR7
+ 525 0108 E8320000 		.word	.LANCHOR8
+ 526 010c 00000000 		.word	.LANCHOR14
+ 527 0110 E0430000 		.word	.LANCHOR9
+ 528 0114 D8540000 		.word	.LANCHOR10
+ 529 0118 C8760000 		.word	.LANCHOR15
+ 530 011c D0650000 		.word	.LANCHOR11
+ 531              		.cfi_endproc
+ 532              	.LFE191:
+ 534              		.global	__aeabi_i2d
+ 535              		.global	__aeabi_dmul
+ 536              		.global	__aeabi_d2f
+ 537              		.section	.text.claculate,"ax",%progbits
+ 538              		.align	1
+ 539              		.global	claculate
+ 540              		.syntax unified
+ 541              		.thumb
+ 542              		.thumb_func
+ 544              	claculate:
+ 545              	.LVL35:
+ 546              	.LFB193:
+ 183:Core/Src/ad7606.c **** 
+ 184:Core/Src/ad7606.c **** void ana_AD7606(void)
+ 185:Core/Src/ad7606.c **** {
+ 186:Core/Src/ad7606.c **** 
+ 187:Core/Src/ad7606.c ****     if (anaFlag == 1)
+ 188:Core/Src/ad7606.c ****     {
+ 189:Core/Src/ad7606.c ****         // claculate(dataR, DataBuf);
+ 190:Core/Src/ad7606.c ****         /* Get the RTC current Time */
+ 191:Core/Src/ad7606.c ****         HAL_RTC_GetTime(&hrtc, &GetTime, RTC_FORMAT_BIN);
+ 192:Core/Src/ad7606.c ****         /* Get the RTC current Date */
+ 193:Core/Src/ad7606.c ****         HAL_RTC_GetDate(&hrtc, &GetData, RTC_FORMAT_BIN);
+ 194:Core/Src/ad7606.c **** 
+ 195:Core/Src/ad7606.c ****         if (Muin != GetTime.Minutes)
+ 196:Core/Src/ad7606.c ****         {
+ 197:Core/Src/ad7606.c ****             printf("%04d-%02d-%02d %02d:%02d:%02d---Success: %d,Err %d\r\n", 2000 + GetData.Year, G
+ 198:Core/Src/ad7606.c ****             SendCount = 0;
+ 199:Core/Src/ad7606.c ****             SendErrCount = 0;
+ 200:Core/Src/ad7606.c ****             Muin = GetTime.Minutes;
+ 201:Core/Src/ad7606.c ****         }
+ 202:Core/Src/ad7606.c ****         anaFlag = 0;
+ 203:Core/Src/ad7606.c ****         RankNumber++;
+ 204:Core/Src/ad7606.c ****         if (pingPongFlag)
+ 205:Core/Src/ad7606.c ****         {
+ 206:Core/Src/ad7606.c **** 
+ 207:Core/Src/ad7606.c ****             NoFFTClaculat(AdcCH1PongData, 1);
+ 208:Core/Src/ad7606.c ****             NoFFTClaculat(AdcCH2PongData, 2);
+ 209:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH3PongData, 3);
+ 210:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH4PongData, 4);
+ 211:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH5PongData, 5);
+ 212:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH6PongData, 6);
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 15
+
+
+ 213:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH7PongData, 7);
+ 214:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH8PongData, 8);
+ 215:Core/Src/ad7606.c ****         }
+ 216:Core/Src/ad7606.c ****         else
+ 217:Core/Src/ad7606.c ****         {
+ 218:Core/Src/ad7606.c **** 
+ 219:Core/Src/ad7606.c ****             NoFFTClaculat(AdcCH1PingData, 1);
+ 220:Core/Src/ad7606.c ****             NoFFTClaculat(AdcCH2PingData, 2);
+ 221:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH3PingData, 3);
+ 222:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH4PingData, 4);
+ 223:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH5PingData, 5);
+ 224:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH6PingData, 6);
+ 225:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH7PingData, 7);
+ 226:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH8PingData, 8);
+ 227:Core/Src/ad7606.c ****         }
+ 228:Core/Src/ad7606.c ****     }
+ 229:Core/Src/ad7606.c **** }
+ 230:Core/Src/ad7606.c **** 
+ 231:Core/Src/ad7606.c **** void claculate(float *fBuf, short *sBuf, uint8_t Channel)
+ 232:Core/Src/ad7606.c **** {
+ 547              		.loc 1 232 1 is_stmt 1 view -0
+ 548              		.cfi_startproc
+ 549              		@ args = 0, pretend = 0, frame = 0
+ 550              		@ frame_needed = 0, uses_anonymous_args = 0
+ 551              		.loc 1 232 1 is_stmt 0 view .LVU145
+ 552 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 553              	.LCFI2:
+ 554              		.cfi_def_cfa_offset 24
+ 555              		.cfi_offset 4, -24
+ 556              		.cfi_offset 5, -20
+ 557              		.cfi_offset 6, -16
+ 558              		.cfi_offset 7, -12
+ 559              		.cfi_offset 8, -8
+ 560              		.cfi_offset 14, -4
+ 561 0004 0646     		mov	r6, r0
+ 562 0006 8846     		mov	r8, r1
+ 233:Core/Src/ad7606.c ****     int i;
+ 563              		.loc 1 233 5 is_stmt 1 view .LVU146
+ 234:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 564              		.loc 1 234 5 view .LVU147
+ 565              	.LVL36:
+ 566              		.loc 1 234 12 is_stmt 0 view .LVU148
+ 567 0008 0024     		movs	r4, #0
+ 568              		.loc 1 234 5 view .LVU149
+ 569 000a 17E0     		b	.L19
+ 570              	.LVL37:
+ 571              	.L20:
+ 235:Core/Src/ad7606.c ****     {
+ 236:Core/Src/ad7606.c ****         // fBuf[i] = sBuf[i] / 32768.0 * ADRANG;
+ 237:Core/Src/ad7606.c ****         // UpdateChart(fBuf[i],1);
+ 238:Core/Src/ad7606.c ****         // fBuf[i*2] = sBuf[i*8+(Channel-1)] / 32768.0 * ADRANG;
+ 239:Core/Src/ad7606.c ****         fBuf[i * 2] = sBuf[i] / 32768.0 * ADRANG;
+ 572              		.loc 1 239 9 is_stmt 1 discriminator 3 view .LVU150
+ 573              		.loc 1 239 31 is_stmt 0 discriminator 3 view .LVU151
+ 574 000c 38F91400 		ldrsh	r0, [r8, r4, lsl #1]
+ 575 0010 FFF7FEFF 		bl	__aeabi_i2d
+ 576              	.LVL38:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 16
+
+
+ 577 0014 0022     		movs	r2, #0
+ 578 0016 4FF07C53 		mov	r3, #1056964608
+ 579 001a FFF7FEFF 		bl	__aeabi_dmul
+ 580              	.LVL39:
+ 581              		.loc 1 239 13 discriminator 3 view .LVU152
+ 582 001e E500     		lsls	r5, r4, #3
+ 583 0020 06EBC407 		add	r7, r6, r4, lsl #3
+ 584              		.loc 1 239 41 discriminator 3 view .LVU153
+ 585 0024 0022     		movs	r2, #0
+ 586 0026 084B     		ldr	r3, .L22
+ 587 0028 FFF7FEFF 		bl	__aeabi_dmul
+ 588              	.LVL40:
+ 589 002c FFF7FEFF 		bl	__aeabi_d2f
+ 590              	.LVL41:
+ 591              		.loc 1 239 21 discriminator 3 view .LVU154
+ 592 0030 3860     		str	r0, [r7]	@ float
+ 240:Core/Src/ad7606.c ****         fBuf[i * 2 + 1] = 0;
+ 593              		.loc 1 240 9 is_stmt 1 discriminator 3 view .LVU155
+ 594              		.loc 1 240 13 is_stmt 0 discriminator 3 view .LVU156
+ 595 0032 0435     		adds	r5, r5, #4
+ 596 0034 3544     		add	r5, r5, r6
+ 597              		.loc 1 240 25 discriminator 3 view .LVU157
+ 598 0036 0023     		movs	r3, #0
+ 599 0038 2B60     		str	r3, [r5]	@ float
+ 234:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 600              		.loc 1 234 29 is_stmt 1 discriminator 3 view .LVU158
+ 234:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 601              		.loc 1 234 30 is_stmt 0 discriminator 3 view .LVU159
+ 602 003a 0134     		adds	r4, r4, #1
+ 603              	.LVL42:
+ 604              	.L19:
+ 234:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 605              		.loc 1 234 17 is_stmt 1 discriminator 1 view .LVU160
+ 234:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 606              		.loc 1 234 5 is_stmt 0 discriminator 1 view .LVU161
+ 607 003c B4F5806F 		cmp	r4, #1024
+ 608 0040 E4DB     		blt	.L20
+ 241:Core/Src/ad7606.c ****         // UpdateChart(fBuf[i*2],1);
+ 242:Core/Src/ad7606.c ****     }
+ 243:Core/Src/ad7606.c **** }
+ 609              		.loc 1 243 1 view .LVU162
+ 610 0042 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 611              	.LVL43:
+ 612              	.L23:
+ 613              		.loc 1 243 1 view .LVU163
+ 614 0046 00BF     		.align	2
+ 615              	.L22:
+ 616 0048 00002440 		.word	1076101120
+ 617              		.cfi_endproc
+ 618              	.LFE193:
+ 620              		.section	.rodata.NoFFTClaculat.str1.4,"aMS",%progbits,1
+ 621              		.align	2
+ 622              	.LC0:
+ 623 0000 6572725F 		.ascii	"err_t: %d\000"
+ 623      743A2025 
+ 623      6400
+ 624              		.section	.text.NoFFTClaculat,"ax",%progbits
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 17
+
+
+ 625              		.align	1
+ 626              		.global	NoFFTClaculat
+ 627              		.syntax unified
+ 628              		.thumb
+ 629              		.thumb_func
+ 631              	NoFFTClaculat:
+ 632              	.LVL44:
+ 633              	.LFB194:
+ 244:Core/Src/ad7606.c **** 
+ 245:Core/Src/ad7606.c **** void NoFFTClaculat(short *DataBuf, uint8_t Channel)
+ 246:Core/Src/ad7606.c **** {
+ 634              		.loc 1 246 1 is_stmt 1 view -0
+ 635              		.cfi_startproc
+ 636              		@ args = 0, pretend = 0, frame = 8
+ 637              		@ frame_needed = 1, uses_anonymous_args = 0
+ 638              		.loc 1 246 1 is_stmt 0 view .LVU165
+ 639 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 640              	.LCFI3:
+ 641              		.cfi_def_cfa_offset 36
+ 642              		.cfi_offset 4, -36
+ 643              		.cfi_offset 5, -32
+ 644              		.cfi_offset 6, -28
+ 645              		.cfi_offset 7, -24
+ 646              		.cfi_offset 8, -20
+ 647              		.cfi_offset 9, -16
+ 648              		.cfi_offset 10, -12
+ 649              		.cfi_offset 11, -8
+ 650              		.cfi_offset 14, -4
+ 651 0004 83B0     		sub	sp, sp, #12
+ 652              	.LCFI4:
+ 653              		.cfi_def_cfa_offset 48
+ 654 0006 00AF     		add	r7, sp, #0
+ 655              	.LCFI5:
+ 656              		.cfi_def_cfa_register 7
+ 657 0008 8C46     		mov	ip, r1
+ 658 000a 7960     		str	r1, [r7, #4]
+ 247:Core/Src/ad7606.c ****     int i;
+ 659              		.loc 1 247 5 is_stmt 1 view .LVU166
+ 248:Core/Src/ad7606.c **** 
+ 249:Core/Src/ad7606.c ****     uint16_t CrCValueLen;
+ 660              		.loc 1 249 5 view .LVU167
+ 250:Core/Src/ad7606.c ****     uint16_t SendVIBuffAddIndex = 0;
+ 661              		.loc 1 250 5 view .LVU168
+ 662              	.LVL45:
+ 251:Core/Src/ad7606.c ****     uint16_t CRCValueIndex = 0;
+ 663              		.loc 1 251 5 view .LVU169
+ 252:Core/Src/ad7606.c ****     uint16_t SendVIBuffIndex = 0;
+ 664              		.loc 1 252 5 view .LVU170
+ 253:Core/Src/ad7606.c **** 
+ 254:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 255;
+ 665              		.loc 1 254 5 view .LVU171
+ 666              		.loc 1 254 36 is_stmt 0 view .LVU172
+ 667 000c 7C4B     		ldr	r3, .L34
+ 668 000e 1E78     		ldrb	r6, [r3]	@ zero_extendqisi2
+ 669              	.LVL46:
+ 670              		.loc 1 254 59 view .LVU173
+ 671 0010 7C4C     		ldr	r4, .L34+4
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 18
+
+
+ 672 0012 40F61A03 		movw	r3, #2074
+ 673 0016 06FB03F3 		mul	r3, r6, r3
+ 674 001a E218     		adds	r2, r4, r3
+ 675 001c FF21     		movs	r1, #255
+ 676              	.LVL47:
+ 677              		.loc 1 254 59 view .LVU174
+ 678 001e E154     		strb	r1, [r4, r3]
+ 255:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 255;
+ 679              		.loc 1 255 5 is_stmt 1 view .LVU175
+ 680              	.LVL48:
+ 681              		.loc 1 255 59 is_stmt 0 view .LVU176
+ 682 0020 5170     		strb	r1, [r2, #1]
+ 256:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 254;
+ 683              		.loc 1 256 5 is_stmt 1 view .LVU177
+ 684              	.LVL49:
+ 685              		.loc 1 256 59 is_stmt 0 view .LVU178
+ 686 0022 FE23     		movs	r3, #254
+ 687 0024 9370     		strb	r3, [r2, #2]
+ 257:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 254;
+ 688              		.loc 1 257 5 is_stmt 1 view .LVU179
+ 689              	.LVL50:
+ 690              		.loc 1 257 59 is_stmt 0 view .LVU180
+ 691 0026 D370     		strb	r3, [r2, #3]
+ 258:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = OperateMode;
+ 692              		.loc 1 258 5 is_stmt 1 view .LVU181
+ 693              	.LVL51:
+ 694              		.loc 1 258 59 is_stmt 0 view .LVU182
+ 695 0028 0023     		movs	r3, #0
+ 696 002a 1371     		strb	r3, [r2, #4]
+ 259:Core/Src/ad7606.c ****     uint16_t TempTime = 2000 + GetData.Year;
+ 697              		.loc 1 259 5 is_stmt 1 view .LVU183
+ 698              		.loc 1 259 39 is_stmt 0 view .LVU184
+ 699 002c 764C     		ldr	r4, .L34+8
+ 700 002e E178     		ldrb	r1, [r4, #3]	@ zero_extendqisi2
+ 701              		.loc 1 259 14 view .LVU185
+ 702 0030 01F5FA65 		add	r5, r1, #2000
+ 703              	.LVL52:
+ 260:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = TempTime >> 8;
+ 704              		.loc 1 260 5 is_stmt 1 view .LVU186
+ 705              		.loc 1 260 59 is_stmt 0 view .LVU187
+ 706 0034 2D0A     		lsrs	r5, r5, #8
+ 707              	.LVL53:
+ 708              		.loc 1 260 59 view .LVU188
+ 709 0036 5571     		strb	r5, [r2, #5]
+ 261:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = TempTime;
+ 710              		.loc 1 261 5 is_stmt 1 view .LVU189
+ 711              	.LVL54:
+ 712              		.loc 1 261 59 is_stmt 0 view .LVU190
+ 713 0038 3039     		subs	r1, r1, #48
+ 714              	.LVL55:
+ 715              		.loc 1 261 59 view .LVU191
+ 716 003a 9171     		strb	r1, [r2, #6]
+ 262:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = GetData.Month;
+ 717              		.loc 1 262 5 is_stmt 1 view .LVU192
+ 718              	.LVL56:
+ 719              		.loc 1 262 68 is_stmt 0 view .LVU193
+ 720 003c 6178     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 19
+
+
+ 721              	.LVL57:
+ 722              		.loc 1 262 59 view .LVU194
+ 723 003e D171     		strb	r1, [r2, #7]
+ 263:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = GetData.Date;
+ 724              		.loc 1 263 5 is_stmt 1 view .LVU195
+ 725              	.LVL58:
+ 726              		.loc 1 263 68 is_stmt 0 view .LVU196
+ 727 0040 A178     		ldrb	r1, [r4, #2]	@ zero_extendqisi2
+ 728              		.loc 1 263 59 view .LVU197
+ 729 0042 1172     		strb	r1, [r2, #8]
+ 264:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = GetTime.Hours;
+ 730              		.loc 1 264 5 is_stmt 1 view .LVU198
+ 731              	.LVL59:
+ 732              		.loc 1 264 68 is_stmt 0 view .LVU199
+ 733 0044 7149     		ldr	r1, .L34+12
+ 734 0046 0C78     		ldrb	r4, [r1]	@ zero_extendqisi2
+ 735              		.loc 1 264 59 view .LVU200
+ 736 0048 5472     		strb	r4, [r2, #9]
+ 265:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = GetTime.Minutes;
+ 737              		.loc 1 265 5 is_stmt 1 view .LVU201
+ 738              	.LVL60:
+ 739              		.loc 1 265 68 is_stmt 0 view .LVU202
+ 740 004a 4C78     		ldrb	r4, [r1, #1]	@ zero_extendqisi2
+ 741              		.loc 1 265 59 view .LVU203
+ 742 004c 9472     		strb	r4, [r2, #10]
+ 266:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = GetTime.Seconds;
+ 743              		.loc 1 266 5 is_stmt 1 view .LVU204
+ 744              	.LVL61:
+ 745              		.loc 1 266 68 is_stmt 0 view .LVU205
+ 746 004e 8978     		ldrb	r1, [r1, #2]	@ zero_extendqisi2
+ 747              		.loc 1 266 59 view .LVU206
+ 748 0050 D172     		strb	r1, [r2, #11]
+ 267:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = RankNumber;
+ 749              		.loc 1 267 5 is_stmt 1 view .LVU207
+ 750              	.LVL62:
+ 751              		.loc 1 267 59 is_stmt 0 view .LVU208
+ 752 0052 6F49     		ldr	r1, .L34+16
+ 753 0054 0968     		ldr	r1, [r1]
+ 754 0056 1173     		strb	r1, [r2, #12]
+ 268:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = HomeID;
+ 755              		.loc 1 268 5 is_stmt 1 view .LVU209
+ 756              	.LVL63:
+ 757              		.loc 1 268 59 is_stmt 0 view .LVU210
+ 758 0058 0121     		movs	r1, #1
+ 759 005a 5173     		strb	r1, [r2, #13]
+ 269:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = Channel;
+ 760              		.loc 1 269 5 is_stmt 1 view .LVU211
+ 761              	.LVL64:
+ 762              		.loc 1 269 59 is_stmt 0 view .LVU212
+ 763 005c 82F80EC0 		strb	ip, [r2, #14]
+ 270:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = bufLen >> 8;
+ 764              		.loc 1 270 5 is_stmt 1 view .LVU213
+ 765              	.LVL65:
+ 766              		.loc 1 270 59 is_stmt 0 view .LVU214
+ 767 0060 0421     		movs	r1, #4
+ 768 0062 D173     		strb	r1, [r2, #15]
+ 271:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = bufLen;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 20
+
+
+ 769              		.loc 1 271 5 is_stmt 1 view .LVU215
+ 770              	.LVL66:
+ 771              		.loc 1 271 59 is_stmt 0 view .LVU216
+ 772 0064 1374     		strb	r3, [r2, #16]
+ 272:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 773              		.loc 1 272 5 is_stmt 1 view .LVU217
+ 774              	.LVL67:
+ 271:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = bufLen;
+ 775              		.loc 1 271 55 is_stmt 0 view .LVU218
+ 776 0066 1124     		movs	r4, #17
+ 777              		.loc 1 272 5 view .LVU219
+ 778 0068 10E0     		b	.L25
+ 779              	.LVL68:
+ 780              	.L26:
+ 273:Core/Src/ad7606.c ****     {
+ 274:Core/Src/ad7606.c ****         SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = DataBuf[i] >> 8;
+ 781              		.loc 1 274 9 is_stmt 1 discriminator 3 view .LVU220
+ 782              		.loc 1 274 72 is_stmt 0 discriminator 3 view .LVU221
+ 783 006a 30F91350 		ldrsh	r5, [r0, r3, lsl #1]
+ 784              		.loc 1 274 59 discriminator 3 view .LVU222
+ 785 006e 611C     		adds	r1, r4, #1
+ 786 0070 89B2     		uxth	r1, r1
+ 787              	.LVL69:
+ 788              		.loc 1 274 63 discriminator 3 view .LVU223
+ 789 0072 644A     		ldr	r2, .L34+4
+ 790 0074 40F61A0C 		movw	ip, #2074
+ 791 0078 0CFB0622 		mla	r2, ip, r6, r2
+ 792 007c 2D12     		asrs	r5, r5, #8
+ 793 007e 1555     		strb	r5, [r2, r4]
+ 275:Core/Src/ad7606.c ****         SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = DataBuf[i];
+ 794              		.loc 1 275 9 is_stmt 1 discriminator 3 view .LVU224
+ 795              		.loc 1 275 72 is_stmt 0 discriminator 3 view .LVU225
+ 796 0080 30F91350 		ldrsh	r5, [r0, r3, lsl #1]
+ 797              		.loc 1 275 59 discriminator 3 view .LVU226
+ 798 0084 0234     		adds	r4, r4, #2
+ 799 0086 A4B2     		uxth	r4, r4
+ 800              	.LVL70:
+ 801              		.loc 1 275 63 discriminator 3 view .LVU227
+ 802 0088 5554     		strb	r5, [r2, r1]
+ 272:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 803              		.loc 1 272 29 is_stmt 1 discriminator 3 view .LVU228
+ 272:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 804              		.loc 1 272 30 is_stmt 0 discriminator 3 view .LVU229
+ 805 008a 0133     		adds	r3, r3, #1
+ 806              	.LVL71:
+ 807              	.L25:
+ 272:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 808              		.loc 1 272 17 is_stmt 1 discriminator 1 view .LVU230
+ 272:Core/Src/ad7606.c ****     for (i = 0; i < bufLen; i++)
+ 809              		.loc 1 272 5 is_stmt 0 discriminator 1 view .LVU231
+ 810 008c B3F5806F 		cmp	r3, #1024
+ 811 0090 EBDB     		blt	.L26
+ 276:Core/Src/ad7606.c ****     }
+ 277:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = SendDataBuffIndex;
+ 812              		.loc 1 277 5 is_stmt 1 view .LVU232
+ 813              		.loc 1 277 55 is_stmt 0 view .LVU233
+ 814 0092 611C     		adds	r1, r4, #1
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 21
+
+
+ 815 0094 89B2     		uxth	r1, r1
+ 816              	.LVL72:
+ 817              		.loc 1 277 59 view .LVU234
+ 818 0096 5B4B     		ldr	r3, .L34+4
+ 819              	.LVL73:
+ 820              		.loc 1 277 59 view .LVU235
+ 821 0098 40F61A02 		movw	r2, #2074
+ 822 009c 02FB0633 		mla	r3, r2, r6, r3
+ 823 00a0 1E55     		strb	r6, [r3, r4]
+ 278:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 0x00;
+ 824              		.loc 1 278 5 is_stmt 1 view .LVU236
+ 825              		.loc 1 278 55 is_stmt 0 view .LVU237
+ 826 00a2 A21C     		adds	r2, r4, #2
+ 827 00a4 92B2     		uxth	r2, r2
+ 828              	.LVL74:
+ 829              		.loc 1 278 59 view .LVU238
+ 830 00a6 4FF0000E 		mov	lr, #0
+ 831 00aa 03F801E0 		strb	lr, [r3, r1]
+ 279:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 0x00;
+ 832              		.loc 1 279 5 is_stmt 1 view .LVU239
+ 833              		.loc 1 279 55 is_stmt 0 view .LVU240
+ 834 00ae 04F1030A 		add	r10, r4, #3
+ 835 00b2 1FFA8AF1 		uxth	r1, r10
+ 836 00b6 3960     		str	r1, [r7]
+ 837              	.LVL75:
+ 838              		.loc 1 279 59 view .LVU241
+ 839 00b8 03F802E0 		strb	lr, [r3, r2]
+ 280:Core/Src/ad7606.c **** 
+ 281:Core/Src/ad7606.c ****     CrCValueLen = SendVIBuffAddIndex / 4;
+ 840              		.loc 1 281 5 is_stmt 1 view .LVU242
+ 841              		.loc 1 281 17 is_stmt 0 view .LVU243
+ 842 00bc CAF38D0A 		ubfx	r10, r10, #2, #14
+ 282:Core/Src/ad7606.c **** 
+ 283:Core/Src/ad7606.c ****     uint32_t CrCValue[CrCValueLen];
+ 843              		.loc 1 283 5 is_stmt 1 view .LVU244
+ 844              	.LVL76:
+ 845              		.loc 1 283 14 is_stmt 0 view .LVU245
+ 846 00c0 4FEA8A03 		lsl	r3, r10, #2
+ 847 00c4 0733     		adds	r3, r3, #7
+ 848 00c6 23F00703 		bic	r3, r3, #7
+ 849 00ca ADEB030D 		sub	sp, sp, r3
+ 850 00ce 6946     		mov	r1, sp
+ 851              	.LVL77:
+ 284:Core/Src/ad7606.c ****     for (i = 0; i < CrCValueLen; i++)
+ 852              		.loc 1 284 5 is_stmt 1 view .LVU246
+ 252:Core/Src/ad7606.c **** 
+ 853              		.loc 1 252 14 is_stmt 0 view .LVU247
+ 854 00d0 7346     		mov	r3, lr
+ 251:Core/Src/ad7606.c ****     uint16_t SendVIBuffIndex = 0;
+ 855              		.loc 1 251 14 view .LVU248
+ 856 00d2 7246     		mov	r2, lr
+ 857              		.loc 1 284 5 view .LVU249
+ 858 00d4 3BE0     		b	.L27
+ 859              	.LVL78:
+ 860              	.L28:
+ 285:Core/Src/ad7606.c ****     {
+ 286:Core/Src/ad7606.c ****         CrCValue[CRCValueIndex] = SendDataBuff[SendDataBuffIndex][SendVIBuffIndex++] << 24;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 22
+
+
+ 861              		.loc 1 286 9 is_stmt 1 discriminator 3 view .LVU250
+ 862              		.loc 1 286 82 is_stmt 0 discriminator 3 view .LVU251
+ 863 00d6 03F10108 		add	r8, r3, #1
+ 864 00da 1FFA88F8 		uxth	r8, r8
+ 865              	.LVL79:
+ 866              		.loc 1 286 66 discriminator 3 view .LVU252
+ 867 00de 494D     		ldr	r5, .L34+4
+ 868 00e0 DFF81CC1 		ldr	ip, .L34
+ 869 00e4 9CF80000 		ldrb	r0, [ip]	@ zero_extendqisi2
+ 870 00e8 40F61A06 		movw	r6, #2074
+ 871 00ec 06FB0050 		mla	r0, r6, r0, r5
+ 872 00f0 C05C     		ldrb	r0, [r0, r3]	@ zero_extendqisi2
+ 873              		.loc 1 286 86 discriminator 3 view .LVU253
+ 874 00f2 0006     		lsls	r0, r0, #24
+ 875              		.loc 1 286 33 discriminator 3 view .LVU254
+ 876 00f4 41F82200 		str	r0, [r1, r2, lsl #2]
+ 287:Core/Src/ad7606.c ****         CrCValue[CRCValueIndex] += SendDataBuff[SendDataBuffIndex][SendVIBuffIndex++] << 16;
+ 877              		.loc 1 287 9 is_stmt 1 discriminator 3 view .LVU255
+ 878              		.loc 1 287 83 is_stmt 0 discriminator 3 view .LVU256
+ 879 00f8 03F10209 		add	r9, r3, #2
+ 880 00fc 1FFA89F9 		uxth	r9, r9
+ 881              	.LVL80:
+ 882              		.loc 1 287 67 discriminator 3 view .LVU257
+ 883 0100 9CF800B0 		ldrb	fp, [ip]	@ zero_extendqisi2
+ 884 0104 06FB0B5B 		mla	fp, r6, fp, r5
+ 885 0108 1BF80880 		ldrb	r8, [fp, r8]	@ zero_extendqisi2
+ 886              		.loc 1 287 33 discriminator 3 view .LVU258
+ 887 010c 00EB0840 		add	r0, r0, r8, lsl #16
+ 888 0110 41F82200 		str	r0, [r1, r2, lsl #2]
+ 288:Core/Src/ad7606.c ****         CrCValue[CRCValueIndex] += SendDataBuff[SendDataBuffIndex][SendVIBuffIndex++] << 8;
+ 889              		.loc 1 288 9 is_stmt 1 discriminator 3 view .LVU259
+ 890              		.loc 1 288 83 is_stmt 0 discriminator 3 view .LVU260
+ 891 0114 03F10308 		add	r8, r3, #3
+ 892 0118 1FFA88F8 		uxth	r8, r8
+ 893              	.LVL81:
+ 894              		.loc 1 288 67 discriminator 3 view .LVU261
+ 895 011c 9CF800B0 		ldrb	fp, [ip]	@ zero_extendqisi2
+ 896 0120 06FB0B5B 		mla	fp, r6, fp, r5
+ 897 0124 1BF80990 		ldrb	r9, [fp, r9]	@ zero_extendqisi2
+ 898              		.loc 1 288 33 discriminator 3 view .LVU262
+ 899 0128 00EB0920 		add	r0, r0, r9, lsl #8
+ 900 012c 41F82200 		str	r0, [r1, r2, lsl #2]
+ 289:Core/Src/ad7606.c ****         CrCValue[CRCValueIndex] += SendDataBuff[SendDataBuffIndex][SendVIBuffIndex++];
+ 901              		.loc 1 289 9 is_stmt 1 discriminator 3 view .LVU263
+ 902              		.loc 1 289 83 is_stmt 0 discriminator 3 view .LVU264
+ 903 0130 0433     		adds	r3, r3, #4
+ 904 0132 9BB2     		uxth	r3, r3
+ 905              	.LVL82:
+ 906              		.loc 1 289 67 discriminator 3 view .LVU265
+ 907 0134 9CF800C0 		ldrb	ip, [ip]	@ zero_extendqisi2
+ 908 0138 06FB0C55 		mla	r5, r6, ip, r5
+ 909 013c 15F80850 		ldrb	r5, [r5, r8]	@ zero_extendqisi2
+ 910              		.loc 1 289 33 discriminator 3 view .LVU266
+ 911 0140 2844     		add	r0, r0, r5
+ 912 0142 41F82200 		str	r0, [r1, r2, lsl #2]
+ 290:Core/Src/ad7606.c ****         CRCValueIndex++;
+ 913              		.loc 1 290 9 is_stmt 1 discriminator 3 view .LVU267
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 23
+
+
+ 914              		.loc 1 290 22 is_stmt 0 discriminator 3 view .LVU268
+ 915 0146 0132     		adds	r2, r2, #1
+ 916              	.LVL83:
+ 917              		.loc 1 290 22 discriminator 3 view .LVU269
+ 918 0148 92B2     		uxth	r2, r2
+ 919              	.LVL84:
+ 284:Core/Src/ad7606.c ****     {
+ 920              		.loc 1 284 34 is_stmt 1 discriminator 3 view .LVU270
+ 284:Core/Src/ad7606.c ****     {
+ 921              		.loc 1 284 35 is_stmt 0 discriminator 3 view .LVU271
+ 922 014a 0EF1010E 		add	lr, lr, #1
+ 923              	.LVL85:
+ 924              	.L27:
+ 284:Core/Src/ad7606.c ****     {
+ 925              		.loc 1 284 17 is_stmt 1 discriminator 1 view .LVU272
+ 284:Core/Src/ad7606.c ****     {
+ 926              		.loc 1 284 5 is_stmt 0 discriminator 1 view .LVU273
+ 927 014e F245     		cmp	r10, lr
+ 928 0150 C1DC     		bgt	.L28
+ 291:Core/Src/ad7606.c ****     }
+ 292:Core/Src/ad7606.c **** 
+ 293:Core/Src/ad7606.c ****     uint32_t CrcRes = HAL_CRC_Calculate(&hcrc, (uint32_t *)CrCValue, CRCValueIndex);
+ 929              		.loc 1 293 5 is_stmt 1 view .LVU274
+ 930              		.loc 1 293 23 is_stmt 0 view .LVU275
+ 931 0152 3048     		ldr	r0, .L34+20
+ 932 0154 FFF7FEFF 		bl	HAL_CRC_Calculate
+ 933              	.LVL86:
+ 934              		.loc 1 293 23 view .LVU276
+ 935 0158 0346     		mov	r3, r0
+ 936              	.LVL87:
+ 294:Core/Src/ad7606.c **** 
+ 295:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = (uint8_t)(CrcRes >> 24);
+ 937              		.loc 1 295 5 is_stmt 1 view .LVU277
+ 938              		.loc 1 295 36 is_stmt 0 view .LVU278
+ 939 015a 294A     		ldr	r2, .L34
+ 940 015c 1678     		ldrb	r6, [r2]	@ zero_extendqisi2
+ 941              		.loc 1 295 55 view .LVU279
+ 942 015e 251D     		adds	r5, r4, #4
+ 943 0160 ADB2     		uxth	r5, r5
+ 944              	.LVL88:
+ 945              		.loc 1 295 61 view .LVU280
+ 946 0162 020E     		lsrs	r2, r0, #24
+ 947              		.loc 1 295 59 view .LVU281
+ 948 0164 40F61A01 		movw	r1, #2074
+ 949 0168 2648     		ldr	r0, .L34+4
+ 950              	.LVL89:
+ 951              		.loc 1 295 59 view .LVU282
+ 952 016a 01FB0600 		mla	r0, r1, r6, r0
+ 953 016e 3E68     		ldr	r6, [r7]
+ 954 0170 8255     		strb	r2, [r0, r6]
+ 296:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = (uint8_t)(CrcRes >> 16);
+ 955              		.loc 1 296 5 is_stmt 1 view .LVU283
+ 956              		.loc 1 296 55 is_stmt 0 view .LVU284
+ 957 0172 621D     		adds	r2, r4, #5
+ 958 0174 92B2     		uxth	r2, r2
+ 959              	.LVL90:
+ 960              		.loc 1 296 61 view .LVU285
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 24
+
+
+ 961 0176 C3F30746 		ubfx	r6, r3, #16, #8
+ 962              		.loc 1 296 59 view .LVU286
+ 963 017a 4655     		strb	r6, [r0, r5]
+ 297:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = (uint8_t)(CrcRes >> 8);
+ 964              		.loc 1 297 5 is_stmt 1 view .LVU287
+ 965              		.loc 1 297 55 is_stmt 0 view .LVU288
+ 966 017c A51D     		adds	r5, r4, #6
+ 967 017e ADB2     		uxth	r5, r5
+ 968              	.LVL91:
+ 969              		.loc 1 297 61 view .LVU289
+ 970 0180 C3F30726 		ubfx	r6, r3, #8, #8
+ 971              		.loc 1 297 59 view .LVU290
+ 972 0184 8654     		strb	r6, [r0, r2]
+ 298:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = (uint8_t)CrcRes;
+ 973              		.loc 1 298 5 is_stmt 1 view .LVU291
+ 974              		.loc 1 298 55 is_stmt 0 view .LVU292
+ 975 0186 E21D     		adds	r2, r4, #7
+ 976 0188 92B2     		uxth	r2, r2
+ 977              	.LVL92:
+ 978              		.loc 1 298 59 view .LVU293
+ 979 018a 4355     		strb	r3, [r0, r5]
+ 299:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 254;
+ 980              		.loc 1 299 5 is_stmt 1 view .LVU294
+ 981              		.loc 1 299 55 is_stmt 0 view .LVU295
+ 982 018c 04F10803 		add	r3, r4, #8
+ 983              	.LVL93:
+ 984              		.loc 1 299 55 view .LVU296
+ 985 0190 9BB2     		uxth	r3, r3
+ 986              	.LVL94:
+ 987              		.loc 1 299 59 view .LVU297
+ 988 0192 FE24     		movs	r4, #254
+ 989 0194 8454     		strb	r4, [r0, r2]
+ 300:Core/Src/ad7606.c ****     SendDataBuff[SendDataBuffIndex][SendVIBuffAddIndex++] = 254;
+ 990              		.loc 1 300 5 is_stmt 1 view .LVU298
+ 991              	.LVL95:
+ 992              		.loc 1 300 59 is_stmt 0 view .LVU299
+ 993 0196 C454     		strb	r4, [r0, r3]
+ 301:Core/Src/ad7606.c **** 
+ 302:Core/Src/ad7606.c ****     uint16_t len = SendBufLen;
+ 994              		.loc 1 302 5 is_stmt 1 view .LVU300
+ 995              	.LVL96:
+ 303:Core/Src/ad7606.c ****     // SendDataBuff[SendDataBuffIndex] = SendVIBuff;
+ 304:Core/Src/ad7606.c ****     err_t res = LWIP_Send_data(SendDataBuff[SendDataBuffIndex], len, Channel);
+ 996              		.loc 1 304 5 view .LVU301
+ 997              		.loc 1 304 17 is_stmt 0 view .LVU302
+ 998 0198 7A68     		ldr	r2, [r7, #4]
+ 999 019a FFF7FEFF 		bl	LWIP_Send_data
+ 1000              	.LVL97:
+ 1001              		.loc 1 304 11 view .LVU303
+ 1002 019e 40B2     		sxtb	r0, r0
+ 1003              	.LVL98:
+ 305:Core/Src/ad7606.c ****     if (res == ERR_OK)
+ 1004              		.loc 1 305 5 is_stmt 1 view .LVU304
+ 1005              		.loc 1 305 8 is_stmt 0 view .LVU305
+ 1006 01a0 A8B9     		cbnz	r0, .L29
+ 306:Core/Src/ad7606.c ****     {
+ 307:Core/Src/ad7606.c ****         SendCount++;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 25
+
+
+ 1007              		.loc 1 307 9 is_stmt 1 view .LVU306
+ 1008              		.loc 1 307 18 is_stmt 0 view .LVU307
+ 1009 01a2 1D4A     		ldr	r2, .L34+24
+ 1010 01a4 1368     		ldr	r3, [r2]
+ 1011 01a6 0133     		adds	r3, r3, #1
+ 1012 01a8 1360     		str	r3, [r2]
+ 1013              	.LVL99:
+ 1014              	.L30:
+ 308:Core/Src/ad7606.c ****     }
+ 309:Core/Src/ad7606.c ****     else
+ 310:Core/Src/ad7606.c ****     {
+ 311:Core/Src/ad7606.c ****         res = LWIP_Send_data(SendDataBuff[SendDataBuffIndex], len, Channel);
+ 312:Core/Src/ad7606.c ****         if (res == ERR_OK)
+ 313:Core/Src/ad7606.c ****         {
+ 314:Core/Src/ad7606.c ****             SendCount++;
+ 315:Core/Src/ad7606.c ****         }
+ 316:Core/Src/ad7606.c ****         else
+ 317:Core/Src/ad7606.c ****         {
+ 318:Core/Src/ad7606.c ****             SendErrCount++;
+ 319:Core/Src/ad7606.c ****         }
+ 320:Core/Src/ad7606.c **** 
+ 321:Core/Src/ad7606.c ****         printf("err_t: %d", res);
+ 322:Core/Src/ad7606.c ****     }
+ 323:Core/Src/ad7606.c ****     SendDataBuffIndex = (SendDataBuffIndex + 1) % 30;
+ 1015              		.loc 1 323 5 is_stmt 1 view .LVU308
+ 1016              		.loc 1 323 44 is_stmt 0 view .LVU309
+ 1017 01aa 1548     		ldr	r0, .L34
+ 1018 01ac 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 1019 01ae 0133     		adds	r3, r3, #1
+ 1020              		.loc 1 323 49 view .LVU310
+ 1021 01b0 1A4A     		ldr	r2, .L34+28
+ 1022 01b2 82FB0312 		smull	r1, r2, r2, r3
+ 1023 01b6 1A44     		add	r2, r2, r3
+ 1024 01b8 22F00F01 		bic	r1, r2, #15
+ 1025 01bc A1EB2212 		sub	r2, r1, r2, asr #4
+ 1026 01c0 A3EB4203 		sub	r3, r3, r2, lsl #1
+ 1027              		.loc 1 323 23 view .LVU311
+ 1028 01c4 0370     		strb	r3, [r0]
+ 324:Core/Src/ad7606.c **** }
+ 1029              		.loc 1 324 1 view .LVU312
+ 1030 01c6 0C37     		adds	r7, r7, #12
+ 1031              	.LCFI6:
+ 1032              		.cfi_remember_state
+ 1033              		.cfi_def_cfa_offset 36
+ 1034 01c8 BD46     		mov	sp, r7
+ 1035              	.LCFI7:
+ 1036              		.cfi_def_cfa_register 13
+ 1037              	.LVL100:
+ 1038              		.loc 1 324 1 view .LVU313
+ 1039              		@ sp needed
+ 1040 01ca BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1041              	.LVL101:
+ 1042              	.L29:
+ 1043              	.LCFI8:
+ 1044              		.cfi_restore_state
+ 311:Core/Src/ad7606.c ****         if (res == ERR_OK)
+ 1045              		.loc 1 311 9 is_stmt 1 view .LVU314
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 26
+
+
+ 311:Core/Src/ad7606.c ****         if (res == ERR_OK)
+ 1046              		.loc 1 311 42 is_stmt 0 view .LVU315
+ 1047 01ce 0C4B     		ldr	r3, .L34
+ 1048 01d0 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 1049              	.LVL102:
+ 311:Core/Src/ad7606.c ****         if (res == ERR_OK)
+ 1050              		.loc 1 311 42 view .LVU316
+ 1051 01d2 40F61A01 		movw	r1, #2074
+ 311:Core/Src/ad7606.c ****         if (res == ERR_OK)
+ 1052              		.loc 1 311 15 view .LVU317
+ 1053 01d6 7A68     		ldr	r2, [r7, #4]
+ 1054 01d8 0A4B     		ldr	r3, .L34+4
+ 1055 01da 01FB0030 		mla	r0, r1, r0, r3
+ 1056 01de FFF7FEFF 		bl	LWIP_Send_data
+ 1057              	.LVL103:
+ 311:Core/Src/ad7606.c ****         if (res == ERR_OK)
+ 1058              		.loc 1 311 13 view .LVU318
+ 1059 01e2 41B2     		sxtb	r1, r0
+ 1060              	.LVL104:
+ 312:Core/Src/ad7606.c ****         {
+ 1061              		.loc 1 312 9 is_stmt 1 view .LVU319
+ 312:Core/Src/ad7606.c ****         {
+ 1062              		.loc 1 312 12 is_stmt 0 view .LVU320
+ 1063 01e4 39B9     		cbnz	r1, .L31
+ 314:Core/Src/ad7606.c ****         }
+ 1064              		.loc 1 314 13 is_stmt 1 view .LVU321
+ 314:Core/Src/ad7606.c ****         }
+ 1065              		.loc 1 314 22 is_stmt 0 view .LVU322
+ 1066 01e6 0C4A     		ldr	r2, .L34+24
+ 1067 01e8 1368     		ldr	r3, [r2]
+ 1068 01ea 0133     		adds	r3, r3, #1
+ 1069 01ec 1360     		str	r3, [r2]
+ 1070              	.L32:
+ 321:Core/Src/ad7606.c ****     }
+ 1071              		.loc 1 321 9 is_stmt 1 view .LVU323
+ 1072 01ee 0C48     		ldr	r0, .L34+32
+ 1073 01f0 FFF7FEFF 		bl	printf
+ 1074              	.LVL105:
+ 321:Core/Src/ad7606.c ****     }
+ 1075              		.loc 1 321 9 is_stmt 0 view .LVU324
+ 1076 01f4 D9E7     		b	.L30
+ 1077              	.LVL106:
+ 1078              	.L31:
+ 318:Core/Src/ad7606.c ****         }
+ 1079              		.loc 1 318 13 is_stmt 1 view .LVU325
+ 318:Core/Src/ad7606.c ****         }
+ 1080              		.loc 1 318 25 is_stmt 0 view .LVU326
+ 1081 01f6 0B4A     		ldr	r2, .L34+36
+ 1082 01f8 1368     		ldr	r3, [r2]
+ 1083 01fa 0133     		adds	r3, r3, #1
+ 1084 01fc 1360     		str	r3, [r2]
+ 1085 01fe F6E7     		b	.L32
+ 1086              	.L35:
+ 1087              		.align	2
+ 1088              	.L34:
+ 1089 0200 00000000 		.word	.LANCHOR16
+ 1090 0204 00000000 		.word	SendDataBuff
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 27
+
+
+ 1091 0208 00000000 		.word	.LANCHOR17
+ 1092 020c 00000000 		.word	.LANCHOR18
+ 1093 0210 00000000 		.word	.LANCHOR19
+ 1094 0214 00000000 		.word	hcrc
+ 1095 0218 00000000 		.word	.LANCHOR2
+ 1096 021c 89888888 		.word	-2004318071
+ 1097 0220 00000000 		.word	.LC0
+ 1098 0224 00000000 		.word	.LANCHOR3
+ 1099              		.cfi_endproc
+ 1100              	.LFE194:
+ 1102              		.section	.rodata.ana_AD7606.str1.4,"aMS",%progbits,1
+ 1103              		.align	2
+ 1104              	.LC1:
+ 1105 0000 25303464 		.ascii	"%04d-%02d-%02d %02d:%02d:%02d---Success: %d,Err %d\015"
+ 1105      2D253032 
+ 1105      642D2530 
+ 1105      32642025 
+ 1105      3032643A 
+ 1106 0033 0A00     		.ascii	"\012\000"
+ 1107              		.section	.text.ana_AD7606,"ax",%progbits
+ 1108              		.align	1
+ 1109              		.global	ana_AD7606
+ 1110              		.syntax unified
+ 1111              		.thumb
+ 1112              		.thumb_func
+ 1114              	ana_AD7606:
+ 1115              	.LFB192:
+ 185:Core/Src/ad7606.c **** 
+ 1116              		.loc 1 185 1 is_stmt 1 view -0
+ 1117              		.cfi_startproc
+ 1118              		@ args = 0, pretend = 0, frame = 0
+ 1119              		@ frame_needed = 0, uses_anonymous_args = 0
+ 187:Core/Src/ad7606.c ****     {
+ 1120              		.loc 1 187 5 view .LVU328
+ 187:Core/Src/ad7606.c ****     {
+ 1121              		.loc 1 187 17 is_stmt 0 view .LVU329
+ 1122 0000 2A4B     		ldr	r3, .L46
+ 1123 0002 B3F90030 		ldrsh	r3, [r3]
+ 187:Core/Src/ad7606.c ****     {
+ 1124              		.loc 1 187 8 view .LVU330
+ 1125 0006 012B     		cmp	r3, #1
+ 1126 0008 00D0     		beq	.L44
+ 1127 000a 7047     		bx	lr
+ 1128              	.L44:
+ 185:Core/Src/ad7606.c **** 
+ 1129              		.loc 1 185 1 view .LVU331
+ 1130 000c F0B5     		push	{r4, r5, r6, r7, lr}
+ 1131              	.LCFI9:
+ 1132              		.cfi_def_cfa_offset 20
+ 1133              		.cfi_offset 4, -20
+ 1134              		.cfi_offset 5, -16
+ 1135              		.cfi_offset 6, -12
+ 1136              		.cfi_offset 7, -8
+ 1137              		.cfi_offset 14, -4
+ 1138 000e 87B0     		sub	sp, sp, #28
+ 1139              	.LCFI10:
+ 1140              		.cfi_def_cfa_offset 48
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 28
+
+
+ 191:Core/Src/ad7606.c ****         /* Get the RTC current Date */
+ 1141              		.loc 1 191 9 is_stmt 1 view .LVU332
+ 1142 0010 274C     		ldr	r4, .L46+4
+ 1143 0012 284D     		ldr	r5, .L46+8
+ 1144 0014 0022     		movs	r2, #0
+ 1145 0016 2146     		mov	r1, r4
+ 1146 0018 2846     		mov	r0, r5
+ 1147 001a FFF7FEFF 		bl	HAL_RTC_GetTime
+ 1148              	.LVL107:
+ 193:Core/Src/ad7606.c **** 
+ 1149              		.loc 1 193 9 view .LVU333
+ 1150 001e 0022     		movs	r2, #0
+ 1151 0020 2549     		ldr	r1, .L46+12
+ 1152 0022 2846     		mov	r0, r5
+ 1153 0024 FFF7FEFF 		bl	HAL_RTC_GetDate
+ 1154              	.LVL108:
+ 195:Core/Src/ad7606.c ****         {
+ 1155              		.loc 1 195 9 view .LVU334
+ 195:Core/Src/ad7606.c ****         {
+ 1156              		.loc 1 195 28 is_stmt 0 view .LVU335
+ 1157 0028 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 195:Core/Src/ad7606.c ****         {
+ 1158              		.loc 1 195 18 view .LVU336
+ 1159 002a 244A     		ldr	r2, .L46+16
+ 1160 002c 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 195:Core/Src/ad7606.c ****         {
+ 1161              		.loc 1 195 12 view .LVU337
+ 1162 002e 9342     		cmp	r3, r2
+ 1163 0030 14D1     		bne	.L45
+ 1164              	.L38:
+ 202:Core/Src/ad7606.c ****         RankNumber++;
+ 1165              		.loc 1 202 9 is_stmt 1 view .LVU338
+ 202:Core/Src/ad7606.c ****         RankNumber++;
+ 1166              		.loc 1 202 17 is_stmt 0 view .LVU339
+ 1167 0032 1E4B     		ldr	r3, .L46
+ 1168 0034 0022     		movs	r2, #0
+ 1169 0036 1A80     		strh	r2, [r3]	@ movhi
+ 203:Core/Src/ad7606.c ****         if (pingPongFlag)
+ 1170              		.loc 1 203 9 is_stmt 1 view .LVU340
+ 203:Core/Src/ad7606.c ****         if (pingPongFlag)
+ 1171              		.loc 1 203 19 is_stmt 0 view .LVU341
+ 1172 0038 214A     		ldr	r2, .L46+20
+ 1173 003a 1368     		ldr	r3, [r2]
+ 1174 003c 0133     		adds	r3, r3, #1
+ 1175 003e 1360     		str	r3, [r2]
+ 204:Core/Src/ad7606.c ****         {
+ 1176              		.loc 1 204 9 is_stmt 1 view .LVU342
+ 204:Core/Src/ad7606.c ****         {
+ 1177              		.loc 1 204 13 is_stmt 0 view .LVU343
+ 1178 0040 204B     		ldr	r3, .L46+24
+ 1179 0042 B3F90030 		ldrsh	r3, [r3]
+ 204:Core/Src/ad7606.c ****         {
+ 1180              		.loc 1 204 12 view .LVU344
+ 1181 0046 2BB3     		cbz	r3, .L39
+ 207:Core/Src/ad7606.c ****             NoFFTClaculat(AdcCH2PongData, 2);
+ 1182              		.loc 1 207 13 is_stmt 1 view .LVU345
+ 1183 0048 0121     		movs	r1, #1
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 29
+
+
+ 1184 004a 1F48     		ldr	r0, .L46+28
+ 1185 004c FFF7FEFF 		bl	NoFFTClaculat
+ 1186              	.LVL109:
+ 208:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH3PongData, 3);
+ 1187              		.loc 1 208 13 view .LVU346
+ 1188 0050 0221     		movs	r1, #2
+ 1189 0052 1E48     		ldr	r0, .L46+32
+ 1190 0054 FFF7FEFF 		bl	NoFFTClaculat
+ 1191              	.LVL110:
+ 1192              	.L36:
+ 229:Core/Src/ad7606.c **** 
+ 1193              		.loc 1 229 1 is_stmt 0 view .LVU347
+ 1194 0058 07B0     		add	sp, sp, #28
+ 1195              	.LCFI11:
+ 1196              		.cfi_remember_state
+ 1197              		.cfi_def_cfa_offset 20
+ 1198              		@ sp needed
+ 1199 005a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1200              	.L45:
+ 1201              	.LCFI12:
+ 1202              		.cfi_restore_state
+ 197:Core/Src/ad7606.c ****             SendCount = 0;
+ 1203              		.loc 1 197 13 is_stmt 1 view .LVU348
+ 197:Core/Src/ad7606.c ****             SendCount = 0;
+ 1204              		.loc 1 197 92 is_stmt 0 view .LVU349
+ 1205 005c 164A     		ldr	r2, .L46+12
+ 1206 005e 92F803C0 		ldrb	ip, [r2, #3]	@ zero_extendqisi2
+ 197:Core/Src/ad7606.c ****             SendCount = 0;
+ 1207              		.loc 1 197 135 view .LVU350
+ 1208 0062 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 197:Core/Src/ad7606.c ****             SendCount = 0;
+ 1209              		.loc 1 197 167 view .LVU351
+ 1210 0064 A778     		ldrb	r7, [r4, #2]	@ zero_extendqisi2
+ 197:Core/Src/ad7606.c ****             SendCount = 0;
+ 1211              		.loc 1 197 13 view .LVU352
+ 1212 0066 1A4D     		ldr	r5, .L46+36
+ 1213 0068 2E68     		ldr	r6, [r5]
+ 1214 006a 0496     		str	r6, [sp, #16]
+ 1215 006c 194E     		ldr	r6, .L46+40
+ 1216 006e 3168     		ldr	r1, [r6]
+ 1217 0070 0391     		str	r1, [sp, #12]
+ 1218 0072 0297     		str	r7, [sp, #8]
+ 1219 0074 0193     		str	r3, [sp, #4]
+ 1220 0076 0090     		str	r0, [sp]
+ 1221 0078 9378     		ldrb	r3, [r2, #2]	@ zero_extendqisi2
+ 1222 007a 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 1223 007c 0CF5FA61 		add	r1, ip, #2000
+ 1224 0080 1548     		ldr	r0, .L46+44
+ 1225 0082 FFF7FEFF 		bl	printf
+ 1226              	.LVL111:
+ 198:Core/Src/ad7606.c ****             SendErrCount = 0;
+ 1227              		.loc 1 198 13 is_stmt 1 view .LVU353
+ 198:Core/Src/ad7606.c ****             SendErrCount = 0;
+ 1228              		.loc 1 198 23 is_stmt 0 view .LVU354
+ 1229 0086 0023     		movs	r3, #0
+ 1230 0088 3360     		str	r3, [r6]
+ 199:Core/Src/ad7606.c ****             Muin = GetTime.Minutes;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 30
+
+
+ 1231              		.loc 1 199 13 is_stmt 1 view .LVU355
+ 199:Core/Src/ad7606.c ****             Muin = GetTime.Minutes;
+ 1232              		.loc 1 199 26 is_stmt 0 view .LVU356
+ 1233 008a 2B60     		str	r3, [r5]
+ 200:Core/Src/ad7606.c ****         }
+ 1234              		.loc 1 200 13 is_stmt 1 view .LVU357
+ 200:Core/Src/ad7606.c ****         }
+ 1235              		.loc 1 200 27 is_stmt 0 view .LVU358
+ 1236 008c 6278     		ldrb	r2, [r4, #1]	@ zero_extendqisi2
+ 200:Core/Src/ad7606.c ****         }
+ 1237              		.loc 1 200 18 view .LVU359
+ 1238 008e 0B4B     		ldr	r3, .L46+16
+ 1239 0090 1A70     		strb	r2, [r3]
+ 1240 0092 CEE7     		b	.L38
+ 1241              	.L39:
+ 219:Core/Src/ad7606.c ****             NoFFTClaculat(AdcCH2PingData, 2);
+ 1242              		.loc 1 219 13 is_stmt 1 view .LVU360
+ 1243 0094 114C     		ldr	r4, .L46+48
+ 1244 0096 0121     		movs	r1, #1
+ 1245 0098 2046     		mov	r0, r4
+ 1246 009a FFF7FEFF 		bl	NoFFTClaculat
+ 1247              	.LVL112:
+ 220:Core/Src/ad7606.c ****             // NoFFTClaculat(AdcCH3PingData, 3);
+ 1248              		.loc 1 220 13 view .LVU361
+ 1249 009e 0221     		movs	r1, #2
+ 1250 00a0 04F50060 		add	r0, r4, #2048
+ 1251 00a4 FFF7FEFF 		bl	NoFFTClaculat
+ 1252              	.LVL113:
+ 229:Core/Src/ad7606.c **** 
+ 1253              		.loc 1 229 1 is_stmt 0 view .LVU362
+ 1254 00a8 D6E7     		b	.L36
+ 1255              	.L47:
+ 1256 00aa 00BF     		.align	2
+ 1257              	.L46:
+ 1258 00ac 00000000 		.word	.LANCHOR14
+ 1259 00b0 00000000 		.word	.LANCHOR18
+ 1260 00b4 00000000 		.word	hrtc
+ 1261 00b8 00000000 		.word	.LANCHOR17
+ 1262 00bc 00000000 		.word	.LANCHOR4
+ 1263 00c0 00000000 		.word	.LANCHOR19
+ 1264 00c4 00000000 		.word	.LANCHOR12
+ 1265 00c8 00400000 		.word	.LANCHOR8+3352
+ 1266 00cc 00480000 		.word	.LANCHOR9+1056
+ 1267 00d0 00000000 		.word	.LANCHOR3
+ 1268 00d4 00000000 		.word	.LANCHOR2
+ 1269 00d8 00000000 		.word	.LC1
+ 1270 00dc 00000000 		.word	.LANCHOR5
+ 1271              		.cfi_endproc
+ 1272              	.LFE192:
+ 1274              		.section	.text.float2u8Arry,"ax",%progbits
+ 1275              		.align	1
+ 1276              		.global	float2u8Arry
+ 1277              		.syntax unified
+ 1278              		.thumb
+ 1279              		.thumb_func
+ 1281              	float2u8Arry:
+ 1282              	.LVL114:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 31
+
+
+ 1283              	.LFB195:
+ 325:Core/Src/ad7606.c **** 
+ 326:Core/Src/ad7606.c **** void float2u8Arry(uint8_t *u8Arry, float *floatdata, uint8_t key)
+ 327:Core/Src/ad7606.c **** {
+ 1284              		.loc 1 327 1 is_stmt 1 view -0
+ 1285              		.cfi_startproc
+ 1286              		@ args = 0, pretend = 0, frame = 8
+ 1287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1288              		@ link register save eliminated.
+ 1289              		.loc 1 327 1 is_stmt 0 view .LVU364
+ 1290 0000 82B0     		sub	sp, sp, #8
+ 1291              	.LCFI13:
+ 1292              		.cfi_def_cfa_offset 8
+ 328:Core/Src/ad7606.c ****     uint8_t farray[4];
+ 1293              		.loc 1 328 5 is_stmt 1 view .LVU365
+ 329:Core/Src/ad7606.c ****     *(float *)farray = *floatdata;
+ 1294              		.loc 1 329 5 view .LVU366
+ 1295              		.loc 1 329 24 is_stmt 0 view .LVU367
+ 1296 0002 0B68     		ldr	r3, [r1]	@ float
+ 1297              		.loc 1 329 22 view .LVU368
+ 1298 0004 0193     		str	r3, [sp, #4]	@ float
+ 330:Core/Src/ad7606.c ****     if (key == 1)
+ 1299              		.loc 1 330 5 is_stmt 1 view .LVU369
+ 1300              		.loc 1 330 8 is_stmt 0 view .LVU370
+ 1301 0006 012A     		cmp	r2, #1
+ 1302 0008 0BD0     		beq	.L52
+ 331:Core/Src/ad7606.c ****     {
+ 332:Core/Src/ad7606.c ****         u8Arry[3] = farray[0];
+ 333:Core/Src/ad7606.c ****         u8Arry[2] = farray[1];
+ 334:Core/Src/ad7606.c ****         u8Arry[1] = farray[2];
+ 335:Core/Src/ad7606.c ****         u8Arry[0] = farray[3];
+ 336:Core/Src/ad7606.c ****     }
+ 337:Core/Src/ad7606.c ****     else
+ 338:Core/Src/ad7606.c ****     {
+ 339:Core/Src/ad7606.c ****         u8Arry[0] = farray[0];
+ 1303              		.loc 1 339 9 is_stmt 1 view .LVU371
+ 1304              		.loc 1 339 19 is_stmt 0 view .LVU372
+ 1305 000a 0370     		strb	r3, [r0]
+ 340:Core/Src/ad7606.c ****         u8Arry[1] = farray[1];
+ 1306              		.loc 1 340 9 is_stmt 1 view .LVU373
+ 1307              		.loc 1 340 19 is_stmt 0 view .LVU374
+ 1308 000c C3F30722 		ubfx	r2, r3, #8, #8
+ 1309              	.LVL115:
+ 1310              		.loc 1 340 19 view .LVU375
+ 1311 0010 4270     		strb	r2, [r0, #1]
+ 341:Core/Src/ad7606.c ****         u8Arry[2] = farray[2];
+ 1312              		.loc 1 341 9 is_stmt 1 view .LVU376
+ 1313              		.loc 1 341 19 is_stmt 0 view .LVU377
+ 1314 0012 C3F30742 		ubfx	r2, r3, #16, #8
+ 1315 0016 8270     		strb	r2, [r0, #2]
+ 342:Core/Src/ad7606.c ****         u8Arry[3] = farray[3];
+ 1316              		.loc 1 342 9 is_stmt 1 view .LVU378
+ 1317              		.loc 1 342 19 is_stmt 0 view .LVU379
+ 1318 0018 C3F30763 		ubfx	r3, r3, #24, #8
+ 1319 001c C370     		strb	r3, [r0, #3]
+ 1320              	.L48:
+ 343:Core/Src/ad7606.c ****     }
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 32
+
+
+ 344:Core/Src/ad7606.c **** }
+ 1321              		.loc 1 344 1 view .LVU380
+ 1322 001e 02B0     		add	sp, sp, #8
+ 1323              	.LCFI14:
+ 1324              		.cfi_remember_state
+ 1325              		.cfi_def_cfa_offset 0
+ 1326              		@ sp needed
+ 1327 0020 7047     		bx	lr
+ 1328              	.LVL116:
+ 1329              	.L52:
+ 1330              	.LCFI15:
+ 1331              		.cfi_restore_state
+ 332:Core/Src/ad7606.c ****         u8Arry[2] = farray[1];
+ 1332              		.loc 1 332 9 is_stmt 1 view .LVU381
+ 332:Core/Src/ad7606.c ****         u8Arry[2] = farray[1];
+ 1333              		.loc 1 332 19 is_stmt 0 view .LVU382
+ 1334 0022 C370     		strb	r3, [r0, #3]
+ 333:Core/Src/ad7606.c ****         u8Arry[1] = farray[2];
+ 1335              		.loc 1 333 9 is_stmt 1 view .LVU383
+ 333:Core/Src/ad7606.c ****         u8Arry[1] = farray[2];
+ 1336              		.loc 1 333 19 is_stmt 0 view .LVU384
+ 1337 0024 C3F30722 		ubfx	r2, r3, #8, #8
+ 1338              	.LVL117:
+ 333:Core/Src/ad7606.c ****         u8Arry[1] = farray[2];
+ 1339              		.loc 1 333 19 view .LVU385
+ 1340 0028 8270     		strb	r2, [r0, #2]
+ 334:Core/Src/ad7606.c ****         u8Arry[0] = farray[3];
+ 1341              		.loc 1 334 9 is_stmt 1 view .LVU386
+ 334:Core/Src/ad7606.c ****         u8Arry[0] = farray[3];
+ 1342              		.loc 1 334 19 is_stmt 0 view .LVU387
+ 1343 002a C3F30742 		ubfx	r2, r3, #16, #8
+ 1344 002e 4270     		strb	r2, [r0, #1]
+ 335:Core/Src/ad7606.c ****     }
+ 1345              		.loc 1 335 9 is_stmt 1 view .LVU388
+ 335:Core/Src/ad7606.c ****     }
+ 1346              		.loc 1 335 19 is_stmt 0 view .LVU389
+ 1347 0030 C3F30763 		ubfx	r3, r3, #24, #8
+ 1348 0034 0370     		strb	r3, [r0]
+ 1349 0036 F2E7     		b	.L48
+ 1350              		.cfi_endproc
+ 1351              	.LFE195:
+ 1353              		.global	DMA_status
+ 1354              		.global	temp
+ 1355              		.global	count
+ 1356              		.global	NowTimeCopy
+ 1357              		.global	Muin
+ 1358              		.global	SendErrCount
+ 1359              		.global	SendCount
+ 1360              		.global	GetTime
+ 1361              		.global	GetData
+ 1362              		.global	anaFlag
+ 1363              		.global	pingPongFlag
+ 1364              		.global	SendDataBuffIndex
+ 1365              		.global	AdcCH8PongData
+ 1366              		.global	AdcCH7PongData
+ 1367              		.global	AdcCH6PongData
+ 1368              		.global	AdcCH5PongData
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 33
+
+
+ 1369              		.global	AdcCH4PongData
+ 1370              		.global	AdcCH3PongData
+ 1371              		.global	AdcCH2PongData
+ 1372              		.global	AdcCH1PongData
+ 1373              		.global	AdcCH8PingData
+ 1374              		.global	AdcCH7PingData
+ 1375              		.global	AdcCH6PingData
+ 1376              		.global	AdcCH5PingData
+ 1377              		.global	AdcCH4PingData
+ 1378              		.global	AdcCH3PingData
+ 1379              		.global	AdcCH2PingData
+ 1380              		.global	AdcCH1PingData
+ 1381              		.global	SendDataBuff
+ 1382              		.section	.__malloc,"aw"
+ 1383              		.align	2
+ 1384              		.set	.LANCHOR5,. + 0
+ 1385              		.set	.LANCHOR6,. + 4344
+ 1386              		.set	.LANCHOR7,. + 8688
+ 1387              		.set	.LANCHOR8,. + 13032
+ 1388              		.set	.LANCHOR9,. + 17376
+ 1389              		.set	.LANCHOR10,. + 21720
+ 1390              		.set	.LANCHOR11,. + 26064
+ 1391              		.set	.LANCHOR15,. + 30408
+ 1394              	AdcCH1PingData:
+ 1395 0000 00000000 		.space	2048
+ 1395      00000000 
+ 1395      00000000 
+ 1395      00000000 
+ 1395      00000000 
+ 1398              	AdcCH2PingData:
+ 1399 0800 00000000 		.space	2048
+ 1399      00000000 
+ 1399      00000000 
+ 1399      00000000 
+ 1399      00000000 
+ 1402              	AdcCH3PingData:
+ 1403 1000 00000000 		.space	2048
+ 1403      00000000 
+ 1403      00000000 
+ 1403      00000000 
+ 1403      00000000 
+ 1406              	AdcCH4PingData:
+ 1407 1800 00000000 		.space	2048
+ 1407      00000000 
+ 1407      00000000 
+ 1407      00000000 
+ 1407      00000000 
+ 1410              	AdcCH5PingData:
+ 1411 2000 00000000 		.space	2048
+ 1411      00000000 
+ 1411      00000000 
+ 1411      00000000 
+ 1411      00000000 
+ 1414              	AdcCH6PingData:
+ 1415 2800 00000000 		.space	2048
+ 1415      00000000 
+ 1415      00000000 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 34
+
+
+ 1415      00000000 
+ 1415      00000000 
+ 1418              	AdcCH7PingData:
+ 1419 3000 00000000 		.space	2048
+ 1419      00000000 
+ 1419      00000000 
+ 1419      00000000 
+ 1419      00000000 
+ 1422              	AdcCH8PingData:
+ 1423 3800 00000000 		.space	2048
+ 1423      00000000 
+ 1423      00000000 
+ 1423      00000000 
+ 1423      00000000 
+ 1426              	AdcCH1PongData:
+ 1427 4000 00000000 		.space	2048
+ 1427      00000000 
+ 1427      00000000 
+ 1427      00000000 
+ 1427      00000000 
+ 1430              	AdcCH2PongData:
+ 1431 4800 00000000 		.space	2048
+ 1431      00000000 
+ 1431      00000000 
+ 1431      00000000 
+ 1431      00000000 
+ 1434              	AdcCH3PongData:
+ 1435 5000 00000000 		.space	2048
+ 1435      00000000 
+ 1435      00000000 
+ 1435      00000000 
+ 1435      00000000 
+ 1438              	AdcCH4PongData:
+ 1439 5800 00000000 		.space	2048
+ 1439      00000000 
+ 1439      00000000 
+ 1439      00000000 
+ 1439      00000000 
+ 1442              	AdcCH6PongData:
+ 1443 6000 00000000 		.space	2048
+ 1443      00000000 
+ 1443      00000000 
+ 1443      00000000 
+ 1443      00000000 
+ 1446              	AdcCH7PongData:
+ 1447 6800 00000000 		.space	2048
+ 1447      00000000 
+ 1447      00000000 
+ 1447      00000000 
+ 1447      00000000 
+ 1450              	AdcCH8PongData:
+ 1451 7000 00000000 		.space	2048
+ 1451      00000000 
+ 1451      00000000 
+ 1451      00000000 
+ 1451      00000000 
+ 1454              	AdcCH5PongData:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 35
+
+
+ 1455 7800 00000000 		.space	2048
+ 1455      00000000 
+ 1455      00000000 
+ 1455      00000000 
+ 1455      00000000 
+ 1456              		.section	.bss.DMA_status,"aw",%nobits
+ 1459              	DMA_status:
+ 1460 0000 00       		.space	1
+ 1461              		.section	.bss.GetData,"aw",%nobits
+ 1462              		.align	2
+ 1463              		.set	.LANCHOR17,. + 0
+ 1466              	GetData:
+ 1467 0000 00000000 		.space	4
+ 1468              		.section	.bss.GetTime,"aw",%nobits
+ 1469              		.align	2
+ 1470              		.set	.LANCHOR18,. + 0
+ 1473              	GetTime:
+ 1474 0000 00000000 		.space	20
+ 1474      00000000 
+ 1474      00000000 
+ 1474      00000000 
+ 1474      00000000 
+ 1475              		.section	.bss.Muin,"aw",%nobits
+ 1476              		.set	.LANCHOR4,. + 0
+ 1479              	Muin:
+ 1480 0000 00       		.space	1
+ 1481              		.section	.bss.NowTimeCopy,"aw",%nobits
+ 1482              		.align	2
+ 1483              		.set	.LANCHOR0,. + 0
+ 1486              	NowTimeCopy:
+ 1487 0000 00000000 		.space	4
+ 1488              		.section	.bss.RankNumber,"aw",%nobits
+ 1489              		.align	2
+ 1490              		.set	.LANCHOR19,. + 0
+ 1493              	RankNumber:
+ 1494 0000 00000000 		.space	4
+ 1495              		.section	.bss.SendCount,"aw",%nobits
+ 1496              		.align	2
+ 1497              		.set	.LANCHOR2,. + 0
+ 1500              	SendCount:
+ 1501 0000 00000000 		.space	4
+ 1502              		.section	.bss.SendDataBuffIndex,"aw",%nobits
+ 1503              		.set	.LANCHOR16,. + 0
+ 1506              	SendDataBuffIndex:
+ 1507 0000 00       		.space	1
+ 1508              		.section	.bss.SendErrCount,"aw",%nobits
+ 1509              		.align	2
+ 1510              		.set	.LANCHOR3,. + 0
+ 1513              	SendErrCount:
+ 1514 0000 00000000 		.space	4
+ 1515              		.section	.bss.anaFlag,"aw",%nobits
+ 1516              		.align	1
+ 1517              		.set	.LANCHOR14,. + 0
+ 1520              	anaFlag:
+ 1521 0000 0000     		.space	2
+ 1522              		.section	.bss.bufPtr.0,"aw",%nobits
+ 1523              		.align	2
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 36
+
+
+ 1524              		.set	.LANCHOR13,. + 0
+ 1527              	bufPtr.0:
+ 1528 0000 00000000 		.space	4
+ 1529              		.section	.bss.count,"aw",%nobits
+ 1530              		.align	2
+ 1531              		.set	.LANCHOR1,. + 0
+ 1534              	count:
+ 1535 0000 00000000 		.space	4
+ 1536              		.section	.bss.pingPongFlag,"aw",%nobits
+ 1537              		.align	1
+ 1538              		.set	.LANCHOR12,. + 0
+ 1541              	pingPongFlag:
+ 1542 0000 0000     		.space	2
+ 1543              		.section	.bss.temp,"aw",%nobits
+ 1544              		.align	1
+ 1547              	temp:
+ 1548 0000 0000     		.space	2
+ 1549              		.section	.ccmram,"aw"
+ 1550              		.align	2
+ 1553              	SendDataBuff:
+ 1554 0000 00000000 		.space	62220
+ 1554      00000000 
+ 1554      00000000 
+ 1554      00000000 
+ 1554      00000000 
+ 1555              		.text
+ 1556              	.Letext0:
+ 1557              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 1558              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1559              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h"
+ 1560              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1561              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1562              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_crc.h"
+ 1563              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h"
+ 1564              		.file 9 "Core/Inc/ad7606.h"
+ 1565              		.file 10 "Core/Inc/rtc.h"
+ 1566              		.file 11 "Middlewares/Third_Party/LwIP/src/include/lwip/arch.h"
+ 1567              		.file 12 "Middlewares/Third_Party/LwIP/src/include/lwip/err.h"
+ 1568              		.file 13 "Core/Inc/crc.h"
+ 1569              		.file 14 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\stdio.h"
+ 1570              		.file 15 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\stdlib.h"
+ 1571              		.file 16 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 1572              		.file 17 "<built-in>"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 37
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ad7606.c
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:20     .text.ini7606Paras:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:25     .text.ini7606Paras:00000000 ini7606Paras
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:59     .text.ad7606ini:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:65     .text.ad7606ini:00000000 ad7606ini
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:312    .text.ad7606ini:00000178 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:332    .text.get_AD7606:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:338    .text.get_AD7606:00000000 get_AD7606
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:520    .text.get_AD7606:000000f4 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:538    .text.claculate:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:544    .text.claculate:00000000 claculate
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:616    .text.claculate:00000048 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:621    .rodata.NoFFTClaculat.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:625    .text.NoFFTClaculat:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:631    .text.NoFFTClaculat:00000000 NoFFTClaculat
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1089   .text.NoFFTClaculat:00000200 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1553   .ccmram:00000000 SendDataBuff
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1103   .rodata.ana_AD7606.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1108   .text.ana_AD7606:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1114   .text.ana_AD7606:00000000 ana_AD7606
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1258   .text.ana_AD7606:000000ac $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1275   .text.float2u8Arry:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1281   .text.float2u8Arry:00000000 float2u8Arry
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1459   .bss.DMA_status:00000000 DMA_status
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1547   .bss.temp:00000000 temp
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1534   .bss.count:00000000 count
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1486   .bss.NowTimeCopy:00000000 NowTimeCopy
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1479   .bss.Muin:00000000 Muin
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1513   .bss.SendErrCount:00000000 SendErrCount
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1500   .bss.SendCount:00000000 SendCount
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1473   .bss.GetTime:00000000 GetTime
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1466   .bss.GetData:00000000 GetData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1520   .bss.anaFlag:00000000 anaFlag
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1541   .bss.pingPongFlag:00000000 pingPongFlag
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1506   .bss.SendDataBuffIndex:00000000 SendDataBuffIndex
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1450   .__malloc:00007000 AdcCH8PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1446   .__malloc:00006800 AdcCH7PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1442   .__malloc:00006000 AdcCH6PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1454   .__malloc:00007800 AdcCH5PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1438   .__malloc:00005800 AdcCH4PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1434   .__malloc:00005000 AdcCH3PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1430   .__malloc:00004800 AdcCH2PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1426   .__malloc:00004000 AdcCH1PongData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1422   .__malloc:00003800 AdcCH8PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1418   .__malloc:00003000 AdcCH7PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1414   .__malloc:00002800 AdcCH6PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1410   .__malloc:00002000 AdcCH5PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1406   .__malloc:00001800 AdcCH4PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1402   .__malloc:00001000 AdcCH3PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1398   .__malloc:00000800 AdcCH2PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1394   .__malloc:00000000 AdcCH1PingData
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1383   .__malloc:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1460   .bss.DMA_status:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1462   .bss.GetData:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1469   .bss.GetTime:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1480   .bss.Muin:00000000 $d
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccx4dppX.s 			page 38
+
+
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1482   .bss.NowTimeCopy:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1489   .bss.RankNumber:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1493   .bss.RankNumber:00000000 RankNumber
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1496   .bss.SendCount:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1507   .bss.SendDataBuffIndex:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1509   .bss.SendErrCount:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1516   .bss.anaFlag:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1523   .bss.bufPtr.0:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1527   .bss.bufPtr.0:00000000 bufPtr.0
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1530   .bss.count:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1537   .bss.pingPongFlag:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1544   .bss.temp:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccx4dppX.s:1550   .ccmram:00000000 $d
+
+UNDEFINED SYMBOLS
+malloc
+memset
+HAL_GPIO_WritePin
+HAL_Delay
+__aeabi_i2d
+__aeabi_dmul
+__aeabi_d2f
+HAL_CRC_Calculate
+LWIP_Send_data
+printf
+hcrc
+HAL_RTC_GetTime
+HAL_RTC_GetDate
+hrtc

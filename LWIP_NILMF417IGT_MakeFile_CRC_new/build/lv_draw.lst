@@ -1,0 +1,101 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccWUXxtd.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_draw.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_draw_init,"ax",%progbits
+  20              		.align	1
+  21              		.global	lv_draw_init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lv_draw_init:
+  27              	.LFB53:
+  28              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  * @file lv_draw.c
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** #include "lv_draw.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** #include "sw/lv_draw_sw.h"
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /*********************
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *      DEFINES
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *********************/
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**********************
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *      TYPEDEFS
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  **********************/
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**********************
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *  STATIC PROTOTYPES
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  **********************/
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**********************
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *  STATIC VARIABLES
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  **********************/
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**********************
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *  STATIC VARIABLES
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  **********************/
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccWUXxtd.s 			page 2
+
+
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**********************
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *      MACROS
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  **********************/
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** /**********************
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  *   GLOBAL FUNCTIONS
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****  **********************/
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** 
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** void lv_draw_init(void)
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** {
+  29              		.loc 1 41 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****     //    backend_head = NULL;
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****     //    lv_draw_sw_init();
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****     //
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****     //#if LV_USE_GPU_STM32_DMA2D == 0
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****     //    lv_gpu_stm32_dma2d_init();
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c ****     //#endif
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw.c **** }
+  34              		.loc 1 48 1 view .LVU1
+  35 0000 7047     		bx	lr
+  36              		.cfi_endproc
+  37              	.LFE53:
+  39              		.text
+  40              	.Letext0:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccWUXxtd.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_draw.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccWUXxtd.s:20     .text.lv_draw_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccWUXxtd.s:26     .text.lv_draw_init:00000000 lv_draw_init
+
+NO UNDEFINED SYMBOLS

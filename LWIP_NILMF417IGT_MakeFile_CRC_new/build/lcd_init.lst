@@ -1,0 +1,913 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lcd_init.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.LCD_Writ_Bus,"ax",%progbits
+  20              		.align	1
+  21              		.global	LCD_Writ_Bus
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	LCD_Writ_Bus:
+  27              	.LVL0:
+  28              	.LFB130:
+  29              		.file 1 "Drivers/LCD/Src/lcd_init.c"
+   1:Drivers/LCD/Src/lcd_init.c **** #include "lcd_init.h"
+   2:Drivers/LCD/Src/lcd_init.c **** 
+   3:Drivers/LCD/Src/lcd_init.c **** 
+   4:Drivers/LCD/Src/lcd_init.c **** //void LCD_GPIO_Init(void)
+   5:Drivers/LCD/Src/lcd_init.c **** //{
+   6:Drivers/LCD/Src/lcd_init.c **** // GPIO_InitTypeDef GPIO_InitStruct;
+   7:Drivers/LCD/Src/lcd_init.c **** //  __HAL_RCC_GPIOA_CLK_ENABLE();
+   8:Drivers/LCD/Src/lcd_init.c **** //  __HAL_RCC_GPIOD_CLK_ENABLE();
+   9:Drivers/LCD/Src/lcd_init.c **** //  __HAL_RCC_GPIOB_CLK_ENABLE();
+  10:Drivers/LCD/Src/lcd_init.c **** 
+  11:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_7;
+  12:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  13:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  14:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  15:Drivers/LCD/Src/lcd_init.c **** //  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  16:Drivers/LCD/Src/lcd_init.c **** //	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_7, GPIO_PIN_SET);
+  17:Drivers/LCD/Src/lcd_init.c **** 
+  18:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  19:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  20:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  21:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  22:Drivers/LCD/Src/lcd_init.c **** //  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+  23:Drivers/LCD/Src/lcd_init.c **** //	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2,GPIO_PIN_SET);
+  24:Drivers/LCD/Src/lcd_init.c **** 
+  25:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
+  26:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  27:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  28:Drivers/LCD/Src/lcd_init.c **** //  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  29:Drivers/LCD/Src/lcd_init.c **** //  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 2
+
+
+  30:Drivers/LCD/Src/lcd_init.c **** //	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_SET);
+  31:Drivers/LCD/Src/lcd_init.c **** 
+  32:Drivers/LCD/Src/lcd_init.c **** //}
+  33:Drivers/LCD/Src/lcd_init.c **** 
+  34:Drivers/LCD/Src/lcd_init.c **** 
+  35:Drivers/LCD/Src/lcd_init.c **** /******************************************************************************
+  36:Drivers/LCD/Src/lcd_init.c ****       函数说明：LCD串行数据写入函数
+  37:Drivers/LCD/Src/lcd_init.c ****       入口数据：dat  要写入的串行数据
+  38:Drivers/LCD/Src/lcd_init.c ****       返回值：  无
+  39:Drivers/LCD/Src/lcd_init.c **** ******************************************************************************/
+  40:Drivers/LCD/Src/lcd_init.c **** void LCD_Writ_Bus(uint8_t dat) 
+  41:Drivers/LCD/Src/lcd_init.c **** {	
+  30              		.loc 1 41 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 41 1 is_stmt 0 view .LVU1
+  35 0000 38B5     		push	{r3, r4, r5, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 16
+  38              		.cfi_offset 3, -16
+  39              		.cfi_offset 4, -12
+  40              		.cfi_offset 5, -8
+  41              		.cfi_offset 14, -4
+  42 0002 0446     		mov	r4, r0
+  42:Drivers/LCD/Src/lcd_init.c **** 	uint8_t i;
+  43              		.loc 1 42 2 is_stmt 1 view .LVU2
+  43:Drivers/LCD/Src/lcd_init.c **** 	LCD_CS_Clr();
+  44              		.loc 1 43 2 view .LVU3
+  45 0004 0022     		movs	r2, #0
+  46 0006 1021     		movs	r1, #16
+  47 0008 1448     		ldr	r0, .L8
+  48              	.LVL1:
+  49              		.loc 1 43 2 is_stmt 0 view .LVU4
+  50 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  51              	.LVL2:
+  44:Drivers/LCD/Src/lcd_init.c **** 	for(i=0;i<8;i++)
+  52              		.loc 1 44 2 is_stmt 1 view .LVU5
+  53              		.loc 1 44 7 is_stmt 0 view .LVU6
+  54 000e 0025     		movs	r5, #0
+  55              		.loc 1 44 2 view .LVU7
+  56 0010 0DE0     		b	.L2
+  57              	.LVL3:
+  58              	.L3:
+  45:Drivers/LCD/Src/lcd_init.c **** 	{			  
+  46:Drivers/LCD/Src/lcd_init.c **** 		LCD_SCLK_Clr();
+  47:Drivers/LCD/Src/lcd_init.c **** 		if(dat&0x80)
+  48:Drivers/LCD/Src/lcd_init.c **** 		{
+  49:Drivers/LCD/Src/lcd_init.c **** 		   LCD_MOSI_Set();
+  50:Drivers/LCD/Src/lcd_init.c **** 		}
+  51:Drivers/LCD/Src/lcd_init.c **** 		else
+  52:Drivers/LCD/Src/lcd_init.c **** 		{
+  53:Drivers/LCD/Src/lcd_init.c **** 		   LCD_MOSI_Clr();
+  59              		.loc 1 53 6 is_stmt 1 view .LVU8
+  60 0012 0022     		movs	r2, #0
+  61 0014 2021     		movs	r1, #32
+  62 0016 1248     		ldr	r0, .L8+4
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 3
+
+
+  63 0018 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  64              	.LVL4:
+  65              	.L4:
+  54:Drivers/LCD/Src/lcd_init.c **** 		}
+  55:Drivers/LCD/Src/lcd_init.c **** 		LCD_SCLK_Set();
+  66              		.loc 1 55 3 discriminator 2 view .LVU9
+  67 001c 0122     		movs	r2, #1
+  68 001e 0821     		movs	r1, #8
+  69 0020 0F48     		ldr	r0, .L8+4
+  70 0022 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  71              	.LVL5:
+  56:Drivers/LCD/Src/lcd_init.c **** 		dat<<=1;
+  72              		.loc 1 56 3 discriminator 2 view .LVU10
+  73              		.loc 1 56 6 is_stmt 0 discriminator 2 view .LVU11
+  74 0026 6400     		lsls	r4, r4, #1
+  75              	.LVL6:
+  76              		.loc 1 56 6 discriminator 2 view .LVU12
+  77 0028 E4B2     		uxtb	r4, r4
+  78              	.LVL7:
+  44:Drivers/LCD/Src/lcd_init.c **** 	{			  
+  79              		.loc 1 44 14 is_stmt 1 discriminator 2 view .LVU13
+  44:Drivers/LCD/Src/lcd_init.c **** 	{			  
+  80              		.loc 1 44 15 is_stmt 0 discriminator 2 view .LVU14
+  81 002a 0135     		adds	r5, r5, #1
+  82              	.LVL8:
+  44:Drivers/LCD/Src/lcd_init.c **** 	{			  
+  83              		.loc 1 44 15 discriminator 2 view .LVU15
+  84 002c EDB2     		uxtb	r5, r5
+  85              	.LVL9:
+  86              	.L2:
+  44:Drivers/LCD/Src/lcd_init.c **** 	{			  
+  87              		.loc 1 44 10 is_stmt 1 discriminator 1 view .LVU16
+  44:Drivers/LCD/Src/lcd_init.c **** 	{			  
+  88              		.loc 1 44 2 is_stmt 0 discriminator 1 view .LVU17
+  89 002e 072D     		cmp	r5, #7
+  90 0030 0DD8     		bhi	.L7
+  46:Drivers/LCD/Src/lcd_init.c **** 		if(dat&0x80)
+  91              		.loc 1 46 3 is_stmt 1 view .LVU18
+  92 0032 0022     		movs	r2, #0
+  93 0034 0821     		movs	r1, #8
+  94 0036 0A48     		ldr	r0, .L8+4
+  95 0038 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  96              	.LVL10:
+  47:Drivers/LCD/Src/lcd_init.c **** 		{
+  97              		.loc 1 47 3 view .LVU19
+  47:Drivers/LCD/Src/lcd_init.c **** 		{
+  98              		.loc 1 47 5 is_stmt 0 view .LVU20
+  99 003c 14F0800F 		tst	r4, #128
+ 100 0040 E7D0     		beq	.L3
+  49:Drivers/LCD/Src/lcd_init.c **** 		}
+ 101              		.loc 1 49 6 is_stmt 1 view .LVU21
+ 102 0042 0122     		movs	r2, #1
+ 103 0044 2021     		movs	r1, #32
+ 104 0046 0648     		ldr	r0, .L8+4
+ 105 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 106              	.LVL11:
+ 107 004c E6E7     		b	.L4
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 4
+
+
+ 108              	.L7:
+  57:Drivers/LCD/Src/lcd_init.c **** 	}	
+  58:Drivers/LCD/Src/lcd_init.c ****   LCD_CS_Set();	
+ 109              		.loc 1 58 3 view .LVU22
+ 110 004e 0122     		movs	r2, #1
+ 111 0050 1021     		movs	r1, #16
+ 112 0052 0248     		ldr	r0, .L8
+ 113 0054 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 114              	.LVL12:
+  59:Drivers/LCD/Src/lcd_init.c **** }
+ 115              		.loc 1 59 1 is_stmt 0 view .LVU23
+ 116 0058 38BD     		pop	{r3, r4, r5, pc}
+ 117              	.LVL13:
+ 118              	.L9:
+ 119              		.loc 1 59 1 view .LVU24
+ 120 005a 00BF     		.align	2
+ 121              	.L8:
+ 122 005c 00000240 		.word	1073872896
+ 123 0060 00040240 		.word	1073873920
+ 124              		.cfi_endproc
+ 125              	.LFE130:
+ 127              		.section	.text.LCD_WR_DATA8,"ax",%progbits
+ 128              		.align	1
+ 129              		.global	LCD_WR_DATA8
+ 130              		.syntax unified
+ 131              		.thumb
+ 132              		.thumb_func
+ 134              	LCD_WR_DATA8:
+ 135              	.LVL14:
+ 136              	.LFB131:
+  60:Drivers/LCD/Src/lcd_init.c **** 
+  61:Drivers/LCD/Src/lcd_init.c **** 
+  62:Drivers/LCD/Src/lcd_init.c **** /******************************************************************************
+  63:Drivers/LCD/Src/lcd_init.c ****       函数说明：LCD写入数据
+  64:Drivers/LCD/Src/lcd_init.c ****       入口数据：dat 写入的数据
+  65:Drivers/LCD/Src/lcd_init.c ****       返回值：  无
+  66:Drivers/LCD/Src/lcd_init.c **** ******************************************************************************/
+  67:Drivers/LCD/Src/lcd_init.c **** void LCD_WR_DATA8(uint8_t dat)
+  68:Drivers/LCD/Src/lcd_init.c **** {
+ 137              		.loc 1 68 1 is_stmt 1 view -0
+ 138              		.cfi_startproc
+ 139              		@ args = 0, pretend = 0, frame = 0
+ 140              		@ frame_needed = 0, uses_anonymous_args = 0
+ 141              		.loc 1 68 1 is_stmt 0 view .LVU26
+ 142 0000 08B5     		push	{r3, lr}
+ 143              	.LCFI1:
+ 144              		.cfi_def_cfa_offset 8
+ 145              		.cfi_offset 3, -8
+ 146              		.cfi_offset 14, -4
+  69:Drivers/LCD/Src/lcd_init.c **** 	LCD_Writ_Bus(dat);
+ 147              		.loc 1 69 2 is_stmt 1 view .LVU27
+ 148 0002 FFF7FEFF 		bl	LCD_Writ_Bus
+ 149              	.LVL15:
+  70:Drivers/LCD/Src/lcd_init.c **** }
+ 150              		.loc 1 70 1 is_stmt 0 view .LVU28
+ 151 0006 08BD     		pop	{r3, pc}
+ 152              		.cfi_endproc
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 5
+
+
+ 153              	.LFE131:
+ 155              		.section	.text.LCD_WR_DATA,"ax",%progbits
+ 156              		.align	1
+ 157              		.global	LCD_WR_DATA
+ 158              		.syntax unified
+ 159              		.thumb
+ 160              		.thumb_func
+ 162              	LCD_WR_DATA:
+ 163              	.LVL16:
+ 164              	.LFB132:
+  71:Drivers/LCD/Src/lcd_init.c **** 
+  72:Drivers/LCD/Src/lcd_init.c **** 
+  73:Drivers/LCD/Src/lcd_init.c **** /******************************************************************************
+  74:Drivers/LCD/Src/lcd_init.c ****       函数说明：LCD写入数据
+  75:Drivers/LCD/Src/lcd_init.c ****       入口数据：dat 写入的数据
+  76:Drivers/LCD/Src/lcd_init.c ****       返回值：  无
+  77:Drivers/LCD/Src/lcd_init.c **** ******************************************************************************/
+  78:Drivers/LCD/Src/lcd_init.c **** void LCD_WR_DATA(uint16_t dat)
+  79:Drivers/LCD/Src/lcd_init.c **** {
+ 165              		.loc 1 79 1 is_stmt 1 view -0
+ 166              		.cfi_startproc
+ 167              		@ args = 0, pretend = 0, frame = 0
+ 168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169              		.loc 1 79 1 is_stmt 0 view .LVU30
+ 170 0000 10B5     		push	{r4, lr}
+ 171              	.LCFI2:
+ 172              		.cfi_def_cfa_offset 8
+ 173              		.cfi_offset 4, -8
+ 174              		.cfi_offset 14, -4
+ 175 0002 0446     		mov	r4, r0
+  80:Drivers/LCD/Src/lcd_init.c **** 	LCD_Writ_Bus(dat>>8);
+ 176              		.loc 1 80 2 is_stmt 1 view .LVU31
+ 177 0004 000A     		lsrs	r0, r0, #8
+ 178              	.LVL17:
+ 179              		.loc 1 80 2 is_stmt 0 view .LVU32
+ 180 0006 FFF7FEFF 		bl	LCD_Writ_Bus
+ 181              	.LVL18:
+  81:Drivers/LCD/Src/lcd_init.c **** 	LCD_Writ_Bus(dat);
+ 182              		.loc 1 81 2 is_stmt 1 view .LVU33
+ 183 000a E0B2     		uxtb	r0, r4
+ 184 000c FFF7FEFF 		bl	LCD_Writ_Bus
+ 185              	.LVL19:
+  82:Drivers/LCD/Src/lcd_init.c **** }
+ 186              		.loc 1 82 1 is_stmt 0 view .LVU34
+ 187 0010 10BD     		pop	{r4, pc}
+ 188              		.cfi_endproc
+ 189              	.LFE132:
+ 191              		.section	.text.LCD_WR_REG,"ax",%progbits
+ 192              		.align	1
+ 193              		.global	LCD_WR_REG
+ 194              		.syntax unified
+ 195              		.thumb
+ 196              		.thumb_func
+ 198              	LCD_WR_REG:
+ 199              	.LVL20:
+ 200              	.LFB133:
+  83:Drivers/LCD/Src/lcd_init.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 6
+
+
+  84:Drivers/LCD/Src/lcd_init.c **** 
+  85:Drivers/LCD/Src/lcd_init.c **** /******************************************************************************
+  86:Drivers/LCD/Src/lcd_init.c ****       函数说明：LCD写入命令
+  87:Drivers/LCD/Src/lcd_init.c ****       入口数据：dat 写入的命令
+  88:Drivers/LCD/Src/lcd_init.c ****       返回值：  无
+  89:Drivers/LCD/Src/lcd_init.c **** ******************************************************************************/
+  90:Drivers/LCD/Src/lcd_init.c **** void LCD_WR_REG(uint8_t dat)
+  91:Drivers/LCD/Src/lcd_init.c **** {
+ 201              		.loc 1 91 1 is_stmt 1 view -0
+ 202              		.cfi_startproc
+ 203              		@ args = 0, pretend = 0, frame = 0
+ 204              		@ frame_needed = 0, uses_anonymous_args = 0
+ 205              		.loc 1 91 1 is_stmt 0 view .LVU36
+ 206 0000 38B5     		push	{r3, r4, r5, lr}
+ 207              	.LCFI3:
+ 208              		.cfi_def_cfa_offset 16
+ 209              		.cfi_offset 3, -16
+ 210              		.cfi_offset 4, -12
+ 211              		.cfi_offset 5, -8
+ 212              		.cfi_offset 14, -4
+ 213 0002 0446     		mov	r4, r0
+  92:Drivers/LCD/Src/lcd_init.c **** 	LCD_DC_Clr();//写命令
+ 214              		.loc 1 92 2 is_stmt 1 view .LVU37
+ 215 0004 074D     		ldr	r5, .L16
+ 216 0006 0022     		movs	r2, #0
+ 217 0008 0221     		movs	r1, #2
+ 218 000a 2846     		mov	r0, r5
+ 219              	.LVL21:
+ 220              		.loc 1 92 2 is_stmt 0 view .LVU38
+ 221 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 222              	.LVL22:
+  93:Drivers/LCD/Src/lcd_init.c **** 	LCD_Writ_Bus(dat);
+ 223              		.loc 1 93 2 is_stmt 1 view .LVU39
+ 224 0010 2046     		mov	r0, r4
+ 225 0012 FFF7FEFF 		bl	LCD_Writ_Bus
+ 226              	.LVL23:
+  94:Drivers/LCD/Src/lcd_init.c **** 	LCD_DC_Set();//写数据
+ 227              		.loc 1 94 2 view .LVU40
+ 228 0016 0122     		movs	r2, #1
+ 229 0018 0221     		movs	r1, #2
+ 230 001a 2846     		mov	r0, r5
+ 231 001c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 232              	.LVL24:
+  95:Drivers/LCD/Src/lcd_init.c **** }
+ 233              		.loc 1 95 1 is_stmt 0 view .LVU41
+ 234 0020 38BD     		pop	{r3, r4, r5, pc}
+ 235              	.L17:
+ 236 0022 00BF     		.align	2
+ 237              	.L16:
+ 238 0024 00040240 		.word	1073873920
+ 239              		.cfi_endproc
+ 240              	.LFE133:
+ 242              		.section	.text.LCD_Address_Set,"ax",%progbits
+ 243              		.align	1
+ 244              		.global	LCD_Address_Set
+ 245              		.syntax unified
+ 246              		.thumb
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 7
+
+
+ 247              		.thumb_func
+ 249              	LCD_Address_Set:
+ 250              	.LVL25:
+ 251              	.LFB134:
+  96:Drivers/LCD/Src/lcd_init.c **** 
+  97:Drivers/LCD/Src/lcd_init.c **** 
+  98:Drivers/LCD/Src/lcd_init.c **** /******************************************************************************
+  99:Drivers/LCD/Src/lcd_init.c ****       函数说明：设置起始和结束地址
+ 100:Drivers/LCD/Src/lcd_init.c ****       入口数据：x1,x2 设置列的起始和结束地址
+ 101:Drivers/LCD/Src/lcd_init.c ****                 y1,y2 设置行的起始和结束地址
+ 102:Drivers/LCD/Src/lcd_init.c ****       返回值：  无
+ 103:Drivers/LCD/Src/lcd_init.c **** ******************************************************************************/
+ 104:Drivers/LCD/Src/lcd_init.c **** void LCD_Address_Set(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2)
+ 105:Drivers/LCD/Src/lcd_init.c **** {
+ 252              		.loc 1 105 1 is_stmt 1 view -0
+ 253              		.cfi_startproc
+ 254              		@ args = 0, pretend = 0, frame = 0
+ 255              		@ frame_needed = 0, uses_anonymous_args = 0
+ 256              		.loc 1 105 1 is_stmt 0 view .LVU43
+ 257 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 258              	.LCFI4:
+ 259              		.cfi_def_cfa_offset 24
+ 260              		.cfi_offset 3, -24
+ 261              		.cfi_offset 4, -20
+ 262              		.cfi_offset 5, -16
+ 263              		.cfi_offset 6, -12
+ 264              		.cfi_offset 7, -8
+ 265              		.cfi_offset 14, -4
+ 266 0002 0746     		mov	r7, r0
+ 267 0004 0D46     		mov	r5, r1
+ 268 0006 1646     		mov	r6, r2
+ 269 0008 1C46     		mov	r4, r3
+ 106:Drivers/LCD/Src/lcd_init.c **** 	if(USE_HORIZONTAL==0)
+ 270              		.loc 1 106 2 is_stmt 1 view .LVU44
+ 107:Drivers/LCD/Src/lcd_init.c **** 	{
+ 108:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2a);//列地址设置
+ 109:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x1);
+ 110:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x2);
+ 111:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2b);//行地址设置
+ 112:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y1);
+ 113:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y2);
+ 114:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2c);//储存器写
+ 115:Drivers/LCD/Src/lcd_init.c **** 	}
+ 116:Drivers/LCD/Src/lcd_init.c **** 	else if(USE_HORIZONTAL==1)
+ 271              		.loc 1 116 7 view .LVU45
+ 117:Drivers/LCD/Src/lcd_init.c **** 	{
+ 118:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2a);//列地址设置
+ 119:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x1);
+ 120:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x2);
+ 121:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2b);//行地址设置
+ 122:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y1+80);
+ 123:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y2+80);
+ 124:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2c);//储存器写
+ 125:Drivers/LCD/Src/lcd_init.c **** 	}
+ 126:Drivers/LCD/Src/lcd_init.c **** 	else if(USE_HORIZONTAL==2)
+ 272              		.loc 1 126 7 view .LVU46
+ 127:Drivers/LCD/Src/lcd_init.c **** 	{
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 8
+
+
+ 128:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2a);//列地址设置
+ 273              		.loc 1 128 3 view .LVU47
+ 274 000a 2A20     		movs	r0, #42
+ 275              	.LVL26:
+ 276              		.loc 1 128 3 is_stmt 0 view .LVU48
+ 277 000c FFF7FEFF 		bl	LCD_WR_REG
+ 278              	.LVL27:
+ 129:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x1);
+ 279              		.loc 1 129 3 is_stmt 1 view .LVU49
+ 280 0010 3846     		mov	r0, r7
+ 281 0012 FFF7FEFF 		bl	LCD_WR_DATA
+ 282              	.LVL28:
+ 130:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x2);
+ 283              		.loc 1 130 3 view .LVU50
+ 284 0016 3046     		mov	r0, r6
+ 285 0018 FFF7FEFF 		bl	LCD_WR_DATA
+ 286              	.LVL29:
+ 131:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2b);//行地址设置
+ 287              		.loc 1 131 3 view .LVU51
+ 288 001c 2B20     		movs	r0, #43
+ 289 001e FFF7FEFF 		bl	LCD_WR_REG
+ 290              	.LVL30:
+ 132:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y1);
+ 291              		.loc 1 132 3 view .LVU52
+ 292 0022 2846     		mov	r0, r5
+ 293 0024 FFF7FEFF 		bl	LCD_WR_DATA
+ 294              	.LVL31:
+ 133:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y2);
+ 295              		.loc 1 133 3 view .LVU53
+ 296 0028 2046     		mov	r0, r4
+ 297 002a FFF7FEFF 		bl	LCD_WR_DATA
+ 298              	.LVL32:
+ 134:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2c);//储存器写
+ 299              		.loc 1 134 3 view .LVU54
+ 300 002e 2C20     		movs	r0, #44
+ 301 0030 FFF7FEFF 		bl	LCD_WR_REG
+ 302              	.LVL33:
+ 135:Drivers/LCD/Src/lcd_init.c **** 	}
+ 136:Drivers/LCD/Src/lcd_init.c **** 	else
+ 137:Drivers/LCD/Src/lcd_init.c **** 	{
+ 138:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2a);//列地址设置
+ 139:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x1+80);
+ 140:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(x2+80);
+ 141:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2b);//行地址设置
+ 142:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y1);
+ 143:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_DATA(y2);
+ 144:Drivers/LCD/Src/lcd_init.c **** 		LCD_WR_REG(0x2c);//储存器写
+ 145:Drivers/LCD/Src/lcd_init.c **** 	}
+ 146:Drivers/LCD/Src/lcd_init.c **** }
+ 303              		.loc 1 146 1 is_stmt 0 view .LVU55
+ 304 0034 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 305              		.cfi_endproc
+ 306              	.LFE134:
+ 308              		.section	.text.LCD_Init,"ax",%progbits
+ 309              		.align	1
+ 310              		.global	LCD_Init
+ 311              		.syntax unified
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 9
+
+
+ 312              		.thumb
+ 313              		.thumb_func
+ 315              	LCD_Init:
+ 316              	.LFB135:
+ 147:Drivers/LCD/Src/lcd_init.c **** 
+ 148:Drivers/LCD/Src/lcd_init.c **** void LCD_Init(void)
+ 149:Drivers/LCD/Src/lcd_init.c **** {
+ 317              		.loc 1 149 1 is_stmt 1 view -0
+ 318              		.cfi_startproc
+ 319              		@ args = 0, pretend = 0, frame = 0
+ 320              		@ frame_needed = 0, uses_anonymous_args = 0
+ 321 0000 10B5     		push	{r4, lr}
+ 322              	.LCFI5:
+ 323              		.cfi_def_cfa_offset 8
+ 324              		.cfi_offset 4, -8
+ 325              		.cfi_offset 14, -4
+ 150:Drivers/LCD/Src/lcd_init.c **** //	LCD_GPIO_Init();//初始化GPIO
+ 151:Drivers/LCD/Src/lcd_init.c **** 	
+ 152:Drivers/LCD/Src/lcd_init.c **** 	LCD_RES_Clr();//复位
+ 326              		.loc 1 152 2 view .LVU57
+ 327 0002 654C     		ldr	r4, .L22
+ 328 0004 0022     		movs	r2, #0
+ 329 0006 0121     		movs	r1, #1
+ 330 0008 2046     		mov	r0, r4
+ 331 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 332              	.LVL34:
+ 153:Drivers/LCD/Src/lcd_init.c **** 	HAL_Delay(100);
+ 333              		.loc 1 153 2 view .LVU58
+ 334 000e 6420     		movs	r0, #100
+ 335 0010 FFF7FEFF 		bl	HAL_Delay
+ 336              	.LVL35:
+ 154:Drivers/LCD/Src/lcd_init.c **** 	LCD_RES_Set();
+ 337              		.loc 1 154 2 view .LVU59
+ 338 0014 0122     		movs	r2, #1
+ 339 0016 1146     		mov	r1, r2
+ 340 0018 2046     		mov	r0, r4
+ 341 001a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 342              	.LVL36:
+ 155:Drivers/LCD/Src/lcd_init.c **** 	HAL_Delay(100);
+ 343              		.loc 1 155 2 view .LVU60
+ 344 001e 6420     		movs	r0, #100
+ 345 0020 FFF7FEFF 		bl	HAL_Delay
+ 346              	.LVL37:
+ 156:Drivers/LCD/Src/lcd_init.c **** 	
+ 157:Drivers/LCD/Src/lcd_init.c **** 	LCD_BLK_Set();//打开背光
+ 347              		.loc 1 157 2 view .LVU61
+ 348 0024 0122     		movs	r2, #1
+ 349 0026 0421     		movs	r1, #4
+ 350 0028 2046     		mov	r0, r4
+ 351 002a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 352              	.LVL38:
+ 158:Drivers/LCD/Src/lcd_init.c ****   HAL_Delay(100);
+ 353              		.loc 1 158 3 view .LVU62
+ 354 002e 6420     		movs	r0, #100
+ 355 0030 FFF7FEFF 		bl	HAL_Delay
+ 356              	.LVL39:
+ 159:Drivers/LCD/Src/lcd_init.c **** 	
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 10
+
+
+ 160:Drivers/LCD/Src/lcd_init.c **** 	//************* Start Initial Sequence **********//
+ 161:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0x11); //Sleep out 
+ 357              		.loc 1 161 2 view .LVU63
+ 358 0034 1120     		movs	r0, #17
+ 359 0036 FFF7FEFF 		bl	LCD_WR_REG
+ 360              	.LVL40:
+ 162:Drivers/LCD/Src/lcd_init.c **** 	HAL_Delay(120);              //Delay 120ms 
+ 361              		.loc 1 162 2 view .LVU64
+ 362 003a 7820     		movs	r0, #120
+ 363 003c FFF7FEFF 		bl	HAL_Delay
+ 364              	.LVL41:
+ 163:Drivers/LCD/Src/lcd_init.c **** 	//************* Start Initial Sequence **********// 
+ 164:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0x36);
+ 365              		.loc 1 164 2 view .LVU65
+ 366 0040 3620     		movs	r0, #54
+ 367 0042 FFF7FEFF 		bl	LCD_WR_REG
+ 368              	.LVL42:
+ 165:Drivers/LCD/Src/lcd_init.c **** 	if(USE_HORIZONTAL==0)LCD_WR_DATA8(0x00);
+ 369              		.loc 1 165 2 view .LVU66
+ 166:Drivers/LCD/Src/lcd_init.c **** 	else if(USE_HORIZONTAL==1)LCD_WR_DATA8(0xC0);
+ 370              		.loc 1 166 7 view .LVU67
+ 167:Drivers/LCD/Src/lcd_init.c **** 	else if(USE_HORIZONTAL==2)LCD_WR_DATA8(0x70);
+ 371              		.loc 1 167 7 view .LVU68
+ 372              		.loc 1 167 28 view .LVU69
+ 373 0046 7020     		movs	r0, #112
+ 374 0048 FFF7FEFF 		bl	LCD_WR_DATA8
+ 375              	.LVL43:
+ 168:Drivers/LCD/Src/lcd_init.c **** 	else LCD_WR_DATA8(0xA0);
+ 169:Drivers/LCD/Src/lcd_init.c **** 
+ 170:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0x3A);			
+ 376              		.loc 1 170 2 view .LVU70
+ 377 004c 3A20     		movs	r0, #58
+ 378 004e FFF7FEFF 		bl	LCD_WR_REG
+ 379              	.LVL44:
+ 171:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x05);
+ 380              		.loc 1 171 2 view .LVU71
+ 381 0052 0520     		movs	r0, #5
+ 382 0054 FFF7FEFF 		bl	LCD_WR_DATA8
+ 383              	.LVL45:
+ 172:Drivers/LCD/Src/lcd_init.c **** 
+ 173:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xB2);			
+ 384              		.loc 1 173 2 view .LVU72
+ 385 0058 B220     		movs	r0, #178
+ 386 005a FFF7FEFF 		bl	LCD_WR_REG
+ 387              	.LVL46:
+ 174:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x0C);
+ 388              		.loc 1 174 2 view .LVU73
+ 389 005e 0C20     		movs	r0, #12
+ 390 0060 FFF7FEFF 		bl	LCD_WR_DATA8
+ 391              	.LVL47:
+ 175:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x0C); 
+ 392              		.loc 1 175 2 view .LVU74
+ 393 0064 0C20     		movs	r0, #12
+ 394 0066 FFF7FEFF 		bl	LCD_WR_DATA8
+ 395              	.LVL48:
+ 176:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x00); 
+ 396              		.loc 1 176 2 view .LVU75
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 11
+
+
+ 397 006a 0020     		movs	r0, #0
+ 398 006c FFF7FEFF 		bl	LCD_WR_DATA8
+ 399              	.LVL49:
+ 177:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x33); 
+ 400              		.loc 1 177 2 view .LVU76
+ 401 0070 3320     		movs	r0, #51
+ 402 0072 FFF7FEFF 		bl	LCD_WR_DATA8
+ 403              	.LVL50:
+ 178:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x33); 			
+ 404              		.loc 1 178 2 view .LVU77
+ 405 0076 3320     		movs	r0, #51
+ 406 0078 FFF7FEFF 		bl	LCD_WR_DATA8
+ 407              	.LVL51:
+ 179:Drivers/LCD/Src/lcd_init.c **** 
+ 180:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xB7);			
+ 408              		.loc 1 180 2 view .LVU78
+ 409 007c B720     		movs	r0, #183
+ 410 007e FFF7FEFF 		bl	LCD_WR_REG
+ 411              	.LVL52:
+ 181:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x35);
+ 412              		.loc 1 181 2 view .LVU79
+ 413 0082 3520     		movs	r0, #53
+ 414 0084 FFF7FEFF 		bl	LCD_WR_DATA8
+ 415              	.LVL53:
+ 182:Drivers/LCD/Src/lcd_init.c **** 
+ 183:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xBB);			
+ 416              		.loc 1 183 2 view .LVU80
+ 417 0088 BB20     		movs	r0, #187
+ 418 008a FFF7FEFF 		bl	LCD_WR_REG
+ 419              	.LVL54:
+ 184:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x32); //Vcom=1.35V
+ 420              		.loc 1 184 2 view .LVU81
+ 421 008e 3220     		movs	r0, #50
+ 422 0090 FFF7FEFF 		bl	LCD_WR_DATA8
+ 423              	.LVL55:
+ 185:Drivers/LCD/Src/lcd_init.c **** 					
+ 186:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xC2);
+ 424              		.loc 1 186 2 view .LVU82
+ 425 0094 C220     		movs	r0, #194
+ 426 0096 FFF7FEFF 		bl	LCD_WR_REG
+ 427              	.LVL56:
+ 187:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x01);
+ 428              		.loc 1 187 2 view .LVU83
+ 429 009a 0120     		movs	r0, #1
+ 430 009c FFF7FEFF 		bl	LCD_WR_DATA8
+ 431              	.LVL57:
+ 188:Drivers/LCD/Src/lcd_init.c **** 
+ 189:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xC3);			
+ 432              		.loc 1 189 2 view .LVU84
+ 433 00a0 C320     		movs	r0, #195
+ 434 00a2 FFF7FEFF 		bl	LCD_WR_REG
+ 435              	.LVL58:
+ 190:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x15); //GVDD=4.8V  颜色深度
+ 436              		.loc 1 190 2 view .LVU85
+ 437 00a6 1520     		movs	r0, #21
+ 438 00a8 FFF7FEFF 		bl	LCD_WR_DATA8
+ 439              	.LVL59:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 12
+
+
+ 191:Drivers/LCD/Src/lcd_init.c **** 				
+ 192:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xC4);			
+ 440              		.loc 1 192 2 view .LVU86
+ 441 00ac C420     		movs	r0, #196
+ 442 00ae FFF7FEFF 		bl	LCD_WR_REG
+ 443              	.LVL60:
+ 193:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x20); //VDV, 0x20:0v
+ 444              		.loc 1 193 2 view .LVU87
+ 445 00b2 2020     		movs	r0, #32
+ 446 00b4 FFF7FEFF 		bl	LCD_WR_DATA8
+ 447              	.LVL61:
+ 194:Drivers/LCD/Src/lcd_init.c **** 
+ 195:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xC6);			
+ 448              		.loc 1 195 2 view .LVU88
+ 449 00b8 C620     		movs	r0, #198
+ 450 00ba FFF7FEFF 		bl	LCD_WR_REG
+ 451              	.LVL62:
+ 196:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x0F); //0x0F:60Hz        	
+ 452              		.loc 1 196 2 view .LVU89
+ 453 00be 0F20     		movs	r0, #15
+ 454 00c0 FFF7FEFF 		bl	LCD_WR_DATA8
+ 455              	.LVL63:
+ 197:Drivers/LCD/Src/lcd_init.c **** 
+ 198:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xD0);			
+ 456              		.loc 1 198 2 view .LVU90
+ 457 00c4 D020     		movs	r0, #208
+ 458 00c6 FFF7FEFF 		bl	LCD_WR_REG
+ 459              	.LVL64:
+ 199:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0xA4);
+ 460              		.loc 1 199 2 view .LVU91
+ 461 00ca A420     		movs	r0, #164
+ 462 00cc FFF7FEFF 		bl	LCD_WR_DATA8
+ 463              	.LVL65:
+ 200:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0xA1); 
+ 464              		.loc 1 200 2 view .LVU92
+ 465 00d0 A120     		movs	r0, #161
+ 466 00d2 FFF7FEFF 		bl	LCD_WR_DATA8
+ 467              	.LVL66:
+ 201:Drivers/LCD/Src/lcd_init.c **** 
+ 202:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xE0);
+ 468              		.loc 1 202 2 view .LVU93
+ 469 00d6 E020     		movs	r0, #224
+ 470 00d8 FFF7FEFF 		bl	LCD_WR_REG
+ 471              	.LVL67:
+ 203:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0xD0);   
+ 472              		.loc 1 203 2 view .LVU94
+ 473 00dc D020     		movs	r0, #208
+ 474 00de FFF7FEFF 		bl	LCD_WR_DATA8
+ 475              	.LVL68:
+ 204:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x08);   
+ 476              		.loc 1 204 2 view .LVU95
+ 477 00e2 0820     		movs	r0, #8
+ 478 00e4 FFF7FEFF 		bl	LCD_WR_DATA8
+ 479              	.LVL69:
+ 205:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x0E);   
+ 480              		.loc 1 205 2 view .LVU96
+ 481 00e8 0E20     		movs	r0, #14
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 13
+
+
+ 482 00ea FFF7FEFF 		bl	LCD_WR_DATA8
+ 483              	.LVL70:
+ 206:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x09);   
+ 484              		.loc 1 206 2 view .LVU97
+ 485 00ee 0920     		movs	r0, #9
+ 486 00f0 FFF7FEFF 		bl	LCD_WR_DATA8
+ 487              	.LVL71:
+ 207:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x09);   
+ 488              		.loc 1 207 2 view .LVU98
+ 489 00f4 0920     		movs	r0, #9
+ 490 00f6 FFF7FEFF 		bl	LCD_WR_DATA8
+ 491              	.LVL72:
+ 208:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x05);   
+ 492              		.loc 1 208 2 view .LVU99
+ 493 00fa 0520     		movs	r0, #5
+ 494 00fc FFF7FEFF 		bl	LCD_WR_DATA8
+ 495              	.LVL73:
+ 209:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x31);   
+ 496              		.loc 1 209 2 view .LVU100
+ 497 0100 3120     		movs	r0, #49
+ 498 0102 FFF7FEFF 		bl	LCD_WR_DATA8
+ 499              	.LVL74:
+ 210:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x33);   
+ 500              		.loc 1 210 2 view .LVU101
+ 501 0106 3320     		movs	r0, #51
+ 502 0108 FFF7FEFF 		bl	LCD_WR_DATA8
+ 503              	.LVL75:
+ 211:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x48);   
+ 504              		.loc 1 211 2 view .LVU102
+ 505 010c 4820     		movs	r0, #72
+ 506 010e FFF7FEFF 		bl	LCD_WR_DATA8
+ 507              	.LVL76:
+ 212:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x17);   
+ 508              		.loc 1 212 2 view .LVU103
+ 509 0112 1720     		movs	r0, #23
+ 510 0114 FFF7FEFF 		bl	LCD_WR_DATA8
+ 511              	.LVL77:
+ 213:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x14);   
+ 512              		.loc 1 213 2 view .LVU104
+ 513 0118 1420     		movs	r0, #20
+ 514 011a FFF7FEFF 		bl	LCD_WR_DATA8
+ 515              	.LVL78:
+ 214:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x15);   
+ 516              		.loc 1 214 2 view .LVU105
+ 517 011e 1520     		movs	r0, #21
+ 518 0120 FFF7FEFF 		bl	LCD_WR_DATA8
+ 519              	.LVL79:
+ 215:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x31);   
+ 520              		.loc 1 215 2 view .LVU106
+ 521 0124 3120     		movs	r0, #49
+ 522 0126 FFF7FEFF 		bl	LCD_WR_DATA8
+ 523              	.LVL80:
+ 216:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x34);   
+ 524              		.loc 1 216 2 view .LVU107
+ 525 012a 3420     		movs	r0, #52
+ 526 012c FFF7FEFF 		bl	LCD_WR_DATA8
+ 527              	.LVL81:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 14
+
+
+ 217:Drivers/LCD/Src/lcd_init.c **** 
+ 218:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0xE1);     
+ 528              		.loc 1 218 2 view .LVU108
+ 529 0130 E120     		movs	r0, #225
+ 530 0132 FFF7FEFF 		bl	LCD_WR_REG
+ 531              	.LVL82:
+ 219:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0xD0);   
+ 532              		.loc 1 219 2 view .LVU109
+ 533 0136 D020     		movs	r0, #208
+ 534 0138 FFF7FEFF 		bl	LCD_WR_DATA8
+ 535              	.LVL83:
+ 220:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x08);   
+ 536              		.loc 1 220 2 view .LVU110
+ 537 013c 0820     		movs	r0, #8
+ 538 013e FFF7FEFF 		bl	LCD_WR_DATA8
+ 539              	.LVL84:
+ 221:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x0E);   
+ 540              		.loc 1 221 2 view .LVU111
+ 541 0142 0E20     		movs	r0, #14
+ 542 0144 FFF7FEFF 		bl	LCD_WR_DATA8
+ 543              	.LVL85:
+ 222:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x09);   
+ 544              		.loc 1 222 2 view .LVU112
+ 545 0148 0920     		movs	r0, #9
+ 546 014a FFF7FEFF 		bl	LCD_WR_DATA8
+ 547              	.LVL86:
+ 223:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x09);   
+ 548              		.loc 1 223 2 view .LVU113
+ 549 014e 0920     		movs	r0, #9
+ 550 0150 FFF7FEFF 		bl	LCD_WR_DATA8
+ 551              	.LVL87:
+ 224:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x15);   
+ 552              		.loc 1 224 2 view .LVU114
+ 553 0154 1520     		movs	r0, #21
+ 554 0156 FFF7FEFF 		bl	LCD_WR_DATA8
+ 555              	.LVL88:
+ 225:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x31);   
+ 556              		.loc 1 225 2 view .LVU115
+ 557 015a 3120     		movs	r0, #49
+ 558 015c FFF7FEFF 		bl	LCD_WR_DATA8
+ 559              	.LVL89:
+ 226:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x33);   
+ 560              		.loc 1 226 2 view .LVU116
+ 561 0160 3320     		movs	r0, #51
+ 562 0162 FFF7FEFF 		bl	LCD_WR_DATA8
+ 563              	.LVL90:
+ 227:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x48);   
+ 564              		.loc 1 227 2 view .LVU117
+ 565 0166 4820     		movs	r0, #72
+ 566 0168 FFF7FEFF 		bl	LCD_WR_DATA8
+ 567              	.LVL91:
+ 228:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x17);   
+ 568              		.loc 1 228 2 view .LVU118
+ 569 016c 1720     		movs	r0, #23
+ 570 016e FFF7FEFF 		bl	LCD_WR_DATA8
+ 571              	.LVL92:
+ 229:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x14);   
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 15
+
+
+ 572              		.loc 1 229 2 view .LVU119
+ 573 0172 1420     		movs	r0, #20
+ 574 0174 FFF7FEFF 		bl	LCD_WR_DATA8
+ 575              	.LVL93:
+ 230:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x15);   
+ 576              		.loc 1 230 2 view .LVU120
+ 577 0178 1520     		movs	r0, #21
+ 578 017a FFF7FEFF 		bl	LCD_WR_DATA8
+ 579              	.LVL94:
+ 231:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x31);   
+ 580              		.loc 1 231 2 view .LVU121
+ 581 017e 3120     		movs	r0, #49
+ 582 0180 FFF7FEFF 		bl	LCD_WR_DATA8
+ 583              	.LVL95:
+ 232:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_DATA8(0x34);
+ 584              		.loc 1 232 2 view .LVU122
+ 585 0184 3420     		movs	r0, #52
+ 586 0186 FFF7FEFF 		bl	LCD_WR_DATA8
+ 587              	.LVL96:
+ 233:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0x21); 
+ 588              		.loc 1 233 2 view .LVU123
+ 589 018a 2120     		movs	r0, #33
+ 590 018c FFF7FEFF 		bl	LCD_WR_REG
+ 591              	.LVL97:
+ 234:Drivers/LCD/Src/lcd_init.c **** 
+ 235:Drivers/LCD/Src/lcd_init.c **** 	LCD_WR_REG(0x29);
+ 592              		.loc 1 235 2 view .LVU124
+ 593 0190 2920     		movs	r0, #41
+ 594 0192 FFF7FEFF 		bl	LCD_WR_REG
+ 595              	.LVL98:
+ 236:Drivers/LCD/Src/lcd_init.c **** } 
+ 596              		.loc 1 236 1 is_stmt 0 view .LVU125
+ 597 0196 10BD     		pop	{r4, pc}
+ 598              	.L23:
+ 599              		.align	2
+ 600              	.L22:
+ 601 0198 00040240 		.word	1073873920
+ 602              		.cfi_endproc
+ 603              	.LFE135:
+ 605              		.text
+ 606              	.Letext0:
+ 607              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 608              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 609              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h"
+ 610              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 611              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lcd_init.c
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:20     .text.LCD_Writ_Bus:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:26     .text.LCD_Writ_Bus:00000000 LCD_Writ_Bus
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:122    .text.LCD_Writ_Bus:0000005c $d
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:128    .text.LCD_WR_DATA8:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:134    .text.LCD_WR_DATA8:00000000 LCD_WR_DATA8
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:156    .text.LCD_WR_DATA:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:162    .text.LCD_WR_DATA:00000000 LCD_WR_DATA
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:192    .text.LCD_WR_REG:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:198    .text.LCD_WR_REG:00000000 LCD_WR_REG
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:238    .text.LCD_WR_REG:00000024 $d
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:243    .text.LCD_Address_Set:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:249    .text.LCD_Address_Set:00000000 LCD_Address_Set
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:309    .text.LCD_Init:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:315    .text.LCD_Init:00000000 LCD_Init
+C:\Users\17832\AppData\Local\Temp\ccCrFu6C.s:601    .text.LCD_Init:00000198 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_Delay

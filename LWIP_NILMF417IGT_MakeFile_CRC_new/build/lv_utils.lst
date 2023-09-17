@@ -1,0 +1,222 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_utils.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text._lv_utils_bsearch,"ax",%progbits
+  20              		.align	1
+  21              		.global	_lv_utils_bsearch
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	_lv_utils_bsearch:
+  27              	.LVL0:
+  28              	.LFB0:
+  29              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @file lv_utils.c
+   3:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** #include <stddef.h>
+  10:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  11:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** #include "lv_utils.h"
+  12:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *      DEFINES
+  15:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  17:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /**********************
+  18:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *      TYPEDEFS
+  19:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  **********************/
+  20:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  21:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /**********************
+  22:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *  STATIC PROTOTYPES
+  23:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  **********************/
+  24:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  25:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /**********************
+  26:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *  STATIC VARIABLES
+  27:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  **********************/
+  28:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  29:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /**********************
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s 			page 2
+
+
+  30:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *      MACROS
+  31:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  **********************/
+  32:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  33:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /**********************
+  34:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *   GLOBAL FUNCTIONS
+  35:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  **********************/
+  36:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  37:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** /** Searches base[0] to base[n - 1] for an item that matches *key.
+  38:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *
+  39:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @note The function cmp must return negative if its first
+  40:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *  argument (the search key) is less than its second (a table entry),
+  41:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *  zero if equal, and positive if greater.
+  42:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *
+  43:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *  @note Items in the array must be in ascending order.
+  44:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *
+  45:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @param key    Pointer to item being searched for
+  46:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @param base   Pointer to first element to search
+  47:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @param n      Number of elements
+  48:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @param size   Size of each element
+  49:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @param cmp    Pointer to comparison function (see #unicode_list_compare as a comparison function
+  50:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * example)
+  51:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  *
+  52:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  * @return a pointer to a matching item, or NULL if none exists.
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****  */
+  54:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** void * _lv_utils_bsearch(const void * key, const void * base, uint32_t n, uint32_t size,
+  55:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****                          int32_t (*cmp)(const void * pRef, const void * pElement))
+  56:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** {
+  30              		.loc 1 56 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 4, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 56 1 is_stmt 0 view .LVU1
+  35 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 32
+  38              		.cfi_offset 4, -32
+  39              		.cfi_offset 5, -28
+  40              		.cfi_offset 6, -24
+  41              		.cfi_offset 7, -20
+  42              		.cfi_offset 8, -16
+  43              		.cfi_offset 9, -12
+  44              		.cfi_offset 10, -8
+  45              		.cfi_offset 14, -4
+  46 0004 8146     		mov	r9, r0
+  47 0006 8846     		mov	r8, r1
+  48 0008 1446     		mov	r4, r2
+  49 000a 1F46     		mov	r7, r3
+  50 000c DDF820A0 		ldr	r10, [sp, #32]
+  57:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****     const char * middle;
+  51              		.loc 1 57 5 is_stmt 1 view .LVU2
+  58:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****     int32_t c;
+  52              		.loc 1 58 5 view .LVU3
+  59:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** 
+  60:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****     for(middle = base; n != 0;) {
+  53              		.loc 1 60 5 view .LVU4
+  54              	.LVL1:
+  55              		.loc 1 60 5 is_stmt 0 view .LVU5
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s 			page 3
+
+
+  56 0010 07E0     		b	.L2
+  57              	.LVL2:
+  58              	.L9:
+  61:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         middle += (n / 2) * size;
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         if((c = (*cmp)(key, middle)) > 0) {
+  63:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             n    = (n / 2) - ((n & 1) == 0);
+  59              		.loc 1 63 13 is_stmt 1 view .LVU6
+  60              		.loc 1 63 39 is_stmt 0 view .LVU7
+  61 0012 14F0010F 		tst	r4, #1
+  62 0016 0CBF     		ite	eq
+  63 0018 0124     		moveq	r4, #1
+  64              	.LVL3:
+  65              		.loc 1 63 39 view .LVU8
+  66 001a 0024     		movne	r4, #0
+  67              		.loc 1 63 18 view .LVU9
+  68 001c 2C1B     		subs	r4, r5, r4
+  69              	.LVL4:
+  64:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             base = (middle += size);
+  70              		.loc 1 64 13 is_stmt 1 view .LVU10
+  71              		.loc 1 64 28 is_stmt 0 view .LVU11
+  72 001e 06EB0708 		add	r8, r6, r7
+  73              	.LVL5:
+  74              	.L2:
+  60:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         middle += (n / 2) * size;
+  75              		.loc 1 60 24 is_stmt 1 discriminator 1 view .LVU12
+  60:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         middle += (n / 2) * size;
+  76              		.loc 1 60 5 is_stmt 0 discriminator 1 view .LVU13
+  77 0022 5CB1     		cbz	r4, .L8
+  61:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         middle += (n / 2) * size;
+  78              		.loc 1 61 9 is_stmt 1 view .LVU14
+  61:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         middle += (n / 2) * size;
+  79              		.loc 1 61 22 is_stmt 0 view .LVU15
+  80 0024 6508     		lsrs	r5, r4, #1
+  61:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         middle += (n / 2) * size;
+  81              		.loc 1 61 16 view .LVU16
+  82 0026 07FB0586 		mla	r6, r7, r5, r8
+  83              	.LVL6:
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             n    = (n / 2) - ((n & 1) == 0);
+  84              		.loc 1 62 9 is_stmt 1 view .LVU17
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             n    = (n / 2) - ((n & 1) == 0);
+  85              		.loc 1 62 18 is_stmt 0 view .LVU18
+  86 002a 3146     		mov	r1, r6
+  87 002c 4846     		mov	r0, r9
+  88 002e D047     		blx	r10
+  89              	.LVL7:
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             n    = (n / 2) - ((n & 1) == 0);
+  90              		.loc 1 62 11 view .LVU19
+  91 0030 0028     		cmp	r0, #0
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             n    = (n / 2) - ((n & 1) == 0);
+  92              		.loc 1 62 11 view .LVU20
+  93 0032 EEDC     		bgt	.L9
+  65:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         }
+  66:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         else if(c < 0) {
+  94              		.loc 1 66 14 is_stmt 1 view .LVU21
+  95              		.loc 1 66 16 is_stmt 0 view .LVU22
+  96 0034 0028     		cmp	r0, #0
+  97 0036 02DA     		bge	.L1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s 			page 4
+
+
+  67:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             n /= 2;
+  98              		.loc 1 67 15 view .LVU23
+  99 0038 2C46     		mov	r4, r5
+ 100              	.LVL8:
+ 101              		.loc 1 67 15 view .LVU24
+ 102 003a F2E7     		b	.L2
+ 103              	.LVL9:
+ 104              	.L8:
+  68:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             middle = base;
+  69:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         }
+  70:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         else {
+  71:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****             return (char *)middle;
+  72:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****         }
+  73:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****     }
+  74:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c ****     return NULL;
+ 105              		.loc 1 74 12 view .LVU25
+ 106 003c 0026     		movs	r6, #0
+ 107              	.LVL10:
+ 108              	.L1:
+  75:Middlewares/LVGL/GUI/lvgl/src/misc/lv_utils.c **** }
+ 109              		.loc 1 75 1 view .LVU26
+ 110 003e 3046     		mov	r0, r6
+ 111 0040 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 112              		.loc 1 75 1 view .LVU27
+ 113              		.cfi_endproc
+ 114              	.LFE0:
+ 116              		.text
+ 117              	.Letext0:
+ 118              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 119              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_utils.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s:20     .text._lv_utils_bsearch:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLtpLmk.s:26     .text._lv_utils_bsearch:00000000 _lv_utils_bsearch
+
+NO UNDEFINED SYMBOLS

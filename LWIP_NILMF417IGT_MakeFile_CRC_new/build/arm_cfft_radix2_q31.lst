@@ -1,0 +1,1642 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"arm_cfft_radix2_q31.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.arm_radix2_butterfly_q31,"ax",%progbits
+  20              		.align	1
+  21              		.global	arm_radix2_butterfly_q31
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	arm_radix2_butterfly_q31:
+  27              	.LVL0:
+  28              	.LFB136:
+  29              		.file 1 "Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c"
+   1:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** /* ----------------------------------------------------------------------
+   2:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Project:      CMSIS DSP Library
+   3:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Title:        arm_cfft_radix2_q31.c
+   4:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Description:  Radix-2 Decimation in Frequency CFFT & CIFFT Fixed point processing function
+   5:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  *
+   6:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * $Date:        27. January 2017
+   7:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * $Revision:    V.1.5.1
+   8:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  *
+   9:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Target Processor: Cortex-M cores
+  10:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * -------------------------------------------------------------------- */
+  11:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** /*
+  12:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+  13:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  *
+  14:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * SPDX-License-Identifier: Apache-2.0
+  15:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  *
+  16:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  17:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * not use this file except in compliance with the License.
+  18:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * You may obtain a copy of the License at
+  19:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  *
+  20:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * www.apache.org/licenses/LICENSE-2.0
+  21:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  *
+  22:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * Unless required by applicable law or agreed to in writing, software
+  23:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  24:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  25:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * See the License for the specific language governing permissions and
+  26:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  * limitations under the License.
+  27:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****  */
+  28:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  29:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** #include "arm_math.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 2
+
+
+  30:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  31:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** void arm_radix2_butterfly_q31(
+  32:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   q31_t * pSrc,
+  33:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint32_t fftLen,
+  34:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   q31_t * pCoef,
+  35:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint16_t twidCoefModifier);
+  36:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  37:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** void arm_radix2_butterfly_inverse_q31(
+  38:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   q31_t * pSrc,
+  39:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint32_t fftLen,
+  40:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   q31_t * pCoef,
+  41:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint16_t twidCoefModifier);
+  42:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  43:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** void arm_bitreversal_q31(
+  44:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   q31_t * pSrc,
+  45:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint32_t fftLen,
+  46:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint16_t bitRevFactor,
+  47:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****   uint16_t * pBitRevTab);
+  48:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  49:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** /**
+  50:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @ingroup groupTransforms
+  51:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** */
+  52:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  53:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** /**
+  54:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @addtogroup ComplexFFT
+  55:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @{
+  56:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** */
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  58:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** /**
+  59:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @details
+  60:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @brief Processing function for the fixed-point CFFT/CIFFT.
+  61:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @deprecated Do not use this function.  It has been superseded by \ref arm_cfft_q31 and will be re
+  62:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @param[in]      *S    points to an instance of the fixed-point CFFT/CIFFT structure.
+  63:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @param[in, out] *pSrc points to the complex data buffer of size <code>2*fftLen</code>. Processing
+  64:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @return none.
+  65:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** */
+  66:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  67:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** void arm_cfft_radix2_q31(
+  68:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** const arm_cfft_radix2_instance_q31 * S,
+  69:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** q31_t * pSrc)
+  70:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** {
+  71:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    if (S->ifftFlag == 1U)
+  73:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       arm_radix2_butterfly_inverse_q31(pSrc, S->fftLen,
+  75:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+  76:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }
+  77:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    else
+  78:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+  79:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       arm_radix2_butterfly_q31(pSrc, S->fftLen,
+  80:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+  81:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }
+  82:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  83:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    arm_bitreversal_q31(pSrc, S->fftLen, S->bitRevFactor, S->pBitRevTable);
+  84:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** }
+  85:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  86:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** /**
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 3
+
+
+  87:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** * @} end of ComplexFFT group
+  88:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** */
+  89:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  90:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** void arm_radix2_butterfly_q31(
+  91:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** q31_t * pSrc,
+  92:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** uint32_t fftLen,
+  93:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** q31_t * pCoef,
+  94:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** uint16_t twidCoefModifier)
+  95:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** {
+  30              		.loc 1 95 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 40
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 95 1 is_stmt 0 view .LVU1
+  35 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 36
+  38              		.cfi_offset 4, -36
+  39              		.cfi_offset 5, -32
+  40              		.cfi_offset 6, -28
+  41              		.cfi_offset 7, -24
+  42              		.cfi_offset 8, -20
+  43              		.cfi_offset 9, -16
+  44              		.cfi_offset 10, -12
+  45              		.cfi_offset 11, -8
+  46              		.cfi_offset 14, -4
+  47 0004 8BB0     		sub	sp, sp, #44
+  48              	.LCFI1:
+  49              		.cfi_def_cfa_offset 80
+  50 0006 8146     		mov	r9, r0
+  51 0008 0891     		str	r1, [sp, #32]
+  52 000a 0792     		str	r2, [sp, #28]
+  53 000c 0193     		str	r3, [sp, #4]
+  96:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+  97:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    unsigned i, j, k, l, m;
+  54              		.loc 1 97 4 is_stmt 1 view .LVU2
+  98:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    unsigned n1, n2, ia;
+  55              		.loc 1 98 4 view .LVU3
+  99:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    q31_t xt, yt, cosVal, sinVal;
+  56              		.loc 1 99 4 view .LVU4
+ 100:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    q31_t p0, p1;
+  57              		.loc 1 100 4 view .LVU5
+ 101:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 102:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    //N = fftLen;
+ 103:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n2 = fftLen;
+  58              		.loc 1 103 4 view .LVU6
+  59              	.LVL1:
+ 104:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 105:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n1 = n2;
+  60              		.loc 1 105 4 view .LVU7
+ 106:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n2 = n2 >> 1;
+  61              		.loc 1 106 4 view .LVU8
+  62              		.loc 1 106 7 is_stmt 0 view .LVU9
+  63 000e 4B08     		lsrs	r3, r1, #1
+  64              	.LVL2:
+  65              		.loc 1 106 7 view .LVU10
+  66 0010 0293     		str	r3, [sp, #8]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 4
+
+
+  67              	.LVL3:
+ 107:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = 0;
+  68              		.loc 1 107 4 is_stmt 1 view .LVU11
+ 108:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 109:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    // loop for groups
+ 110:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    for (i = 0; i < n2; i++)
+  69              		.loc 1 110 4 view .LVU12
+ 107:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = 0;
+  70              		.loc 1 107 7 is_stmt 0 view .LVU13
+  71 0012 4FF0000B 		mov	fp, #0
+  72              		.loc 1 110 11 view .LVU14
+  73 0016 DA46     		mov	r10, fp
+  74              		.loc 1 110 4 view .LVU15
+  75 0018 66E0     		b	.L2
+  76              	.LVL4:
+  77              	.L3:
+ 111:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 112:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       cosVal = pCoef[ia * 2];
+  78              		.loc 1 112 7 is_stmt 1 discriminator 3 view .LVU16
+  79              		.loc 1 112 21 is_stmt 0 discriminator 3 view .LVU17
+  80 001a 4FEACB03 		lsl	r3, fp, #3
+  81              		.loc 1 112 14 discriminator 3 view .LVU18
+  82 001e 0799     		ldr	r1, [sp, #28]
+  83 0020 51F83B20 		ldr	r2, [r1, fp, lsl #3]
+  84              	.LVL5:
+ 113:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       sinVal = pCoef[(ia * 2) + 1];
+  85              		.loc 1 113 7 is_stmt 1 discriminator 3 view .LVU19
+  86              		.loc 1 113 21 is_stmt 0 discriminator 3 view .LVU20
+  87 0024 0433     		adds	r3, r3, #4
+  88              		.loc 1 113 14 discriminator 3 view .LVU21
+  89 0026 C958     		ldr	r1, [r1, r3]
+  90              	.LVL6:
+ 114:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = ia + twidCoefModifier;
+  91              		.loc 1 114 7 is_stmt 1 discriminator 3 view .LVU22
+  92              		.loc 1 114 10 is_stmt 0 discriminator 3 view .LVU23
+  93 0028 019B     		ldr	r3, [sp, #4]
+  94 002a 9B44     		add	fp, fp, r3
+  95              	.LVL7:
+ 115:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 116:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       l = i + n2;
+  96              		.loc 1 116 7 is_stmt 1 discriminator 3 view .LVU24
+  97              		.loc 1 116 9 is_stmt 0 discriminator 3 view .LVU25
+  98 002c 029B     		ldr	r3, [sp, #8]
+  99 002e 0AEB0307 		add	r7, r10, r3
+ 100              	.LVL8:
+ 117:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       xt = (pSrc[2 * i] >> 1U) - (pSrc[2 * l] >> 1U);
+ 101              		.loc 1 117 7 is_stmt 1 discriminator 3 view .LVU26
+ 102              		.loc 1 117 17 is_stmt 0 discriminator 3 view .LVU27
+ 103 0032 4FEACA00 		lsl	r0, r10, #3
+ 104 0036 59F83A50 		ldr	r5, [r9, r10, lsl #3]
+ 105              		.loc 1 117 39 discriminator 3 view .LVU28
+ 106 003a FE00     		lsls	r6, r7, #3
+ 107 003c 59F83730 		ldr	r3, [r9, r7, lsl #3]
+ 108              		.loc 1 117 47 discriminator 3 view .LVU29
+ 109 0040 5B10     		asrs	r3, r3, #1
+ 110              		.loc 1 117 10 discriminator 3 view .LVU30
+ 111 0042 C3EB6504 		rsb	r4, r3, r5, asr #1
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 5
+
+
+ 112              	.LVL9:
+ 118:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i] = ((pSrc[2 * i] >> 1U) + (pSrc[2 * l] >> 1U)) >> 1U;
+ 113              		.loc 1 118 7 is_stmt 1 discriminator 3 view .LVU31
+ 114              		.loc 1 118 42 is_stmt 0 discriminator 3 view .LVU32
+ 115 0046 03EB6503 		add	r3, r3, r5, asr #1
+ 116              		.loc 1 118 65 discriminator 3 view .LVU33
+ 117 004a 5B10     		asrs	r3, r3, #1
+ 118              		.loc 1 118 19 discriminator 3 view .LVU34
+ 119 004c 49F83A30 		str	r3, [r9, r10, lsl #3]
+ 119:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 120:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       yt = (pSrc[2 * i + 1] >> 1U) - (pSrc[2 * l + 1] >> 1U);
+ 120              		.loc 1 120 7 is_stmt 1 discriminator 3 view .LVU35
+ 121              		.loc 1 120 17 is_stmt 0 discriminator 3 view .LVU36
+ 122 0050 0430     		adds	r0, r0, #4
+ 123 0052 59F80050 		ldr	r5, [r9, r0]
+ 124              		.loc 1 120 43 discriminator 3 view .LVU37
+ 125 0056 0436     		adds	r6, r6, #4
+ 126 0058 59F80630 		ldr	r3, [r9, r6]
+ 127              		.loc 1 120 55 discriminator 3 view .LVU38
+ 128 005c 4FEA630C 		asr	ip, r3, #1
+ 129              		.loc 1 120 10 discriminator 3 view .LVU39
+ 130 0060 CCEB6503 		rsb	r3, ip, r5, asr #1
+ 131              	.LVL10:
+ 121:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] =
+ 132              		.loc 1 121 7 is_stmt 1 discriminator 3 view .LVU40
+ 122:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****         ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
+ 133              		.loc 1 122 34 is_stmt 0 discriminator 3 view .LVU41
+ 134 0064 0CEB6505 		add	r5, ip, r5, asr #1
+ 135              		.loc 1 122 61 discriminator 3 view .LVU42
+ 136 0068 6D10     		asrs	r5, r5, #1
+ 121:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] =
+ 137              		.loc 1 121 23 discriminator 3 view .LVU43
+ 138 006a 49F80050 		str	r5, [r9, r0]
+ 123:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 124:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       mult_32x32_keep32_R(p0, xt, cosVal);
+ 139              		.loc 1 124 7 is_stmt 1 discriminator 3 view .LVU44
+ 140 006e 4FEAE47E 		asr	lr, r4, #31
+ 141 0072 D517     		asrs	r5, r2, #31
+ 142 0074 04FB05FC 		mul	ip, r4, r5
+ 143 0078 02FB0ECC 		mla	ip, r2, lr, ip
+ 144 007c A4FB0208 		umull	r0, r8, r4, r2
+ 145 0080 10F10040 		adds	r0, r0, #-2147483648
+ 146 0084 4CEB0800 		adc	r0, ip, r8
+ 147 0088 0090     		str	r0, [sp]
+ 148              	.LVL11:
+ 125:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       mult_32x32_keep32_R(p1, yt, cosVal);
+ 149              		.loc 1 125 7 discriminator 3 view .LVU45
+ 150 008a 4FEAE37C 		asr	ip, r3, #31
+ 151 008e 02FB0CF0 		mul	r0, r2, ip
+ 152 0092 03FB0500 		mla	r0, r3, r5, r0
+ 153 0096 A2FB0325 		umull	r2, r5, r2, r3
+ 154              	.LVL12:
+ 155              		.loc 1 125 7 is_stmt 0 discriminator 3 view .LVU46
+ 156 009a 12F10042 		adds	r2, r2, #-2147483648
+ 157 009e 40EB0500 		adc	r0, r0, r5
+ 158              	.LVL13:
+ 126:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       multAcc_32x32_keep32_R(p0, yt, sinVal);
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 6
+
+
+ 159              		.loc 1 126 7 is_stmt 1 discriminator 3 view .LVU47
+ 160 00a2 0022     		movs	r2, #0
+ 161 00a4 CD17     		asrs	r5, r1, #31
+ 162 00a6 03FB05F8 		mul	r8, r3, r5
+ 163 00aa 01FB0C8C 		mla	ip, r1, ip, r8
+ 164 00ae A3FB0138 		umull	r3, r8, r3, r1
+ 165              	.LVL14:
+ 166              		.loc 1 126 7 is_stmt 0 discriminator 3 view .LVU48
+ 167 00b2 C444     		add	ip, ip, r8
+ 168 00b4 D318     		adds	r3, r2, r3
+ 169 00b6 13F10043 		adds	r3, r3, #-2147483648
+ 170 00ba 009B     		ldr	r3, [sp]
+ 171 00bc 4CEB0303 		adc	r3, ip, r3
+ 172              	.LVL15:
+ 127:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       multSub_32x32_keep32_R(p1, xt, sinVal);
+ 173              		.loc 1 127 7 is_stmt 1 discriminator 3 view .LVU49
+ 174 00c0 04FB05F5 		mul	r5, r4, r5
+ 175 00c4 01FB0E55 		mla	r5, r1, lr, r5
+ 176 00c8 A4FB0114 		umull	r1, r4, r4, r1
+ 177              	.LVL16:
+ 178              		.loc 1 127 7 is_stmt 0 discriminator 3 view .LVU50
+ 179 00cc 2C44     		add	r4, r4, r5
+ 180 00ce 521A     		subs	r2, r2, r1
+ 181 00d0 60EB0400 		sbc	r0, r0, r4
+ 182 00d4 12F10042 		adds	r2, r2, #-2147483648
+ 183 00d8 40F10000 		adc	r0, r0, #0
+ 184              	.LVL17:
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 129:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l] = p0;
+ 185              		.loc 1 129 7 is_stmt 1 discriminator 3 view .LVU51
+ 186              		.loc 1 129 20 is_stmt 0 discriminator 3 view .LVU52
+ 187 00dc 49F83730 		str	r3, [r9, r7, lsl #3]
+ 130:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l + 1U] = p1;
+ 188              		.loc 1 130 7 is_stmt 1 discriminator 3 view .LVU53
+ 189              		.loc 1 130 25 is_stmt 0 discriminator 3 view .LVU54
+ 190 00e0 49F80600 		str	r0, [r9, r6]
+ 110:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 191              		.loc 1 110 24 is_stmt 1 discriminator 3 view .LVU55
+ 110:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 192              		.loc 1 110 25 is_stmt 0 discriminator 3 view .LVU56
+ 193 00e4 0AF1010A 		add	r10, r10, #1
+ 194              	.LVL18:
+ 195              	.L2:
+ 110:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 196              		.loc 1 110 16 is_stmt 1 discriminator 1 view .LVU57
+ 110:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 197              		.loc 1 110 4 is_stmt 0 discriminator 1 view .LVU58
+ 198 00e8 029B     		ldr	r3, [sp, #8]
+ 199 00ea 9A45     		cmp	r10, r3
+ 200 00ec 95D3     		bcc	.L3
+ 131:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 132:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }                             // groups loop end
+ 133:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 134:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    twidCoefModifier <<= 1U;
+ 201              		.loc 1 134 4 is_stmt 1 view .LVU59
+ 202              		.loc 1 134 21 is_stmt 0 view .LVU60
+ 203 00ee 019B     		ldr	r3, [sp, #4]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 7
+
+
+ 204 00f0 5B00     		lsls	r3, r3, #1
+ 205 00f2 9BB2     		uxth	r3, r3
+ 206 00f4 0693     		str	r3, [sp, #24]
+ 207              	.LVL19:
+ 135:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 136:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    // loop for stage
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    for (k = fftLen / 2; k > 2; k = k >> 1)
+ 208              		.loc 1 137 4 is_stmt 1 view .LVU61
+ 209              		.loc 1 137 11 is_stmt 0 view .LVU62
+ 210 00f6 089B     		ldr	r3, [sp, #32]
+ 211              	.LVL20:
+ 212              		.loc 1 137 11 view .LVU63
+ 213 00f8 5B08     		lsrs	r3, r3, #1
+ 214 00fa 0993     		str	r3, [sp, #36]
+ 215              	.LVL21:
+ 216              		.loc 1 137 4 view .LVU64
+ 217 00fc 7BE0     		b	.L4
+ 218              	.LVL22:
+ 219              	.L7:
+ 138:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 139:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       n1 = n2;
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       n2 = n2 >> 1;
+ 141:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 142:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 143:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       // loop for groups
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       for (j = 0; j < n2; j++)
+ 145:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 146:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          cosVal = pCoef[ia * 2];
+ 220              		.loc 1 146 10 is_stmt 1 view .LVU65
+ 221              		.loc 1 146 24 is_stmt 0 view .LVU66
+ 222 00fe 059A     		ldr	r2, [sp, #20]
+ 223 0100 D300     		lsls	r3, r2, #3
+ 224              	.LVL23:
+ 225              		.loc 1 146 17 view .LVU67
+ 226 0102 0799     		ldr	r1, [sp, #28]
+ 227 0104 51F83240 		ldr	r4, [r1, r2, lsl #3]
+ 228              	.LVL24:
+ 147:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          sinVal = pCoef[(ia * 2) + 1];
+ 229              		.loc 1 147 10 is_stmt 1 view .LVU68
+ 230              		.loc 1 147 24 is_stmt 0 view .LVU69
+ 231 0108 0433     		adds	r3, r3, #4
+ 232              		.loc 1 147 17 view .LVU70
+ 233 010a 51F803B0 		ldr	fp, [r1, r3]
+ 234              	.LVL25:
+ 148:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          ia = ia + twidCoefModifier;
+ 235              		.loc 1 148 10 is_stmt 1 view .LVU71
+ 236              		.loc 1 148 13 is_stmt 0 view .LVU72
+ 237 010e 069B     		ldr	r3, [sp, #24]
+ 238 0110 D318     		adds	r3, r2, r3
+ 239 0112 0593     		str	r3, [sp, #20]
+ 240              	.LVL26:
+ 149:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 150:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          // loop for butterfly
+ 151:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          i = j;
+ 241              		.loc 1 151 10 is_stmt 1 view .LVU73
+ 152:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          m = fftLen / n1;
+ 242              		.loc 1 152 10 view .LVU74
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 8
+
+
+ 243              		.loc 1 152 12 is_stmt 0 view .LVU75
+ 244 0114 089B     		ldr	r3, [sp, #32]
+ 245              	.LVL27:
+ 246              		.loc 1 152 12 view .LVU76
+ 247 0116 029A     		ldr	r2, [sp, #8]
+ 248 0118 B3FBF2F3 		udiv	r3, r3, r2
+ 249 011c 0093     		str	r3, [sp]
+ 250              	.LVL28:
+ 151:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          m = fftLen / n1;
+ 251              		.loc 1 151 12 view .LVU77
+ 252 011e 049D     		ldr	r5, [sp, #16]
+ 253              	.LVL29:
+ 254              	.L6:
+ 153:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          do
+ 255              		.loc 1 153 10 is_stmt 1 discriminator 1 view .LVU78
+ 154:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 155:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             l = i + n2;
+ 256              		.loc 1 155 13 discriminator 1 view .LVU79
+ 257              		.loc 1 155 15 is_stmt 0 discriminator 1 view .LVU80
+ 258 0120 039B     		ldr	r3, [sp, #12]
+ 259 0122 05EB030C 		add	ip, r5, r3
+ 260              	.LVL30:
+ 156:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             xt = pSrc[2 * i] - pSrc[2 * l];
+ 261              		.loc 1 156 13 is_stmt 1 discriminator 1 view .LVU81
+ 262              		.loc 1 156 22 is_stmt 0 discriminator 1 view .LVU82
+ 263 0126 E800     		lsls	r0, r5, #3
+ 264 0128 59F83530 		ldr	r3, [r9, r5, lsl #3]
+ 265              		.loc 1 156 36 discriminator 1 view .LVU83
+ 266 012c 4FEACC06 		lsl	r6, ip, #3
+ 267 0130 59F83C20 		ldr	r2, [r9, ip, lsl #3]
+ 268              		.loc 1 156 16 discriminator 1 view .LVU84
+ 269 0134 991A     		subs	r1, r3, r2
+ 270              	.LVL31:
+ 157:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]) >> 1U;
+ 271              		.loc 1 157 13 is_stmt 1 discriminator 1 view .LVU85
+ 272              		.loc 1 157 40 is_stmt 0 discriminator 1 view .LVU86
+ 273 0136 1344     		add	r3, r3, r2
+ 274              		.loc 1 157 55 discriminator 1 view .LVU87
+ 275 0138 5B10     		asrs	r3, r3, #1
+ 276              		.loc 1 157 25 discriminator 1 view .LVU88
+ 277 013a 49F83530 		str	r3, [r9, r5, lsl #3]
+ 158:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 159:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+ 278              		.loc 1 159 13 is_stmt 1 discriminator 1 view .LVU89
+ 279              		.loc 1 159 22 is_stmt 0 discriminator 1 view .LVU90
+ 280 013e 0430     		adds	r0, r0, #4
+ 281 0140 59F80020 		ldr	r2, [r9, r0]
+ 282              		.loc 1 159 40 discriminator 1 view .LVU91
+ 283 0144 331D     		adds	r3, r6, #4
+ 284 0146 0193     		str	r3, [sp, #4]
+ 285 0148 59F80360 		ldr	r6, [r9, r3]
+ 286              		.loc 1 159 16 discriminator 1 view .LVU92
+ 287 014c 931B     		subs	r3, r2, r6
+ 288              	.LVL32:
+ 160:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]) >> 1U;
+ 289              		.loc 1 160 13 is_stmt 1 discriminator 1 view .LVU93
+ 290              		.loc 1 160 48 is_stmt 0 discriminator 1 view .LVU94
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 9
+
+
+ 291 014e 3244     		add	r2, r2, r6
+ 292              		.loc 1 160 67 discriminator 1 view .LVU95
+ 293 0150 5210     		asrs	r2, r2, #1
+ 294              		.loc 1 160 29 discriminator 1 view .LVU96
+ 295 0152 49F80020 		str	r2, [r9, r0]
+ 161:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 162:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             mult_32x32_keep32_R(p0, xt, cosVal);
+ 296              		.loc 1 162 13 is_stmt 1 discriminator 1 view .LVU97
+ 297 0156 4FEAE178 		asr	r8, r1, #31
+ 298 015a E017     		asrs	r0, r4, #31
+ 299 015c 01FB00F7 		mul	r7, r1, r0
+ 300 0160 04FB0877 		mla	r7, r4, r8, r7
+ 301 0164 A1FB0426 		umull	r2, r6, r1, r4
+ 302 0168 12F10042 		adds	r2, r2, #-2147483648
+ 303 016c 47EB0607 		adc	r7, r7, r6
+ 163:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             mult_32x32_keep32_R(p1, yt, cosVal);
+ 304              		.loc 1 163 13 discriminator 1 view .LVU98
+ 305 0170 4FEAE37E 		asr	lr, r3, #31
+ 306 0174 04FB0EF2 		mul	r2, r4, lr
+ 307 0178 03FB0020 		mla	r0, r3, r0, r2
+ 308 017c A4FB0326 		umull	r2, r6, r4, r3
+ 309 0180 12F10042 		adds	r2, r2, #-2147483648
+ 310 0184 40EB0600 		adc	r0, r0, r6
+ 164:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             multAcc_32x32_keep32_R(p0, yt, sinVal);
+ 311              		.loc 1 164 13 discriminator 1 view .LVU99
+ 312 0188 0022     		movs	r2, #0
+ 313 018a 4FEAEB76 		asr	r6, fp, #31
+ 314 018e 03FB06FA 		mul	r10, r3, r6
+ 315 0192 0BFB0EAE 		mla	lr, fp, lr, r10
+ 316 0196 A3FB0B3A 		umull	r3, r10, r3, fp
+ 317              	.LVL33:
+ 318              		.loc 1 164 13 is_stmt 0 discriminator 1 view .LVU100
+ 319 019a D644     		add	lr, lr, r10
+ 320 019c D318     		adds	r3, r2, r3
+ 321 019e 13F10043 		adds	r3, r3, #-2147483648
+ 322 01a2 4EEB0707 		adc	r7, lr, r7
+ 323              	.LVL34:
+ 165:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             multSub_32x32_keep32_R(p1, xt, sinVal);
+ 324              		.loc 1 165 13 is_stmt 1 discriminator 1 view .LVU101
+ 325 01a6 01FB06F6 		mul	r6, r1, r6
+ 326 01aa 0BFB0868 		mla	r8, fp, r8, r6
+ 327 01ae A1FB0B16 		umull	r1, r6, r1, fp
+ 328              	.LVL35:
+ 329              		.loc 1 165 13 is_stmt 0 discriminator 1 view .LVU102
+ 330 01b2 B044     		add	r8, r8, r6
+ 331 01b4 511A     		subs	r1, r2, r1
+ 332 01b6 60EB0808 		sbc	r8, r0, r8
+ 333 01ba 11F10041 		adds	r1, r1, #-2147483648
+ 334 01be 48F10006 		adc	r6, r8, #0
+ 335              	.LVL36:
+ 166:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 167:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2U * l] = p0;
+ 336              		.loc 1 167 13 is_stmt 1 discriminator 1 view .LVU103
+ 337              		.loc 1 167 26 is_stmt 0 discriminator 1 view .LVU104
+ 338 01c2 49F83C70 		str	r7, [r9, ip, lsl #3]
+ 168:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2U * l + 1U] = p1;
+ 339              		.loc 1 168 13 is_stmt 1 discriminator 1 view .LVU105
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 10
+
+
+ 340              		.loc 1 168 31 is_stmt 0 discriminator 1 view .LVU106
+ 341 01c6 019B     		ldr	r3, [sp, #4]
+ 342 01c8 49F80360 		str	r6, [r9, r3]
+ 169:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             i += n1;
+ 343              		.loc 1 169 13 is_stmt 1 discriminator 1 view .LVU107
+ 344              		.loc 1 169 15 is_stmt 0 discriminator 1 view .LVU108
+ 345 01cc 029B     		ldr	r3, [sp, #8]
+ 346 01ce 1D44     		add	r5, r5, r3
+ 347              	.LVL37:
+ 170:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             m--;
+ 348              		.loc 1 170 13 is_stmt 1 discriminator 1 view .LVU109
+ 171:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          } while ( m > 0);                   // butterfly loop end
+ 349              		.loc 1 171 18 discriminator 1 view .LVU110
+ 350              		.loc 1 171 10 is_stmt 0 discriminator 1 view .LVU111
+ 351 01d0 009B     		ldr	r3, [sp]
+ 352 01d2 013B     		subs	r3, r3, #1
+ 353              	.LVL38:
+ 354              		.loc 1 171 10 discriminator 1 view .LVU112
+ 355 01d4 0093     		str	r3, [sp]
+ 356 01d6 A3D1     		bne	.L6
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 357              		.loc 1 144 27 is_stmt 1 discriminator 2 view .LVU113
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 358              		.loc 1 144 28 is_stmt 0 discriminator 2 view .LVU114
+ 359 01d8 049B     		ldr	r3, [sp, #16]
+ 360              	.LVL39:
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 361              		.loc 1 144 28 discriminator 2 view .LVU115
+ 362 01da 0133     		adds	r3, r3, #1
+ 363 01dc 0493     		str	r3, [sp, #16]
+ 364              	.LVL40:
+ 365              	.L5:
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 366              		.loc 1 144 19 is_stmt 1 discriminator 1 view .LVU116
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 367              		.loc 1 144 7 is_stmt 0 discriminator 1 view .LVU117
+ 368 01de 049B     		ldr	r3, [sp, #16]
+ 369 01e0 039A     		ldr	r2, [sp, #12]
+ 370 01e2 9342     		cmp	r3, r2
+ 371 01e4 8BD3     		bcc	.L7
+ 172:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 173:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       }                           // groups loop end
+ 174:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 175:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       twidCoefModifier <<= 1U;
+ 372              		.loc 1 175 7 is_stmt 1 discriminator 2 view .LVU118
+ 373              		.loc 1 175 24 is_stmt 0 discriminator 2 view .LVU119
+ 374 01e6 069B     		ldr	r3, [sp, #24]
+ 375 01e8 5B00     		lsls	r3, r3, #1
+ 376              	.LVL41:
+ 377              		.loc 1 175 24 discriminator 2 view .LVU120
+ 378 01ea 9BB2     		uxth	r3, r3
+ 379              		.loc 1 175 24 discriminator 2 view .LVU121
+ 380 01ec 0693     		str	r3, [sp, #24]
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 381              		.loc 1 137 32 is_stmt 1 discriminator 2 view .LVU122
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 382              		.loc 1 137 34 is_stmt 0 discriminator 2 view .LVU123
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 11
+
+
+ 383 01ee 099B     		ldr	r3, [sp, #36]
+ 384              	.LVL42:
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 385              		.loc 1 137 34 discriminator 2 view .LVU124
+ 386 01f0 5B08     		lsrs	r3, r3, #1
+ 387 01f2 0993     		str	r3, [sp, #36]
+ 388              	.LVL43:
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 389              		.loc 1 140 10 discriminator 2 view .LVU125
+ 390 01f4 0292     		str	r2, [sp, #8]
+ 391              	.LVL44:
+ 392              	.L4:
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 393              		.loc 1 137 25 is_stmt 1 discriminator 1 view .LVU126
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 394              		.loc 1 137 4 is_stmt 0 discriminator 1 view .LVU127
+ 395 01f6 099B     		ldr	r3, [sp, #36]
+ 396 01f8 022B     		cmp	r3, #2
+ 397 01fa 06D9     		bls	.L12
+ 139:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       n2 = n2 >> 1;
+ 398              		.loc 1 139 7 is_stmt 1 view .LVU128
+ 399              	.LVL45:
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 400              		.loc 1 140 7 view .LVU129
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 401              		.loc 1 140 10 is_stmt 0 view .LVU130
+ 402 01fc 029B     		ldr	r3, [sp, #8]
+ 403 01fe 5B08     		lsrs	r3, r3, #1
+ 404 0200 0393     		str	r3, [sp, #12]
+ 405              	.LVL46:
+ 141:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 406              		.loc 1 141 7 is_stmt 1 view .LVU131
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 407              		.loc 1 144 7 view .LVU132
+ 141:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 408              		.loc 1 141 10 is_stmt 0 view .LVU133
+ 409 0202 0023     		movs	r3, #0
+ 410              	.LVL47:
+ 141:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 411              		.loc 1 141 10 view .LVU134
+ 412 0204 0593     		str	r3, [sp, #20]
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 413              		.loc 1 144 14 view .LVU135
+ 414 0206 0493     		str	r3, [sp, #16]
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 415              		.loc 1 144 7 view .LVU136
+ 416 0208 E9E7     		b	.L5
+ 417              	.LVL48:
+ 418              	.L12:
+ 176:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }                             // stages loop end
+ 177:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 178:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n1 = n2;
+ 419              		.loc 1 178 4 is_stmt 1 view .LVU137
+ 179:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n2 = n2 >> 1;
+ 420              		.loc 1 179 4 view .LVU138
+ 421              		.loc 1 179 7 is_stmt 0 view .LVU139
+ 422 020a 029E     		ldr	r6, [sp, #8]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 12
+
+
+ 423 020c 7508     		lsrs	r5, r6, #1
+ 424              	.LVL49:
+ 180:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = 0;
+ 425              		.loc 1 180 4 is_stmt 1 view .LVU140
+ 181:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 182:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    cosVal = pCoef[ia * 2];
+ 426              		.loc 1 182 4 view .LVU141
+ 183:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    sinVal = pCoef[(ia * 2) + 1];
+ 427              		.loc 1 183 4 view .LVU142
+ 184:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = ia + twidCoefModifier;
+ 428              		.loc 1 184 4 view .LVU143
+ 185:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 186:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    // loop for butterfly
+ 187:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    for (i = 0; i < fftLen; i += n1)
+ 429              		.loc 1 187 4 view .LVU144
+ 430              		.loc 1 187 11 is_stmt 0 view .LVU145
+ 431 020e 0023     		movs	r3, #0
+ 432              	.LVL50:
+ 433              		.loc 1 187 11 view .LVU146
+ 434 0210 089F     		ldr	r7, [sp, #32]
+ 435              		.loc 1 187 4 view .LVU147
+ 436 0212 37E0     		b	.L9
+ 437              	.LVL51:
+ 438              	.L10:
+ 188:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 189:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       l = i + n2;
+ 439              		.loc 1 189 7 is_stmt 1 discriminator 3 view .LVU148
+ 440              		.loc 1 189 9 is_stmt 0 discriminator 3 view .LVU149
+ 441 0214 5C19     		adds	r4, r3, r5
+ 442              	.LVL52:
+ 190:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       xt = pSrc[2 * i] - pSrc[2 * l];
+ 443              		.loc 1 190 7 is_stmt 1 discriminator 3 view .LVU150
+ 444              		.loc 1 190 16 is_stmt 0 discriminator 3 view .LVU151
+ 445 0216 D900     		lsls	r1, r3, #3
+ 446 0218 59F83300 		ldr	r0, [r9, r3, lsl #3]
+ 447              		.loc 1 190 30 discriminator 3 view .LVU152
+ 448 021c E200     		lsls	r2, r4, #3
+ 449 021e 59F834E0 		ldr	lr, [r9, r4, lsl #3]
+ 450              		.loc 1 190 10 discriminator 3 view .LVU153
+ 451 0222 A0EB0E0C 		sub	ip, r0, lr
+ 452              	.LVL53:
+ 191:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+ 453              		.loc 1 191 7 is_stmt 1 discriminator 3 view .LVU154
+ 454              		.loc 1 191 34 is_stmt 0 discriminator 3 view .LVU155
+ 455 0226 7044     		add	r0, r0, lr
+ 456              		.loc 1 191 19 discriminator 3 view .LVU156
+ 457 0228 49F83300 		str	r0, [r9, r3, lsl #3]
+ 192:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 193:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+ 458              		.loc 1 193 7 is_stmt 1 discriminator 3 view .LVU157
+ 459              		.loc 1 193 16 is_stmt 0 discriminator 3 view .LVU158
+ 460 022c 0431     		adds	r1, r1, #4
+ 461 022e 59F80100 		ldr	r0, [r9, r1]
+ 462              		.loc 1 193 34 discriminator 3 view .LVU159
+ 463 0232 0432     		adds	r2, r2, #4
+ 464 0234 59F802E0 		ldr	lr, [r9, r2]
+ 465              		.loc 1 193 10 discriminator 3 view .LVU160
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 13
+
+
+ 466 0238 A0EB0E08 		sub	r8, r0, lr
+ 467              	.LVL54:
+ 194:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+ 468              		.loc 1 194 7 is_stmt 1 discriminator 3 view .LVU161
+ 469              		.loc 1 194 42 is_stmt 0 discriminator 3 view .LVU162
+ 470 023c 7044     		add	r0, r0, lr
+ 471              		.loc 1 194 23 discriminator 3 view .LVU163
+ 472 023e 49F80100 		str	r0, [r9, r1]
+ 195:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 196:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l] = xt;
+ 473              		.loc 1 196 7 is_stmt 1 discriminator 3 view .LVU164
+ 474              		.loc 1 196 20 is_stmt 0 discriminator 3 view .LVU165
+ 475 0242 49F834C0 		str	ip, [r9, r4, lsl #3]
+ 197:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 198:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l + 1U] = yt;
+ 476              		.loc 1 198 7 is_stmt 1 discriminator 3 view .LVU166
+ 477              		.loc 1 198 25 is_stmt 0 discriminator 3 view .LVU167
+ 478 0246 49F80280 		str	r8, [r9, r2]
+ 199:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 200:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       i += n1;
+ 479              		.loc 1 200 7 is_stmt 1 discriminator 3 view .LVU168
+ 480              		.loc 1 200 9 is_stmt 0 discriminator 3 view .LVU169
+ 481 024a 3344     		add	r3, r3, r6
+ 482              	.LVL55:
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       l = i + n2;
+ 483              		.loc 1 201 7 is_stmt 1 discriminator 3 view .LVU170
+ 484              		.loc 1 201 9 is_stmt 0 discriminator 3 view .LVU171
+ 485 024c EC18     		adds	r4, r5, r3
+ 486              	.LVL56:
+ 202:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 203:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       xt = pSrc[2 * i] - pSrc[2 * l];
+ 487              		.loc 1 203 7 is_stmt 1 discriminator 3 view .LVU172
+ 488              		.loc 1 203 16 is_stmt 0 discriminator 3 view .LVU173
+ 489 024e D900     		lsls	r1, r3, #3
+ 490 0250 59F83300 		ldr	r0, [r9, r3, lsl #3]
+ 491              		.loc 1 203 30 discriminator 3 view .LVU174
+ 492 0254 E200     		lsls	r2, r4, #3
+ 493 0256 59F834E0 		ldr	lr, [r9, r4, lsl #3]
+ 494              		.loc 1 203 10 discriminator 3 view .LVU175
+ 495 025a A0EB0E0C 		sub	ip, r0, lr
+ 496              	.LVL57:
+ 204:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+ 497              		.loc 1 204 7 is_stmt 1 discriminator 3 view .LVU176
+ 498              		.loc 1 204 34 is_stmt 0 discriminator 3 view .LVU177
+ 499 025e 7044     		add	r0, r0, lr
+ 500              		.loc 1 204 19 discriminator 3 view .LVU178
+ 501 0260 49F83300 		str	r0, [r9, r3, lsl #3]
+ 205:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 206:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+ 502              		.loc 1 206 7 is_stmt 1 discriminator 3 view .LVU179
+ 503              		.loc 1 206 16 is_stmt 0 discriminator 3 view .LVU180
+ 504 0264 0431     		adds	r1, r1, #4
+ 505 0266 59F80100 		ldr	r0, [r9, r1]
+ 506              		.loc 1 206 34 discriminator 3 view .LVU181
+ 507 026a 0432     		adds	r2, r2, #4
+ 508 026c 59F802E0 		ldr	lr, [r9, r2]
+ 509              		.loc 1 206 10 discriminator 3 view .LVU182
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 14
+
+
+ 510 0270 A0EB0E08 		sub	r8, r0, lr
+ 511              	.LVL58:
+ 207:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+ 512              		.loc 1 207 7 is_stmt 1 discriminator 3 view .LVU183
+ 513              		.loc 1 207 42 is_stmt 0 discriminator 3 view .LVU184
+ 514 0274 7044     		add	r0, r0, lr
+ 515              		.loc 1 207 23 discriminator 3 view .LVU185
+ 516 0276 49F80100 		str	r0, [r9, r1]
+ 208:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 209:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l] = xt;
+ 517              		.loc 1 209 7 is_stmt 1 discriminator 3 view .LVU186
+ 518              		.loc 1 209 20 is_stmt 0 discriminator 3 view .LVU187
+ 519 027a 49F834C0 		str	ip, [r9, r4, lsl #3]
+ 210:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 211:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l + 1U] = yt;
+ 520              		.loc 1 211 7 is_stmt 1 discriminator 3 view .LVU188
+ 521              		.loc 1 211 25 is_stmt 0 discriminator 3 view .LVU189
+ 522 027e 49F80280 		str	r8, [r9, r2]
+ 187:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 523              		.loc 1 187 28 is_stmt 1 discriminator 3 view .LVU190
+ 187:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 524              		.loc 1 187 30 is_stmt 0 discriminator 3 view .LVU191
+ 525 0282 3344     		add	r3, r3, r6
+ 526              	.LVL59:
+ 527              	.L9:
+ 187:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 528              		.loc 1 187 16 is_stmt 1 discriminator 1 view .LVU192
+ 187:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 529              		.loc 1 187 4 is_stmt 0 discriminator 1 view .LVU193
+ 530 0284 BB42     		cmp	r3, r7
+ 531 0286 C5D3     		bcc	.L10
+ 212:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 213:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }                             // butterfly loop end
+ 214:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 215:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** }
+ 532              		.loc 1 215 1 view .LVU194
+ 533 0288 0BB0     		add	sp, sp, #44
+ 534              	.LCFI2:
+ 535              		.cfi_def_cfa_offset 36
+ 536              		@ sp needed
+ 537 028a BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 538              		.loc 1 215 1 view .LVU195
+ 539              		.cfi_endproc
+ 540              	.LFE136:
+ 542              		.section	.text.arm_radix2_butterfly_inverse_q31,"ax",%progbits
+ 543              		.align	1
+ 544              		.global	arm_radix2_butterfly_inverse_q31
+ 545              		.syntax unified
+ 546              		.thumb
+ 547              		.thumb_func
+ 549              	arm_radix2_butterfly_inverse_q31:
+ 550              	.LVL60:
+ 551              	.LFB137:
+ 216:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 217:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 218:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** void arm_radix2_butterfly_inverse_q31(
+ 219:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** q31_t * pSrc,
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 15
+
+
+ 220:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** uint32_t fftLen,
+ 221:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** q31_t * pCoef,
+ 222:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** uint16_t twidCoefModifier)
+ 223:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** {
+ 552              		.loc 1 223 1 is_stmt 1 view -0
+ 553              		.cfi_startproc
+ 554              		@ args = 0, pretend = 0, frame = 40
+ 555              		@ frame_needed = 0, uses_anonymous_args = 0
+ 556              		.loc 1 223 1 is_stmt 0 view .LVU197
+ 557 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 558              	.LCFI3:
+ 559              		.cfi_def_cfa_offset 36
+ 560              		.cfi_offset 4, -36
+ 561              		.cfi_offset 5, -32
+ 562              		.cfi_offset 6, -28
+ 563              		.cfi_offset 7, -24
+ 564              		.cfi_offset 8, -20
+ 565              		.cfi_offset 9, -16
+ 566              		.cfi_offset 10, -12
+ 567              		.cfi_offset 11, -8
+ 568              		.cfi_offset 14, -4
+ 569 0004 8BB0     		sub	sp, sp, #44
+ 570              	.LCFI4:
+ 571              		.cfi_def_cfa_offset 80
+ 572 0006 8346     		mov	fp, r0
+ 573 0008 0391     		str	r1, [sp, #12]
+ 574 000a 0892     		str	r2, [sp, #32]
+ 575 000c 0293     		str	r3, [sp, #8]
+ 224:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 225:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    unsigned i, j, k, l;
+ 576              		.loc 1 225 4 is_stmt 1 view .LVU198
+ 226:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    unsigned n1, n2, ia;
+ 577              		.loc 1 226 4 view .LVU199
+ 227:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    q31_t xt, yt, cosVal, sinVal;
+ 578              		.loc 1 227 4 view .LVU200
+ 228:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    q31_t p0, p1;
+ 579              		.loc 1 228 4 view .LVU201
+ 229:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 230:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    //N = fftLen;
+ 231:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n2 = fftLen;
+ 580              		.loc 1 231 4 view .LVU202
+ 581              	.LVL61:
+ 232:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 233:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n1 = n2;
+ 582              		.loc 1 233 4 view .LVU203
+ 234:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n2 = n2 >> 1;
+ 583              		.loc 1 234 4 view .LVU204
+ 584              		.loc 1 234 7 is_stmt 0 view .LVU205
+ 585 000e 4B08     		lsrs	r3, r1, #1
+ 586              	.LVL62:
+ 587              		.loc 1 234 7 view .LVU206
+ 588 0010 0493     		str	r3, [sp, #16]
+ 589              	.LVL63:
+ 235:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = 0;
+ 590              		.loc 1 235 4 is_stmt 1 view .LVU207
+ 236:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 237:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    // loop for groups
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 16
+
+
+ 238:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    for (i = 0; i < n2; i++)
+ 591              		.loc 1 238 4 view .LVU208
+ 235:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = 0;
+ 592              		.loc 1 235 7 is_stmt 0 view .LVU209
+ 593 0012 4FF00008 		mov	r8, #0
+ 594              		.loc 1 238 11 view .LVU210
+ 595 0016 C246     		mov	r10, r8
+ 596              		.loc 1 238 4 view .LVU211
+ 597 0018 67E0     		b	.L14
+ 598              	.LVL64:
+ 599              	.L15:
+ 239:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 240:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       cosVal = pCoef[ia * 2];
+ 600              		.loc 1 240 7 is_stmt 1 discriminator 3 view .LVU212
+ 601              		.loc 1 240 21 is_stmt 0 discriminator 3 view .LVU213
+ 602 001a 4FEAC803 		lsl	r3, r8, #3
+ 603              		.loc 1 240 14 discriminator 3 view .LVU214
+ 604 001e 089A     		ldr	r2, [sp, #32]
+ 605 0020 52F83810 		ldr	r1, [r2, r8, lsl #3]
+ 606              	.LVL65:
+ 241:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       sinVal = pCoef[(ia * 2) + 1];
+ 607              		.loc 1 241 7 is_stmt 1 discriminator 3 view .LVU215
+ 608              		.loc 1 241 21 is_stmt 0 discriminator 3 view .LVU216
+ 609 0024 0433     		adds	r3, r3, #4
+ 610              		.loc 1 241 14 discriminator 3 view .LVU217
+ 611 0026 D058     		ldr	r0, [r2, r3]
+ 612              	.LVL66:
+ 242:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = ia + twidCoefModifier;
+ 613              		.loc 1 242 7 is_stmt 1 discriminator 3 view .LVU218
+ 614              		.loc 1 242 10 is_stmt 0 discriminator 3 view .LVU219
+ 615 0028 029B     		ldr	r3, [sp, #8]
+ 616 002a 9844     		add	r8, r8, r3
+ 617              	.LVL67:
+ 243:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 244:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       l = i + n2;
+ 618              		.loc 1 244 7 is_stmt 1 discriminator 3 view .LVU220
+ 619              		.loc 1 244 9 is_stmt 0 discriminator 3 view .LVU221
+ 620 002c 049B     		ldr	r3, [sp, #16]
+ 621 002e 0AEB0307 		add	r7, r10, r3
+ 622              	.LVL68:
+ 245:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       xt = (pSrc[2 * i] >> 1U) - (pSrc[2 * l] >> 1U);
+ 623              		.loc 1 245 7 is_stmt 1 discriminator 3 view .LVU222
+ 624              		.loc 1 245 17 is_stmt 0 discriminator 3 view .LVU223
+ 625 0032 4FEACA04 		lsl	r4, r10, #3
+ 626 0036 5BF83A50 		ldr	r5, [fp, r10, lsl #3]
+ 627              		.loc 1 245 39 discriminator 3 view .LVU224
+ 628 003a FE00     		lsls	r6, r7, #3
+ 629 003c 5BF83730 		ldr	r3, [fp, r7, lsl #3]
+ 630              		.loc 1 245 47 discriminator 3 view .LVU225
+ 631 0040 5B10     		asrs	r3, r3, #1
+ 632              		.loc 1 245 10 discriminator 3 view .LVU226
+ 633 0042 C3EB6502 		rsb	r2, r3, r5, asr #1
+ 634              	.LVL69:
+ 246:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i] = ((pSrc[2 * i] >> 1U) + (pSrc[2 * l] >> 1U)) >> 1U;
+ 635              		.loc 1 246 7 is_stmt 1 discriminator 3 view .LVU227
+ 636              		.loc 1 246 42 is_stmt 0 discriminator 3 view .LVU228
+ 637 0046 03EB6503 		add	r3, r3, r5, asr #1
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 17
+
+
+ 638              		.loc 1 246 65 discriminator 3 view .LVU229
+ 639 004a 5B10     		asrs	r3, r3, #1
+ 640              		.loc 1 246 19 discriminator 3 view .LVU230
+ 641 004c 4BF83A30 		str	r3, [fp, r10, lsl #3]
+ 247:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 248:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       yt = (pSrc[2 * i + 1] >> 1U) - (pSrc[2 * l + 1] >> 1U);
+ 642              		.loc 1 248 7 is_stmt 1 discriminator 3 view .LVU231
+ 643              		.loc 1 248 17 is_stmt 0 discriminator 3 view .LVU232
+ 644 0050 0434     		adds	r4, r4, #4
+ 645 0052 5BF80450 		ldr	r5, [fp, r4]
+ 646              		.loc 1 248 43 discriminator 3 view .LVU233
+ 647 0056 0436     		adds	r6, r6, #4
+ 648 0058 5BF80630 		ldr	r3, [fp, r6]
+ 649              		.loc 1 248 55 discriminator 3 view .LVU234
+ 650 005c 4FEA630C 		asr	ip, r3, #1
+ 651              		.loc 1 248 10 discriminator 3 view .LVU235
+ 652 0060 CCEB6503 		rsb	r3, ip, r5, asr #1
+ 653              	.LVL70:
+ 249:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] =
+ 654              		.loc 1 249 7 is_stmt 1 discriminator 3 view .LVU236
+ 250:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****         ((pSrc[2 * l + 1] >> 1U) + (pSrc[2 * i + 1] >> 1U)) >> 1U;
+ 655              		.loc 1 250 34 is_stmt 0 discriminator 3 view .LVU237
+ 656 0064 0CEB6505 		add	r5, ip, r5, asr #1
+ 657              		.loc 1 250 61 discriminator 3 view .LVU238
+ 658 0068 6D10     		asrs	r5, r5, #1
+ 249:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] =
+ 659              		.loc 1 249 23 discriminator 3 view .LVU239
+ 660 006a 4BF80450 		str	r5, [fp, r4]
+ 251:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 252:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       mult_32x32_keep32_R(p0, xt, cosVal);
+ 661              		.loc 1 252 7 is_stmt 1 discriminator 3 view .LVU240
+ 662 006e 4FEAE27E 		asr	lr, r2, #31
+ 663 0072 4FEAE179 		asr	r9, r1, #31
+ 664 0076 02FB09F5 		mul	r5, r2, r9
+ 665 007a 01FB0E55 		mla	r5, r1, lr, r5
+ 666 007e A2FB014C 		umull	r4, ip, r2, r1
+ 667 0082 14F10044 		adds	r4, r4, #-2147483648
+ 668 0086 45EB0C05 		adc	r5, r5, ip
+ 669              	.LVL71:
+ 253:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       mult_32x32_keep32_R(p1, yt, cosVal);
+ 670              		.loc 1 253 7 discriminator 3 view .LVU241
+ 671 008a 4FEAE37C 		asr	ip, r3, #31
+ 672 008e 01FB0CF4 		mul	r4, r1, ip
+ 673 0092 03FB0944 		mla	r4, r3, r9, r4
+ 674 0096 A1FB0319 		umull	r1, r9, r1, r3
+ 675              	.LVL72:
+ 676              		.loc 1 253 7 is_stmt 0 discriminator 3 view .LVU242
+ 677 009a 11F10041 		adds	r1, r1, #-2147483648
+ 678 009e 44EB0901 		adc	r1, r4, r9
+ 679 00a2 0191     		str	r1, [sp, #4]
+ 680              	.LVL73:
+ 254:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       multSub_32x32_keep32_R(p0, yt, sinVal);
+ 681              		.loc 1 254 7 is_stmt 1 discriminator 3 view .LVU243
+ 682 00a4 0021     		movs	r1, #0
+ 683 00a6 C417     		asrs	r4, r0, #31
+ 684 00a8 03FB04F9 		mul	r9, r3, r4
+ 685 00ac 00FB0C9C 		mla	ip, r0, ip, r9
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 18
+
+
+ 686 00b0 A3FB0039 		umull	r3, r9, r3, r0
+ 687              	.LVL74:
+ 688              		.loc 1 254 7 is_stmt 0 discriminator 3 view .LVU244
+ 689 00b4 CC44     		add	ip, ip, r9
+ 690 00b6 CB1A     		subs	r3, r1, r3
+ 691 00b8 65EB0C0C 		sbc	ip, r5, ip
+ 692 00bc 13F10043 		adds	r3, r3, #-2147483648
+ 693 00c0 4CF10005 		adc	r5, ip, #0
+ 694              	.LVL75:
+ 255:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       multAcc_32x32_keep32_R(p1, xt, sinVal);
+ 695              		.loc 1 255 7 is_stmt 1 discriminator 3 view .LVU245
+ 696 00c4 02FB04F4 		mul	r4, r2, r4
+ 697 00c8 00FB0E44 		mla	r4, r0, lr, r4
+ 698 00cc A2FB0003 		umull	r0, r3, r2, r0
+ 699              	.LVL76:
+ 700              		.loc 1 255 7 is_stmt 0 discriminator 3 view .LVU246
+ 701 00d0 2344     		add	r3, r3, r4
+ 702 00d2 0918     		adds	r1, r1, r0
+ 703 00d4 11F10041 		adds	r1, r1, #-2147483648
+ 704 00d8 0199     		ldr	r1, [sp, #4]
+ 705 00da 43EB0103 		adc	r3, r3, r1
+ 706              	.LVL77:
+ 256:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 257:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l] = p0;
+ 707              		.loc 1 257 7 is_stmt 1 discriminator 3 view .LVU247
+ 708              		.loc 1 257 20 is_stmt 0 discriminator 3 view .LVU248
+ 709 00de 4BF83750 		str	r5, [fp, r7, lsl #3]
+ 258:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l + 1U] = p1;
+ 710              		.loc 1 258 7 is_stmt 1 discriminator 3 view .LVU249
+ 711              		.loc 1 258 25 is_stmt 0 discriminator 3 view .LVU250
+ 712 00e2 4BF80630 		str	r3, [fp, r6]
+ 238:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 713              		.loc 1 238 24 is_stmt 1 discriminator 3 view .LVU251
+ 238:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 714              		.loc 1 238 25 is_stmt 0 discriminator 3 view .LVU252
+ 715 00e6 0AF1010A 		add	r10, r10, #1
+ 716              	.LVL78:
+ 717              	.L14:
+ 238:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 718              		.loc 1 238 16 is_stmt 1 discriminator 1 view .LVU253
+ 238:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 719              		.loc 1 238 4 is_stmt 0 discriminator 1 view .LVU254
+ 720 00ea 049B     		ldr	r3, [sp, #16]
+ 721 00ec 9A45     		cmp	r10, r3
+ 722 00ee 94D3     		bcc	.L15
+ 259:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }                             // groups loop end
+ 260:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 261:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    twidCoefModifier = twidCoefModifier << 1U;
+ 723              		.loc 1 261 4 is_stmt 1 view .LVU255
+ 724              		.loc 1 261 21 is_stmt 0 view .LVU256
+ 725 00f0 029B     		ldr	r3, [sp, #8]
+ 726 00f2 5B00     		lsls	r3, r3, #1
+ 727 00f4 9BB2     		uxth	r3, r3
+ 728 00f6 0793     		str	r3, [sp, #28]
+ 729              	.LVL79:
+ 262:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 263:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    // loop for stage
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 19
+
+
+ 264:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    for (k = fftLen / 2; k > 2; k = k >> 1)
+ 730              		.loc 1 264 4 is_stmt 1 view .LVU257
+ 731              		.loc 1 264 11 is_stmt 0 view .LVU258
+ 732 00f8 039B     		ldr	r3, [sp, #12]
+ 733              	.LVL80:
+ 734              		.loc 1 264 11 view .LVU259
+ 735 00fa 5B08     		lsrs	r3, r3, #1
+ 736 00fc 0993     		str	r3, [sp, #36]
+ 737              	.LVL81:
+ 738              		.loc 1 264 4 view .LVU260
+ 739 00fe 76E0     		b	.L16
+ 740              	.LVL82:
+ 741              	.L19:
+ 265:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 266:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       n1 = n2;
+ 267:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       n2 = n2 >> 1;
+ 268:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 269:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 270:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       // loop for groups
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       for (j = 0; j < n2; j++)
+ 272:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 273:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          cosVal = pCoef[ia * 2];
+ 274:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          sinVal = pCoef[(ia * 2) + 1];
+ 275:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          ia = ia + twidCoefModifier;
+ 276:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 277:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          // loop for butterfly
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          for (i = j; i < fftLen; i += n1)
+ 279:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 280:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             l = i + n2;
+ 742              		.loc 1 280 13 is_stmt 1 discriminator 3 view .LVU261
+ 743              		.loc 1 280 15 is_stmt 0 discriminator 3 view .LVU262
+ 744 0100 029B     		ldr	r3, [sp, #8]
+ 745 0102 04EB030C 		add	ip, r4, r3
+ 746              	.LVL83:
+ 281:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             xt = pSrc[2 * i] - pSrc[2 * l];
+ 747              		.loc 1 281 13 is_stmt 1 discriminator 3 view .LVU263
+ 748              		.loc 1 281 22 is_stmt 0 discriminator 3 view .LVU264
+ 749 0106 E000     		lsls	r0, r4, #3
+ 750 0108 5BF83430 		ldr	r3, [fp, r4, lsl #3]
+ 751              		.loc 1 281 36 discriminator 3 view .LVU265
+ 752 010c 4FEACC06 		lsl	r6, ip, #3
+ 753 0110 5BF83C20 		ldr	r2, [fp, ip, lsl #3]
+ 754              		.loc 1 281 16 discriminator 3 view .LVU266
+ 755 0114 991A     		subs	r1, r3, r2
+ 756              	.LVL84:
+ 282:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]) >> 1U;
+ 757              		.loc 1 282 13 is_stmt 1 discriminator 3 view .LVU267
+ 758              		.loc 1 282 40 is_stmt 0 discriminator 3 view .LVU268
+ 759 0116 1344     		add	r3, r3, r2
+ 760              		.loc 1 282 55 discriminator 3 view .LVU269
+ 761 0118 5B10     		asrs	r3, r3, #1
+ 762              		.loc 1 282 25 discriminator 3 view .LVU270
+ 763 011a 4BF83430 		str	r3, [fp, r4, lsl #3]
+ 283:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 284:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+ 764              		.loc 1 284 13 is_stmt 1 discriminator 3 view .LVU271
+ 765              		.loc 1 284 22 is_stmt 0 discriminator 3 view .LVU272
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 20
+
+
+ 766 011e 0430     		adds	r0, r0, #4
+ 767 0120 5BF80020 		ldr	r2, [fp, r0]
+ 768              		.loc 1 284 40 discriminator 3 view .LVU273
+ 769 0124 331D     		adds	r3, r6, #4
+ 770 0126 0193     		str	r3, [sp, #4]
+ 771 0128 5BF80360 		ldr	r6, [fp, r3]
+ 772              		.loc 1 284 16 discriminator 3 view .LVU274
+ 773 012c 931B     		subs	r3, r2, r6
+ 774              	.LVL85:
+ 285:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]) >> 1U;
+ 775              		.loc 1 285 13 is_stmt 1 discriminator 3 view .LVU275
+ 776              		.loc 1 285 48 is_stmt 0 discriminator 3 view .LVU276
+ 777 012e 3244     		add	r2, r2, r6
+ 778              		.loc 1 285 67 discriminator 3 view .LVU277
+ 779 0130 5210     		asrs	r2, r2, #1
+ 780              		.loc 1 285 29 discriminator 3 view .LVU278
+ 781 0132 4BF80020 		str	r2, [fp, r0]
+ 286:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 287:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             mult_32x32_keep32_R(p0, xt, cosVal);
+ 782              		.loc 1 287 13 is_stmt 1 discriminator 3 view .LVU279
+ 783 0136 4FEAE178 		asr	r8, r1, #31
+ 784 013a E817     		asrs	r0, r5, #31
+ 785 013c 01FB00F7 		mul	r7, r1, r0
+ 786 0140 05FB0877 		mla	r7, r5, r8, r7
+ 787 0144 A1FB0526 		umull	r2, r6, r1, r5
+ 788 0148 12F10042 		adds	r2, r2, #-2147483648
+ 789 014c 47EB0607 		adc	r7, r7, r6
+ 288:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             mult_32x32_keep32_R(p1, yt, cosVal);
+ 790              		.loc 1 288 13 discriminator 3 view .LVU280
+ 791 0150 4FEAE37E 		asr	lr, r3, #31
+ 792 0154 05FB0EF6 		mul	r6, r5, lr
+ 793 0158 03FB0066 		mla	r6, r3, r0, r6
+ 794 015c A5FB0320 		umull	r2, r0, r5, r3
+ 795 0160 12F10042 		adds	r2, r2, #-2147483648
+ 796 0164 46EB0006 		adc	r6, r6, r0
+ 289:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             multSub_32x32_keep32_R(p0, yt, sinVal);
+ 797              		.loc 1 289 13 discriminator 3 view .LVU281
+ 798 0168 0022     		movs	r2, #0
+ 799 016a 4FEAEA70 		asr	r0, r10, #31
+ 800 016e 03FB00F9 		mul	r9, r3, r0
+ 801 0172 0AFB0E9E 		mla	lr, r10, lr, r9
+ 802 0176 A3FB0A39 		umull	r3, r9, r3, r10
+ 803              	.LVL86:
+ 804              		.loc 1 289 13 is_stmt 0 discriminator 3 view .LVU282
+ 805 017a CE44     		add	lr, lr, r9
+ 806 017c D31A     		subs	r3, r2, r3
+ 807 017e 67EB0E0E 		sbc	lr, r7, lr
+ 808 0182 13F10043 		adds	r3, r3, #-2147483648
+ 809 0186 4EF10007 		adc	r7, lr, #0
+ 810              	.LVL87:
+ 290:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             multAcc_32x32_keep32_R(p1, xt, sinVal);
+ 811              		.loc 1 290 13 is_stmt 1 discriminator 3 view .LVU283
+ 812 018a 01FB00F0 		mul	r0, r1, r0
+ 813 018e 0AFB0808 		mla	r8, r10, r8, r0
+ 814 0192 A1FB0A10 		umull	r1, r0, r1, r10
+ 815              	.LVL88:
+ 816              		.loc 1 290 13 is_stmt 0 discriminator 3 view .LVU284
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 21
+
+
+ 817 0196 8044     		add	r8, r8, r0
+ 818 0198 5118     		adds	r1, r2, r1
+ 819 019a 11F10041 		adds	r1, r1, #-2147483648
+ 820 019e 48EB0606 		adc	r6, r8, r6
+ 821              	.LVL89:
+ 291:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 292:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2U * l] = p0;
+ 822              		.loc 1 292 13 is_stmt 1 discriminator 3 view .LVU285
+ 823              		.loc 1 292 26 is_stmt 0 discriminator 3 view .LVU286
+ 824 01a2 4BF83C70 		str	r7, [fp, ip, lsl #3]
+ 293:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****             pSrc[2U * l + 1U] = p1;
+ 825              		.loc 1 293 13 is_stmt 1 discriminator 3 view .LVU287
+ 826              		.loc 1 293 31 is_stmt 0 discriminator 3 view .LVU288
+ 827 01a6 019B     		ldr	r3, [sp, #4]
+ 828 01a8 4BF80360 		str	r6, [fp, r3]
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 829              		.loc 1 278 34 is_stmt 1 discriminator 3 view .LVU289
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 830              		.loc 1 278 36 is_stmt 0 discriminator 3 view .LVU290
+ 831 01ac 049B     		ldr	r3, [sp, #16]
+ 832 01ae 1C44     		add	r4, r4, r3
+ 833              	.LVL90:
+ 834              	.L18:
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 835              		.loc 1 278 22 is_stmt 1 discriminator 1 view .LVU291
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 836              		.loc 1 278 10 is_stmt 0 discriminator 1 view .LVU292
+ 837 01b0 039B     		ldr	r3, [sp, #12]
+ 838 01b2 9C42     		cmp	r4, r3
+ 839 01b4 A4D3     		bcc	.L19
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 840              		.loc 1 271 27 is_stmt 1 discriminator 2 view .LVU293
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 841              		.loc 1 271 28 is_stmt 0 discriminator 2 view .LVU294
+ 842 01b6 059B     		ldr	r3, [sp, #20]
+ 843 01b8 0133     		adds	r3, r3, #1
+ 844 01ba 0593     		str	r3, [sp, #20]
+ 845              	.LVL91:
+ 846              	.L17:
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 847              		.loc 1 271 19 is_stmt 1 discriminator 1 view .LVU295
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 848              		.loc 1 271 7 is_stmt 0 discriminator 1 view .LVU296
+ 849 01bc 059B     		ldr	r3, [sp, #20]
+ 850 01be 029A     		ldr	r2, [sp, #8]
+ 851 01c0 9342     		cmp	r3, r2
+ 852 01c2 0CD2     		bcs	.L25
+ 273:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          sinVal = pCoef[(ia * 2) + 1];
+ 853              		.loc 1 273 10 is_stmt 1 view .LVU297
+ 273:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          sinVal = pCoef[(ia * 2) + 1];
+ 854              		.loc 1 273 24 is_stmt 0 view .LVU298
+ 855 01c4 069A     		ldr	r2, [sp, #24]
+ 856 01c6 D300     		lsls	r3, r2, #3
+ 273:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          sinVal = pCoef[(ia * 2) + 1];
+ 857              		.loc 1 273 17 view .LVU299
+ 858 01c8 0899     		ldr	r1, [sp, #32]
+ 859 01ca 51F83250 		ldr	r5, [r1, r2, lsl #3]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 22
+
+
+ 860              	.LVL92:
+ 274:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          ia = ia + twidCoefModifier;
+ 861              		.loc 1 274 10 is_stmt 1 view .LVU300
+ 274:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          ia = ia + twidCoefModifier;
+ 862              		.loc 1 274 24 is_stmt 0 view .LVU301
+ 863 01ce 0433     		adds	r3, r3, #4
+ 274:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          ia = ia + twidCoefModifier;
+ 864              		.loc 1 274 17 view .LVU302
+ 865 01d0 51F803A0 		ldr	r10, [r1, r3]
+ 866              	.LVL93:
+ 275:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 867              		.loc 1 275 10 is_stmt 1 view .LVU303
+ 275:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 868              		.loc 1 275 13 is_stmt 0 view .LVU304
+ 869 01d4 079B     		ldr	r3, [sp, #28]
+ 870 01d6 D318     		adds	r3, r2, r3
+ 871 01d8 0693     		str	r3, [sp, #24]
+ 872              	.LVL94:
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 873              		.loc 1 278 10 is_stmt 1 view .LVU305
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 874              		.loc 1 278 17 is_stmt 0 view .LVU306
+ 875 01da 059C     		ldr	r4, [sp, #20]
+ 278:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          {
+ 876              		.loc 1 278 10 view .LVU307
+ 877 01dc E8E7     		b	.L18
+ 878              	.LVL95:
+ 879              	.L25:
+ 294:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****          }                         // butterfly loop end
+ 295:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 296:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       }                           // groups loop end
+ 297:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 298:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       twidCoefModifier = twidCoefModifier << 1U;
+ 880              		.loc 1 298 7 is_stmt 1 discriminator 2 view .LVU308
+ 881              		.loc 1 298 24 is_stmt 0 discriminator 2 view .LVU309
+ 882 01de 079B     		ldr	r3, [sp, #28]
+ 883              	.LVL96:
+ 884              		.loc 1 298 24 discriminator 2 view .LVU310
+ 885 01e0 5B00     		lsls	r3, r3, #1
+ 886              	.LVL97:
+ 887              		.loc 1 298 24 discriminator 2 view .LVU311
+ 888 01e2 9BB2     		uxth	r3, r3
+ 889              		.loc 1 298 24 discriminator 2 view .LVU312
+ 890 01e4 0793     		str	r3, [sp, #28]
+ 264:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 891              		.loc 1 264 32 is_stmt 1 discriminator 2 view .LVU313
+ 264:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 892              		.loc 1 264 34 is_stmt 0 discriminator 2 view .LVU314
+ 893 01e6 099B     		ldr	r3, [sp, #36]
+ 894              	.LVL98:
+ 264:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 895              		.loc 1 264 34 discriminator 2 view .LVU315
+ 896 01e8 5B08     		lsrs	r3, r3, #1
+ 897 01ea 0993     		str	r3, [sp, #36]
+ 898              	.LVL99:
+ 267:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 899              		.loc 1 267 10 discriminator 2 view .LVU316
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 23
+
+
+ 900 01ec 0492     		str	r2, [sp, #16]
+ 901              	.LVL100:
+ 902              	.L16:
+ 264:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 903              		.loc 1 264 25 is_stmt 1 discriminator 1 view .LVU317
+ 264:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 904              		.loc 1 264 4 is_stmt 0 discriminator 1 view .LVU318
+ 905 01ee 099B     		ldr	r3, [sp, #36]
+ 906 01f0 022B     		cmp	r3, #2
+ 907 01f2 06D9     		bls	.L26
+ 266:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       n2 = n2 >> 1;
+ 908              		.loc 1 266 7 is_stmt 1 view .LVU319
+ 909              	.LVL101:
+ 267:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 910              		.loc 1 267 7 view .LVU320
+ 267:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       ia = 0;
+ 911              		.loc 1 267 10 is_stmt 0 view .LVU321
+ 912 01f4 049B     		ldr	r3, [sp, #16]
+ 913 01f6 5B08     		lsrs	r3, r3, #1
+ 914 01f8 0293     		str	r3, [sp, #8]
+ 915              	.LVL102:
+ 268:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 916              		.loc 1 268 7 is_stmt 1 view .LVU322
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 917              		.loc 1 271 7 view .LVU323
+ 268:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 918              		.loc 1 268 10 is_stmt 0 view .LVU324
+ 919 01fa 0023     		movs	r3, #0
+ 920              	.LVL103:
+ 268:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 921              		.loc 1 268 10 view .LVU325
+ 922 01fc 0693     		str	r3, [sp, #24]
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 923              		.loc 1 271 14 view .LVU326
+ 924 01fe 0593     		str	r3, [sp, #20]
+ 271:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       {
+ 925              		.loc 1 271 7 view .LVU327
+ 926 0200 DCE7     		b	.L17
+ 927              	.LVL104:
+ 928              	.L26:
+ 299:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }                             // stages loop end
+ 300:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 301:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n1 = n2;
+ 929              		.loc 1 301 4 is_stmt 1 view .LVU328
+ 302:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    n2 = n2 >> 1;
+ 930              		.loc 1 302 4 view .LVU329
+ 931              		.loc 1 302 7 is_stmt 0 view .LVU330
+ 932 0202 049E     		ldr	r6, [sp, #16]
+ 933 0204 7508     		lsrs	r5, r6, #1
+ 934              	.LVL105:
+ 303:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = 0;
+ 935              		.loc 1 303 4 is_stmt 1 view .LVU331
+ 304:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 305:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    cosVal = pCoef[ia * 2];
+ 936              		.loc 1 305 4 view .LVU332
+ 306:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    sinVal = pCoef[(ia * 2) + 1];
+ 937              		.loc 1 306 4 view .LVU333
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 24
+
+
+ 307:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    ia = ia + twidCoefModifier;
+ 938              		.loc 1 307 4 view .LVU334
+ 308:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 309:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    // loop for butterfly
+ 310:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    for (i = 0; i < fftLen; i += n1)
+ 939              		.loc 1 310 4 view .LVU335
+ 940              		.loc 1 310 11 is_stmt 0 view .LVU336
+ 941 0206 0023     		movs	r3, #0
+ 942              	.LVL106:
+ 943              		.loc 1 310 11 view .LVU337
+ 944 0208 039F     		ldr	r7, [sp, #12]
+ 945              		.loc 1 310 4 view .LVU338
+ 946 020a 37E0     		b	.L22
+ 947              	.LVL107:
+ 948              	.L23:
+ 311:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 312:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       l = i + n2;
+ 949              		.loc 1 312 7 is_stmt 1 discriminator 3 view .LVU339
+ 950              		.loc 1 312 9 is_stmt 0 discriminator 3 view .LVU340
+ 951 020c 5C19     		adds	r4, r3, r5
+ 952              	.LVL108:
+ 313:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       xt = pSrc[2 * i] - pSrc[2 * l];
+ 953              		.loc 1 313 7 is_stmt 1 discriminator 3 view .LVU341
+ 954              		.loc 1 313 16 is_stmt 0 discriminator 3 view .LVU342
+ 955 020e D900     		lsls	r1, r3, #3
+ 956 0210 5BF83300 		ldr	r0, [fp, r3, lsl #3]
+ 957              		.loc 1 313 30 discriminator 3 view .LVU343
+ 958 0214 E200     		lsls	r2, r4, #3
+ 959 0216 5BF834E0 		ldr	lr, [fp, r4, lsl #3]
+ 960              		.loc 1 313 10 discriminator 3 view .LVU344
+ 961 021a A0EB0E0C 		sub	ip, r0, lr
+ 962              	.LVL109:
+ 314:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+ 963              		.loc 1 314 7 is_stmt 1 discriminator 3 view .LVU345
+ 964              		.loc 1 314 34 is_stmt 0 discriminator 3 view .LVU346
+ 965 021e 7044     		add	r0, r0, lr
+ 966              		.loc 1 314 19 discriminator 3 view .LVU347
+ 967 0220 4BF83300 		str	r0, [fp, r3, lsl #3]
+ 315:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 316:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+ 968              		.loc 1 316 7 is_stmt 1 discriminator 3 view .LVU348
+ 969              		.loc 1 316 16 is_stmt 0 discriminator 3 view .LVU349
+ 970 0224 0431     		adds	r1, r1, #4
+ 971 0226 5BF80100 		ldr	r0, [fp, r1]
+ 972              		.loc 1 316 34 discriminator 3 view .LVU350
+ 973 022a 0432     		adds	r2, r2, #4
+ 974 022c 5BF802E0 		ldr	lr, [fp, r2]
+ 975              		.loc 1 316 10 discriminator 3 view .LVU351
+ 976 0230 A0EB0E08 		sub	r8, r0, lr
+ 977              	.LVL110:
+ 317:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+ 978              		.loc 1 317 7 is_stmt 1 discriminator 3 view .LVU352
+ 979              		.loc 1 317 42 is_stmt 0 discriminator 3 view .LVU353
+ 980 0234 7044     		add	r0, r0, lr
+ 981              		.loc 1 317 23 discriminator 3 view .LVU354
+ 982 0236 4BF80100 		str	r0, [fp, r1]
+ 318:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 25
+
+
+ 319:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l] = xt;
+ 983              		.loc 1 319 7 is_stmt 1 discriminator 3 view .LVU355
+ 984              		.loc 1 319 20 is_stmt 0 discriminator 3 view .LVU356
+ 985 023a 4BF834C0 		str	ip, [fp, r4, lsl #3]
+ 320:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 321:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l + 1U] = yt;
+ 986              		.loc 1 321 7 is_stmt 1 discriminator 3 view .LVU357
+ 987              		.loc 1 321 25 is_stmt 0 discriminator 3 view .LVU358
+ 988 023e 4BF80280 		str	r8, [fp, r2]
+ 322:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 323:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       i += n1;
+ 989              		.loc 1 323 7 is_stmt 1 discriminator 3 view .LVU359
+ 990              		.loc 1 323 9 is_stmt 0 discriminator 3 view .LVU360
+ 991 0242 3344     		add	r3, r3, r6
+ 992              	.LVL111:
+ 324:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       l = i + n2;
+ 993              		.loc 1 324 7 is_stmt 1 discriminator 3 view .LVU361
+ 994              		.loc 1 324 9 is_stmt 0 discriminator 3 view .LVU362
+ 995 0244 EC18     		adds	r4, r5, r3
+ 996              	.LVL112:
+ 325:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 326:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       xt = pSrc[2 * i] - pSrc[2 * l];
+ 997              		.loc 1 326 7 is_stmt 1 discriminator 3 view .LVU363
+ 998              		.loc 1 326 16 is_stmt 0 discriminator 3 view .LVU364
+ 999 0246 D900     		lsls	r1, r3, #3
+ 1000 0248 5BF83300 		ldr	r0, [fp, r3, lsl #3]
+ 1001              		.loc 1 326 30 discriminator 3 view .LVU365
+ 1002 024c E200     		lsls	r2, r4, #3
+ 1003 024e 5BF834E0 		ldr	lr, [fp, r4, lsl #3]
+ 1004              		.loc 1 326 10 discriminator 3 view .LVU366
+ 1005 0252 A0EB0E0C 		sub	ip, r0, lr
+ 1006              	.LVL113:
+ 327:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i] = (pSrc[2 * i] + pSrc[2 * l]);
+ 1007              		.loc 1 327 7 is_stmt 1 discriminator 3 view .LVU367
+ 1008              		.loc 1 327 34 is_stmt 0 discriminator 3 view .LVU368
+ 1009 0256 7044     		add	r0, r0, lr
+ 1010              		.loc 1 327 19 discriminator 3 view .LVU369
+ 1011 0258 4BF83300 		str	r0, [fp, r3, lsl #3]
+ 328:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 329:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       yt = pSrc[2 * i + 1] - pSrc[2 * l + 1];
+ 1012              		.loc 1 329 7 is_stmt 1 discriminator 3 view .LVU370
+ 1013              		.loc 1 329 16 is_stmt 0 discriminator 3 view .LVU371
+ 1014 025c 0431     		adds	r1, r1, #4
+ 1015 025e 5BF80100 		ldr	r0, [fp, r1]
+ 1016              		.loc 1 329 34 discriminator 3 view .LVU372
+ 1017 0262 0432     		adds	r2, r2, #4
+ 1018 0264 5BF802E0 		ldr	lr, [fp, r2]
+ 1019              		.loc 1 329 10 discriminator 3 view .LVU373
+ 1020 0268 A0EB0E08 		sub	r8, r0, lr
+ 1021              	.LVL114:
+ 330:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2 * i + 1] = (pSrc[2 * l + 1] + pSrc[2 * i + 1]);
+ 1022              		.loc 1 330 7 is_stmt 1 discriminator 3 view .LVU374
+ 1023              		.loc 1 330 42 is_stmt 0 discriminator 3 view .LVU375
+ 1024 026c 7044     		add	r0, r0, lr
+ 1025              		.loc 1 330 23 discriminator 3 view .LVU376
+ 1026 026e 4BF80100 		str	r0, [fp, r1]
+ 331:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 26
+
+
+ 332:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l] = xt;
+ 1027              		.loc 1 332 7 is_stmt 1 discriminator 3 view .LVU377
+ 1028              		.loc 1 332 20 is_stmt 0 discriminator 3 view .LVU378
+ 1029 0272 4BF834C0 		str	ip, [fp, r4, lsl #3]
+ 333:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 334:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       pSrc[2U * l + 1U] = yt;
+ 1030              		.loc 1 334 7 is_stmt 1 discriminator 3 view .LVU379
+ 1031              		.loc 1 334 25 is_stmt 0 discriminator 3 view .LVU380
+ 1032 0276 4BF80280 		str	r8, [fp, r2]
+ 310:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1033              		.loc 1 310 28 is_stmt 1 discriminator 3 view .LVU381
+ 310:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1034              		.loc 1 310 30 is_stmt 0 discriminator 3 view .LVU382
+ 1035 027a 3344     		add	r3, r3, r6
+ 1036              	.LVL115:
+ 1037              	.L22:
+ 310:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1038              		.loc 1 310 16 is_stmt 1 discriminator 1 view .LVU383
+ 310:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1039              		.loc 1 310 4 is_stmt 0 discriminator 1 view .LVU384
+ 1040 027c BB42     		cmp	r3, r7
+ 1041 027e C5D3     		bcc	.L23
+ 335:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 336:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    }                             // butterfly loop end
+ 337:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 338:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** }
+ 1042              		.loc 1 338 1 view .LVU385
+ 1043 0280 0BB0     		add	sp, sp, #44
+ 1044              	.LCFI5:
+ 1045              		.cfi_def_cfa_offset 36
+ 1046              		@ sp needed
+ 1047 0282 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1048              		.loc 1 338 1 view .LVU386
+ 1049              		.cfi_endproc
+ 1050              	.LFE137:
+ 1052              		.section	.text.arm_cfft_radix2_q31,"ax",%progbits
+ 1053              		.align	1
+ 1054              		.global	arm_cfft_radix2_q31
+ 1055              		.syntax unified
+ 1056              		.thumb
+ 1057              		.thumb_func
+ 1059              	arm_cfft_radix2_q31:
+ 1060              	.LVL116:
+ 1061              	.LFB135:
+  70:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 1062              		.loc 1 70 1 is_stmt 1 view -0
+ 1063              		.cfi_startproc
+ 1064              		@ args = 0, pretend = 0, frame = 0
+ 1065              		@ frame_needed = 0, uses_anonymous_args = 0
+  70:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 1066              		.loc 1 70 1 is_stmt 0 view .LVU388
+ 1067 0000 38B5     		push	{r3, r4, r5, lr}
+ 1068              	.LCFI6:
+ 1069              		.cfi_def_cfa_offset 16
+ 1070              		.cfi_offset 3, -16
+ 1071              		.cfi_offset 4, -12
+ 1072              		.cfi_offset 5, -8
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 27
+
+
+ 1073              		.cfi_offset 14, -4
+ 1074 0002 0446     		mov	r4, r0
+ 1075 0004 0D46     		mov	r5, r1
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1076              		.loc 1 72 4 is_stmt 1 view .LVU389
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1077              		.loc 1 72 9 is_stmt 0 view .LVU390
+ 1078 0006 8378     		ldrb	r3, [r0, #2]	@ zero_extendqisi2
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****    {
+ 1079              		.loc 1 72 7 view .LVU391
+ 1080 0008 012B     		cmp	r3, #1
+ 1081 000a 0CD0     		beq	.L31
+  79:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+ 1082              		.loc 1 79 7 is_stmt 1 view .LVU392
+ 1083 000c 8389     		ldrh	r3, [r0, #12]
+ 1084 000e 4268     		ldr	r2, [r0, #4]
+ 1085 0010 0188     		ldrh	r1, [r0]
+ 1086              	.LVL117:
+  79:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+ 1087              		.loc 1 79 7 is_stmt 0 view .LVU393
+ 1088 0012 2846     		mov	r0, r5
+ 1089              	.LVL118:
+  79:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+ 1090              		.loc 1 79 7 view .LVU394
+ 1091 0014 FFF7FEFF 		bl	arm_radix2_butterfly_q31
+ 1092              	.LVL119:
+ 1093              	.L29:
+  83:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** }
+ 1094              		.loc 1 83 4 is_stmt 1 view .LVU395
+ 1095 0018 A368     		ldr	r3, [r4, #8]
+ 1096 001a E289     		ldrh	r2, [r4, #14]
+ 1097 001c 2188     		ldrh	r1, [r4]
+ 1098 001e 2846     		mov	r0, r5
+ 1099 0020 FFF7FEFF 		bl	arm_bitreversal_q31
+ 1100              	.LVL120:
+  84:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c **** 
+ 1101              		.loc 1 84 1 is_stmt 0 view .LVU396
+ 1102 0024 38BD     		pop	{r3, r4, r5, pc}
+ 1103              	.LVL121:
+ 1104              	.L31:
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+ 1105              		.loc 1 74 7 is_stmt 1 view .LVU397
+ 1106 0026 8389     		ldrh	r3, [r0, #12]
+ 1107 0028 4268     		ldr	r2, [r0, #4]
+ 1108 002a 0188     		ldrh	r1, [r0]
+ 1109              	.LVL122:
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+ 1110              		.loc 1 74 7 is_stmt 0 view .LVU398
+ 1111 002c 2846     		mov	r0, r5
+ 1112              	.LVL123:
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_cfft_radix2_q31.c ****       S->pTwiddle, S->twidCoefModifier);
+ 1113              		.loc 1 74 7 view .LVU399
+ 1114 002e FFF7FEFF 		bl	arm_radix2_butterfly_inverse_q31
+ 1115              	.LVL124:
+ 1116 0032 F1E7     		b	.L29
+ 1117              		.cfi_endproc
+ 1118              	.LFE135:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 28
+
+
+ 1120              		.text
+ 1121              	.Letext0:
+ 1122              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 1123              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1124              		.file 4 "Drivers/CMSIS/DSP/Include/arm_math.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s 			page 29
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_cfft_radix2_q31.c
+C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s:20     .text.arm_radix2_butterfly_q31:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s:26     .text.arm_radix2_butterfly_q31:00000000 arm_radix2_butterfly_q31
+C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s:543    .text.arm_radix2_butterfly_inverse_q31:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s:549    .text.arm_radix2_butterfly_inverse_q31:00000000 arm_radix2_butterfly_inverse_q31
+C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s:1053   .text.arm_cfft_radix2_q31:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccXF2eS2.s:1059   .text.arm_cfft_radix2_q31:00000000 arm_cfft_radix2_q31
+
+UNDEFINED SYMBOLS
+arm_bitreversal_q31

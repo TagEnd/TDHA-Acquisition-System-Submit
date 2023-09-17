@@ -1,0 +1,582 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_list.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_list_create,"ax",%progbits
+  20              		.align	1
+  21              		.global	lv_list_create
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lv_list_create:
+  27              	.LVL0:
+  28              	.LFB164:
+  29              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  * @file lv_list.c
+   3:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #include "lv_list.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #include "../../../core/lv_disp.h"
+  11:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #include "../../../widgets/lv_label.h"
+  12:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #include "../../../widgets/lv_img.h"
+  13:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #include "../../../widgets/lv_btn.h"
+  14:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  15:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #if LV_USE_LIST
+  16:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  17:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /*********************
+  18:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *      DEFINES
+  19:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *********************/
+  20:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #define MV_CLASS &lv_list
+  21:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  22:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /**********************
+  23:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *      TYPEDEFS
+  24:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  **********************/
+  25:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  26:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /**********************
+  27:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *  STATIC PROTOTYPES
+  28:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  **********************/
+  29:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 2
+
+
+  30:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** const lv_obj_class_t lv_list_class = {
+  31:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     .base_class = &lv_obj_class,
+  32:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     .width_def = (LV_DPI_DEF * 3) / 2,
+  33:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     .height_def = LV_DPI_DEF * 2
+  34:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** };
+  35:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  36:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** const lv_obj_class_t lv_list_btn_class = {
+  37:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     .base_class = &lv_btn_class,
+  38:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** };
+  39:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  40:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** const lv_obj_class_t lv_list_text_class = {
+  41:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     .base_class = &lv_label_class,
+  42:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** };
+  43:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  44:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /**********************
+  45:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *  STATIC VARIABLES
+  46:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  **********************/
+  47:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  48:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /**********************
+  49:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *      MACROS
+  50:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  **********************/
+  51:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  52:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** /**********************
+  53:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  *   GLOBAL FUNCTIONS
+  54:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****  **********************/
+  55:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  56:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** lv_obj_t * lv_list_create(lv_obj_t * parent)
+  57:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** {
+  30              		.loc 1 57 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 57 1 is_stmt 0 view .LVU1
+  35 0000 10B5     		push	{r4, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 4, -8
+  39              		.cfi_offset 14, -4
+  40 0002 0146     		mov	r1, r0
+  58:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     LV_LOG_INFO("begin");
+  41              		.loc 1 58 5 is_stmt 1 view .LVU2
+  42              		.loc 1 58 5 view .LVU3
+  43              		.loc 1 58 5 view .LVU4
+  59:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_t * obj = lv_obj_class_create_obj(&lv_list_class, parent);
+  44              		.loc 1 59 5 view .LVU5
+  45              		.loc 1 59 22 is_stmt 0 view .LVU6
+  46 0004 0548     		ldr	r0, .L3
+  47              	.LVL1:
+  48              		.loc 1 59 22 view .LVU7
+  49 0006 FFF7FEFF 		bl	lv_obj_class_create_obj
+  50              	.LVL2:
+  51              		.loc 1 59 22 view .LVU8
+  52 000a 0446     		mov	r4, r0
+  53              	.LVL3:
+  60:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_class_init_obj(obj);
+  54              		.loc 1 60 5 is_stmt 1 view .LVU9
+  55 000c FFF7FEFF 		bl	lv_obj_class_init_obj
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 3
+
+
+  56              	.LVL4:
+  61:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_COLUMN);
+  57              		.loc 1 61 5 view .LVU10
+  58 0010 0121     		movs	r1, #1
+  59 0012 2046     		mov	r0, r4
+  60 0014 FFF7FEFF 		bl	lv_obj_set_flex_flow
+  61              	.LVL5:
+  62:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     return obj;
+  62              		.loc 1 62 5 view .LVU11
+  63:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** }
+  63              		.loc 1 63 1 is_stmt 0 view .LVU12
+  64 0018 2046     		mov	r0, r4
+  65 001a 10BD     		pop	{r4, pc}
+  66              	.LVL6:
+  67              	.L4:
+  68              		.loc 1 63 1 view .LVU13
+  69              		.align	2
+  70              	.L3:
+  71 001c 00000000 		.word	.LANCHOR0
+  72              		.cfi_endproc
+  73              	.LFE164:
+  75              		.section	.text.lv_list_add_text,"ax",%progbits
+  76              		.align	1
+  77              		.global	lv_list_add_text
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  82              	lv_list_add_text:
+  83              	.LVL7:
+  84              	.LFB165:
+  64:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  65:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** lv_obj_t * lv_list_add_text(lv_obj_t * list, const char * txt)
+  66:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** {
+  85              		.loc 1 66 1 is_stmt 1 view -0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              		.loc 1 66 1 is_stmt 0 view .LVU15
+  90 0000 38B5     		push	{r3, r4, r5, lr}
+  91              	.LCFI1:
+  92              		.cfi_def_cfa_offset 16
+  93              		.cfi_offset 3, -16
+  94              		.cfi_offset 4, -12
+  95              		.cfi_offset 5, -8
+  96              		.cfi_offset 14, -4
+  97 0002 0D46     		mov	r5, r1
+  67:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     LV_LOG_INFO("begin");
+  98              		.loc 1 67 5 is_stmt 1 view .LVU16
+  99              		.loc 1 67 5 view .LVU17
+ 100              		.loc 1 67 5 view .LVU18
+  68:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_t * obj = lv_obj_class_create_obj(&lv_list_text_class, list);
+ 101              		.loc 1 68 5 view .LVU19
+ 102              		.loc 1 68 22 is_stmt 0 view .LVU20
+ 103 0004 0146     		mov	r1, r0
+ 104              	.LVL8:
+ 105              		.loc 1 68 22 view .LVU21
+ 106 0006 0A48     		ldr	r0, .L7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 4
+
+
+ 107              	.LVL9:
+ 108              		.loc 1 68 22 view .LVU22
+ 109 0008 FFF7FEFF 		bl	lv_obj_class_create_obj
+ 110              	.LVL10:
+ 111              		.loc 1 68 22 view .LVU23
+ 112 000c 0446     		mov	r4, r0
+ 113              	.LVL11:
+  69:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_class_init_obj(obj);
+ 114              		.loc 1 69 5 is_stmt 1 view .LVU24
+ 115 000e FFF7FEFF 		bl	lv_obj_class_init_obj
+ 116              	.LVL12:
+  70:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_label_set_text(obj, txt);
+ 117              		.loc 1 70 5 view .LVU25
+ 118 0012 2946     		mov	r1, r5
+ 119 0014 2046     		mov	r0, r4
+ 120 0016 FFF7FEFF 		bl	lv_label_set_text
+ 121              	.LVL13:
+  71:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_label_set_long_mode(obj, LV_LABEL_LONG_SCROLL_CIRCULAR);
+ 122              		.loc 1 71 5 view .LVU26
+ 123 001a 0321     		movs	r1, #3
+ 124 001c 2046     		mov	r0, r4
+ 125 001e FFF7FEFF 		bl	lv_label_set_long_mode
+ 126              	.LVL14:
+  72:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_set_width(obj, LV_PCT(100));
+ 127              		.loc 1 72 5 view .LVU27
+ 128 0022 0449     		ldr	r1, .L7+4
+ 129 0024 2046     		mov	r0, r4
+ 130 0026 FFF7FEFF 		bl	lv_obj_set_width
+ 131              	.LVL15:
+  73:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     return obj;
+ 132              		.loc 1 73 5 view .LVU28
+  74:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** }
+ 133              		.loc 1 74 1 is_stmt 0 view .LVU29
+ 134 002a 2046     		mov	r0, r4
+ 135 002c 38BD     		pop	{r3, r4, r5, pc}
+ 136              	.LVL16:
+ 137              	.L8:
+ 138              		.loc 1 74 1 view .LVU30
+ 139 002e 00BF     		.align	2
+ 140              	.L7:
+ 141 0030 00000000 		.word	.LANCHOR1
+ 142 0034 64000020 		.word	536871012
+ 143              		.cfi_endproc
+ 144              	.LFE165:
+ 146              		.section	.text.lv_list_add_btn,"ax",%progbits
+ 147              		.align	1
+ 148              		.global	lv_list_add_btn
+ 149              		.syntax unified
+ 150              		.thumb
+ 151              		.thumb_func
+ 153              	lv_list_add_btn:
+ 154              	.LVL17:
+ 155              	.LFB166:
+  75:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  76:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** lv_obj_t * lv_list_add_btn(lv_obj_t * list, const char * icon, const char * txt)
+  77:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** {
+ 156              		.loc 1 77 1 is_stmt 1 view -0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 5
+
+
+ 157              		.cfi_startproc
+ 158              		@ args = 0, pretend = 0, frame = 0
+ 159              		@ frame_needed = 0, uses_anonymous_args = 0
+ 160              		.loc 1 77 1 is_stmt 0 view .LVU32
+ 161 0000 70B5     		push	{r4, r5, r6, lr}
+ 162              	.LCFI2:
+ 163              		.cfi_def_cfa_offset 16
+ 164              		.cfi_offset 4, -16
+ 165              		.cfi_offset 5, -12
+ 166              		.cfi_offset 6, -8
+ 167              		.cfi_offset 14, -4
+ 168 0002 0E46     		mov	r6, r1
+ 169 0004 1546     		mov	r5, r2
+  78:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     LV_LOG_INFO("begin");
+ 170              		.loc 1 78 5 is_stmt 1 view .LVU33
+ 171              		.loc 1 78 5 view .LVU34
+ 172              		.loc 1 78 5 view .LVU35
+  79:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_t * obj = lv_obj_class_create_obj(&lv_list_btn_class, list);
+ 173              		.loc 1 79 5 view .LVU36
+ 174              		.loc 1 79 22 is_stmt 0 view .LVU37
+ 175 0006 0146     		mov	r1, r0
+ 176              	.LVL18:
+ 177              		.loc 1 79 22 view .LVU38
+ 178 0008 1348     		ldr	r0, .L13
+ 179              	.LVL19:
+ 180              		.loc 1 79 22 view .LVU39
+ 181 000a FFF7FEFF 		bl	lv_obj_class_create_obj
+ 182              	.LVL20:
+ 183              		.loc 1 79 22 view .LVU40
+ 184 000e 0446     		mov	r4, r0
+ 185              	.LVL21:
+  80:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_class_init_obj(obj);
+ 186              		.loc 1 80 5 is_stmt 1 view .LVU41
+ 187 0010 FFF7FEFF 		bl	lv_obj_class_init_obj
+ 188              	.LVL22:
+  81:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_set_size(obj, LV_PCT(100), LV_SIZE_CONTENT);
+ 189              		.loc 1 81 5 view .LVU42
+ 190 0014 114A     		ldr	r2, .L13+4
+ 191 0016 1249     		ldr	r1, .L13+8
+ 192 0018 2046     		mov	r0, r4
+ 193 001a FFF7FEFF 		bl	lv_obj_set_size
+ 194              	.LVL23:
+  82:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_ROW);
+ 195              		.loc 1 82 5 view .LVU43
+ 196 001e 0021     		movs	r1, #0
+ 197 0020 2046     		mov	r0, r4
+ 198 0022 FFF7FEFF 		bl	lv_obj_set_flex_flow
+ 199              	.LVL24:
+  83:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  84:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #if LV_USE_IMG == 1
+  85:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     if(icon) {
+ 200              		.loc 1 85 5 view .LVU44
+ 201              		.loc 1 85 7 is_stmt 0 view .LVU45
+ 202 0026 2EB1     		cbz	r6, .L10
+ 203              	.LBB2:
+  86:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_obj_t * img = lv_img_create(obj);
+ 204              		.loc 1 86 9 is_stmt 1 view .LVU46
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 6
+
+
+ 205              		.loc 1 86 26 is_stmt 0 view .LVU47
+ 206 0028 2046     		mov	r0, r4
+ 207 002a FFF7FEFF 		bl	lv_img_create
+ 208              	.LVL25:
+  87:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_img_set_src(img, icon);
+ 209              		.loc 1 87 9 is_stmt 1 view .LVU48
+ 210 002e 3146     		mov	r1, r6
+ 211 0030 FFF7FEFF 		bl	lv_img_set_src
+ 212              	.LVL26:
+ 213              	.L10:
+ 214              		.loc 1 87 9 is_stmt 0 view .LVU49
+ 215              	.LBE2:
+  88:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     }
+  89:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** #endif
+  90:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  91:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     if(txt) {
+ 216              		.loc 1 91 5 is_stmt 1 view .LVU50
+ 217              		.loc 1 91 7 is_stmt 0 view .LVU51
+ 218 0034 75B1     		cbz	r5, .L9
+ 219              	.LBB3:
+  92:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_obj_t * label = lv_label_create(obj);
+ 220              		.loc 1 92 9 is_stmt 1 view .LVU52
+ 221              		.loc 1 92 28 is_stmt 0 view .LVU53
+ 222 0036 2046     		mov	r0, r4
+ 223 0038 FFF7FEFF 		bl	lv_label_create
+ 224              	.LVL27:
+ 225 003c 0646     		mov	r6, r0
+ 226              	.LVL28:
+  93:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_label_set_text(label, txt);
+ 227              		.loc 1 93 9 is_stmt 1 view .LVU54
+ 228 003e 2946     		mov	r1, r5
+ 229 0040 FFF7FEFF 		bl	lv_label_set_text
+ 230              	.LVL29:
+  94:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_label_set_long_mode(label, LV_LABEL_LONG_SCROLL_CIRCULAR);
+ 231              		.loc 1 94 9 view .LVU55
+ 232 0044 0321     		movs	r1, #3
+ 233 0046 3046     		mov	r0, r6
+ 234 0048 FFF7FEFF 		bl	lv_label_set_long_mode
+ 235              	.LVL30:
+  95:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_obj_set_flex_grow(label, 1);
+ 236              		.loc 1 95 9 view .LVU56
+ 237 004c 0121     		movs	r1, #1
+ 238 004e 3046     		mov	r0, r6
+ 239 0050 FFF7FEFF 		bl	lv_obj_set_flex_grow
+ 240              	.LVL31:
+ 241              	.LBE3:
+  96:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     }
+  97:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+  98:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     return obj;
+ 242              		.loc 1 98 5 view .LVU57
+ 243              	.L9:
+  99:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** }
+ 244              		.loc 1 99 1 is_stmt 0 view .LVU58
+ 245 0054 2046     		mov	r0, r4
+ 246 0056 70BD     		pop	{r4, r5, r6, pc}
+ 247              	.LVL32:
+ 248              	.L14:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 7
+
+
+ 249              		.loc 1 99 1 view .LVU59
+ 250              		.align	2
+ 251              	.L13:
+ 252 0058 00000000 		.word	.LANCHOR2
+ 253 005c D1070020 		.word	536872913
+ 254 0060 64000020 		.word	536871012
+ 255              		.cfi_endproc
+ 256              	.LFE166:
+ 258              		.section	.rodata.lv_list_get_btn_text.str1.4,"aMS",%progbits,1
+ 259              		.align	2
+ 260              	.LC0:
+ 261 0000 00       		.ascii	"\000"
+ 262              		.section	.text.lv_list_get_btn_text,"ax",%progbits
+ 263              		.align	1
+ 264              		.global	lv_list_get_btn_text
+ 265              		.syntax unified
+ 266              		.thumb
+ 267              		.thumb_func
+ 269              	lv_list_get_btn_text:
+ 270              	.LVL33:
+ 271              	.LFB167:
+ 100:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+ 101:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** const char * lv_list_get_btn_text(lv_obj_t * list, lv_obj_t * btn)
+ 102:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** {
+ 272              		.loc 1 102 1 is_stmt 1 view -0
+ 273              		.cfi_startproc
+ 274              		@ args = 0, pretend = 0, frame = 0
+ 275              		@ frame_needed = 0, uses_anonymous_args = 0
+ 276              		.loc 1 102 1 is_stmt 0 view .LVU61
+ 277 0000 70B5     		push	{r4, r5, r6, lr}
+ 278              	.LCFI3:
+ 279              		.cfi_def_cfa_offset 16
+ 280              		.cfi_offset 4, -16
+ 281              		.cfi_offset 5, -12
+ 282              		.cfi_offset 6, -8
+ 283              		.cfi_offset 14, -4
+ 284 0002 0E46     		mov	r6, r1
+ 103:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     LV_UNUSED(list);
+ 285              		.loc 1 103 5 is_stmt 1 view .LVU62
+ 104:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     uint32_t i;
+ 286              		.loc 1 104 5 view .LVU63
+ 105:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     for(i = 0; i < lv_obj_get_child_cnt(btn); i++) {
+ 287              		.loc 1 105 5 view .LVU64
+ 288              	.LVL34:
+ 289              		.loc 1 105 11 is_stmt 0 view .LVU65
+ 290 0004 0024     		movs	r4, #0
+ 291              		.loc 1 105 5 view .LVU66
+ 292 0006 00E0     		b	.L16
+ 293              	.LVL35:
+ 294              	.L17:
+ 295              		.loc 1 105 47 is_stmt 1 discriminator 2 view .LVU67
+ 296              		.loc 1 105 48 is_stmt 0 discriminator 2 view .LVU68
+ 297 0008 0134     		adds	r4, r4, #1
+ 298              	.LVL36:
+ 299              	.L16:
+ 300              		.loc 1 105 16 is_stmt 1 discriminator 1 view .LVU69
+ 301              		.loc 1 105 20 is_stmt 0 discriminator 1 view .LVU70
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 8
+
+
+ 302 000a 3046     		mov	r0, r6
+ 303 000c FFF7FEFF 		bl	lv_obj_get_child_cnt
+ 304              	.LVL37:
+ 305              		.loc 1 105 5 discriminator 1 view .LVU71
+ 306 0010 A042     		cmp	r0, r4
+ 307 0012 0DD9     		bls	.L21
+ 308              	.LBB4:
+ 106:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         lv_obj_t * child = lv_obj_get_child(btn, i);
+ 309              		.loc 1 106 9 is_stmt 1 view .LVU72
+ 310              		.loc 1 106 28 is_stmt 0 view .LVU73
+ 311 0014 2146     		mov	r1, r4
+ 312 0016 3046     		mov	r0, r6
+ 313 0018 FFF7FEFF 		bl	lv_obj_get_child
+ 314              	.LVL38:
+ 315 001c 0546     		mov	r5, r0
+ 316              	.LVL39:
+ 107:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         if(lv_obj_check_type(child, &lv_label_class)) {
+ 317              		.loc 1 107 9 is_stmt 1 view .LVU74
+ 318              		.loc 1 107 12 is_stmt 0 view .LVU75
+ 319 001e 0549     		ldr	r1, .L22
+ 320 0020 FFF7FEFF 		bl	lv_obj_check_type
+ 321              	.LVL40:
+ 322              		.loc 1 107 11 view .LVU76
+ 323 0024 0028     		cmp	r0, #0
+ 324 0026 EFD0     		beq	.L17
+ 108:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****             return lv_label_get_text(child);
+ 325              		.loc 1 108 13 is_stmt 1 view .LVU77
+ 326              		.loc 1 108 20 is_stmt 0 view .LVU78
+ 327 0028 2846     		mov	r0, r5
+ 328 002a FFF7FEFF 		bl	lv_label_get_text
+ 329              	.LVL41:
+ 330 002e 00E0     		b	.L15
+ 331              	.LVL42:
+ 332              	.L21:
+ 333              		.loc 1 108 20 view .LVU79
+ 334              	.LBE4:
+ 109:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****         }
+ 110:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+ 111:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     }
+ 112:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** 
+ 113:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c ****     return "";
+ 335              		.loc 1 113 12 view .LVU80
+ 336 0030 0148     		ldr	r0, .L22+4
+ 337              	.L15:
+ 114:Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.c **** }
+ 338              		.loc 1 114 1 view .LVU81
+ 339 0032 70BD     		pop	{r4, r5, r6, pc}
+ 340              	.LVL43:
+ 341              	.L23:
+ 342              		.loc 1 114 1 view .LVU82
+ 343              		.align	2
+ 344              	.L22:
+ 345 0034 00000000 		.word	lv_label_class
+ 346 0038 00000000 		.word	.LC0
+ 347              		.cfi_endproc
+ 348              	.LFE167:
+ 350              		.global	lv_list_text_class
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 9
+
+
+ 351              		.global	lv_list_btn_class
+ 352              		.global	lv_list_class
+ 353              		.section	.rodata.lv_list_btn_class,"a"
+ 354              		.align	2
+ 355              		.set	.LANCHOR2,. + 0
+ 358              	lv_list_btn_class:
+ 359 0000 00000000 		.word	lv_btn_class
+ 360 0004 00000000 		.space	28
+ 360      00000000 
+ 360      00000000 
+ 360      00000000 
+ 360      00000000 
+ 361              		.section	.rodata.lv_list_class,"a"
+ 362              		.align	2
+ 363              		.set	.LANCHOR0,. + 0
+ 366              	lv_list_class:
+ 367 0000 00000000 		.word	lv_obj_class
+ 368 0004 00000000 		.space	16
+ 368      00000000 
+ 368      00000000 
+ 368      00000000 
+ 369 0014 C3000000 		.word	195
+ 370 0018 04010000 		.word	260
+ 371 001c 00000000 		.space	4
+ 372              		.section	.rodata.lv_list_text_class,"a"
+ 373              		.align	2
+ 374              		.set	.LANCHOR1,. + 0
+ 377              	lv_list_text_class:
+ 378 0000 00000000 		.word	lv_label_class
+ 379 0004 00000000 		.space	28
+ 379      00000000 
+ 379      00000000 
+ 379      00000000 
+ 379      00000000 
+ 380              		.text
+ 381              	.Letext0:
+ 382              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 383              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 384              		.file 4 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/../misc/../font/../misc/lv
+ 385              		.file 5 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/../misc/lv_color.h"
+ 386              		.file 6 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/../misc/lv_style.h"
+ 387              		.file 7 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_obj.h"
+ 388              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/../hal/../misc/lv_ll.h"
+ 389              		.file 9 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_group.h"
+ 390              		.file 10 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_obj_scroll.h"
+ 391              		.file 11 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_obj_style.h"
+ 392              		.file 12 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_obj_class.h"
+ 393              		.file 13 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_event.h"
+ 394              		.file 14 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../layouts/flex/lv_flex.h"
+ 395              		.file 15 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/lv_list.h"
+ 396              		.file 16 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../widgets/lv_label.h"
+ 397              		.file 17 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../widgets/lv_btn.h"
+ 398              		.file 18 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/lv_obj_tree.h"
+ 399              		.file 19 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../widgets/lv_img.h"
+ 400              		.file 20 "Middlewares/LVGL/GUI/lvgl/src/extra/widgets/list/../../../core/../hal/../draw/sw/../../c
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_list.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:20     .text.lv_list_create:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:26     .text.lv_list_create:00000000 lv_list_create
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:71     .text.lv_list_create:0000001c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:76     .text.lv_list_add_text:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:82     .text.lv_list_add_text:00000000 lv_list_add_text
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:141    .text.lv_list_add_text:00000030 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:147    .text.lv_list_add_btn:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:153    .text.lv_list_add_btn:00000000 lv_list_add_btn
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:252    .text.lv_list_add_btn:00000058 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:259    .rodata.lv_list_get_btn_text.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:263    .text.lv_list_get_btn_text:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:269    .text.lv_list_get_btn_text:00000000 lv_list_get_btn_text
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:345    .text.lv_list_get_btn_text:00000034 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:377    .rodata.lv_list_text_class:00000000 lv_list_text_class
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:358    .rodata.lv_list_btn_class:00000000 lv_list_btn_class
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:366    .rodata.lv_list_class:00000000 lv_list_class
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:354    .rodata.lv_list_btn_class:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:362    .rodata.lv_list_class:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccZzYcPC.s:373    .rodata.lv_list_text_class:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_obj_class_create_obj
+lv_obj_class_init_obj
+lv_obj_set_flex_flow
+lv_label_set_text
+lv_label_set_long_mode
+lv_obj_set_width
+lv_obj_set_size
+lv_img_create
+lv_img_set_src
+lv_label_create
+lv_obj_set_flex_grow
+lv_obj_get_child_cnt
+lv_obj_get_child
+lv_obj_check_type
+lv_label_get_text
+lv_label_class
+lv_btn_class
+lv_obj_class

@@ -1,0 +1,1098 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"bsp_driver_sd.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.BSP_SD_ITConfig,"ax",%progbits
+  20              		.align	1
+  21              		.weak	BSP_SD_ITConfig
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	BSP_SD_ITConfig:
+  27              	.LFB131:
+  28              		.file 1 "FATFS/Target/bsp_driver_sd.c"
+   1:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN Header */
+   2:FATFS/Target/bsp_driver_sd.c **** /**
+   3:FATFS/Target/bsp_driver_sd.c ****  ******************************************************************************
+   4:FATFS/Target/bsp_driver_sd.c ****   * @file    bsp_driver_sd.c for F4 (based on stm324x9i_eval_sd.c)
+   5:FATFS/Target/bsp_driver_sd.c ****  * @brief   This file includes a generic uSD card driver.
+   6:FATFS/Target/bsp_driver_sd.c ****  *          To be completed by the user according to the board used for the project.
+   7:FATFS/Target/bsp_driver_sd.c ****  * @note    Some functions generated as weak: they can be overridden by
+   8:FATFS/Target/bsp_driver_sd.c ****  *          - code in user files
+   9:FATFS/Target/bsp_driver_sd.c ****  *          - or BSP code from the FW pack files
+  10:FATFS/Target/bsp_driver_sd.c ****  *          if such files are added to the generated project (by the user).
+  11:FATFS/Target/bsp_driver_sd.c ****  ******************************************************************************
+  12:FATFS/Target/bsp_driver_sd.c ****   * @attention
+  13:FATFS/Target/bsp_driver_sd.c ****   *
+  14:FATFS/Target/bsp_driver_sd.c ****   * Copyright (c) 2023 STMicroelectronics.
+  15:FATFS/Target/bsp_driver_sd.c ****   * All rights reserved.
+  16:FATFS/Target/bsp_driver_sd.c ****   *
+  17:FATFS/Target/bsp_driver_sd.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  18:FATFS/Target/bsp_driver_sd.c ****   * in the root directory of this software component.
+  19:FATFS/Target/bsp_driver_sd.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  20:FATFS/Target/bsp_driver_sd.c ****   *
+  21:FATFS/Target/bsp_driver_sd.c ****  ******************************************************************************
+  22:FATFS/Target/bsp_driver_sd.c ****  */
+  23:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END Header */
+  24:FATFS/Target/bsp_driver_sd.c **** 
+  25:FATFS/Target/bsp_driver_sd.c **** #ifdef OLD_API
+  26:FATFS/Target/bsp_driver_sd.c **** /* kept to avoid issue when migrating old projects. */
+  27:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN 0 */
+  28:FATFS/Target/bsp_driver_sd.c **** 
+  29:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END 0 */
+  30:FATFS/Target/bsp_driver_sd.c **** #else
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 2
+
+
+  31:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN FirstSection */
+  32:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify / undefine following code or add new definitions */
+  33:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END FirstSection */
+  34:FATFS/Target/bsp_driver_sd.c **** /* Includes ------------------------------------------------------------------*/
+  35:FATFS/Target/bsp_driver_sd.c **** #include "bsp_driver_sd.h"
+  36:FATFS/Target/bsp_driver_sd.c **** 
+  37:FATFS/Target/bsp_driver_sd.c **** /* Extern variables ---------------------------------------------------------*/
+  38:FATFS/Target/bsp_driver_sd.c **** 
+  39:FATFS/Target/bsp_driver_sd.c **** extern SD_HandleTypeDef hsd;
+  40:FATFS/Target/bsp_driver_sd.c **** 
+  41:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeInitSection */
+  42:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify / undefine following code or add code */
+  43:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeInitSection */
+  44:FATFS/Target/bsp_driver_sd.c **** /**
+  45:FATFS/Target/bsp_driver_sd.c ****   * @brief  Initializes the SD card device.
+  46:FATFS/Target/bsp_driver_sd.c ****   * @retval SD status
+  47:FATFS/Target/bsp_driver_sd.c ****   */
+  48:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_Init(void)
+  49:FATFS/Target/bsp_driver_sd.c **** {
+  50:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+  51:FATFS/Target/bsp_driver_sd.c ****   /* Check if the SD card is plugged in the slot */
+  52:FATFS/Target/bsp_driver_sd.c ****   if (BSP_SD_IsDetected() != SD_PRESENT)
+  53:FATFS/Target/bsp_driver_sd.c ****   {
+  54:FATFS/Target/bsp_driver_sd.c ****     return MSD_ERROR;
+  55:FATFS/Target/bsp_driver_sd.c ****   }
+  56:FATFS/Target/bsp_driver_sd.c ****   /* HAL SD initialization */
+  57:FATFS/Target/bsp_driver_sd.c ****   sd_state = HAL_SD_Init(&hsd);
+  58:FATFS/Target/bsp_driver_sd.c ****   /* Configure SD Bus width (4 bits mode selected) */
+  59:FATFS/Target/bsp_driver_sd.c ****   if (sd_state == MSD_OK)
+  60:FATFS/Target/bsp_driver_sd.c ****   {
+  61:FATFS/Target/bsp_driver_sd.c ****     /* Enable wide operation */
+  62:FATFS/Target/bsp_driver_sd.c ****     if (HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B) != HAL_OK)
+  63:FATFS/Target/bsp_driver_sd.c ****     {
+  64:FATFS/Target/bsp_driver_sd.c ****       sd_state = MSD_ERROR;
+  65:FATFS/Target/bsp_driver_sd.c ****     }
+  66:FATFS/Target/bsp_driver_sd.c ****   }
+  67:FATFS/Target/bsp_driver_sd.c **** 
+  68:FATFS/Target/bsp_driver_sd.c ****   return sd_state;
+  69:FATFS/Target/bsp_driver_sd.c **** }
+  70:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN AfterInitSection */
+  71:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+  72:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END AfterInitSection */
+  73:FATFS/Target/bsp_driver_sd.c **** 
+  74:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN InterruptMode */
+  75:FATFS/Target/bsp_driver_sd.c **** /**
+  76:FATFS/Target/bsp_driver_sd.c ****   * @brief  Configures Interrupt mode for SD detection pin.
+  77:FATFS/Target/bsp_driver_sd.c ****   * @retval Returns 0
+  78:FATFS/Target/bsp_driver_sd.c ****   */
+  79:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_ITConfig(void)
+  80:FATFS/Target/bsp_driver_sd.c **** {
+  29              		.loc 1 80 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  81:FATFS/Target/bsp_driver_sd.c ****   /* Code to be updated by the user or replaced by one from the FW pack (in a stmxxxx_sd.c file) */
+  82:FATFS/Target/bsp_driver_sd.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 3
+
+
+  83:FATFS/Target/bsp_driver_sd.c ****   return (uint8_t)0;
+  34              		.loc 1 83 3 view .LVU1
+  84:FATFS/Target/bsp_driver_sd.c **** }
+  35              		.loc 1 84 1 is_stmt 0 view .LVU2
+  36 0000 0020     		movs	r0, #0
+  37 0002 7047     		bx	lr
+  38              		.cfi_endproc
+  39              	.LFE131:
+  41              		.section	.text.BSP_SD_DetectIT,"ax",%progbits
+  42              		.align	1
+  43              		.weak	BSP_SD_DetectIT
+  44              		.syntax unified
+  45              		.thumb
+  46              		.thumb_func
+  48              	BSP_SD_DetectIT:
+  49              	.LFB132:
+  85:FATFS/Target/bsp_driver_sd.c **** 
+  86:FATFS/Target/bsp_driver_sd.c **** /** @brief  SD detect IT treatment
+  87:FATFS/Target/bsp_driver_sd.c ****   */
+  88:FATFS/Target/bsp_driver_sd.c **** __weak void BSP_SD_DetectIT(void)
+  89:FATFS/Target/bsp_driver_sd.c **** {
+  50              		.loc 1 89 1 is_stmt 1 view -0
+  51              		.cfi_startproc
+  52              		@ args = 0, pretend = 0, frame = 0
+  53              		@ frame_needed = 0, uses_anonymous_args = 0
+  54              		@ link register save eliminated.
+  90:FATFS/Target/bsp_driver_sd.c ****   /* Code to be updated by the user or replaced by one from the FW pack (in a stmxxxx_sd.c file) */
+  91:FATFS/Target/bsp_driver_sd.c **** }
+  55              		.loc 1 91 1 view .LVU4
+  56 0000 7047     		bx	lr
+  57              		.cfi_endproc
+  58              	.LFE132:
+  60              		.section	.text.BSP_SD_ReadBlocks,"ax",%progbits
+  61              		.align	1
+  62              		.weak	BSP_SD_ReadBlocks
+  63              		.syntax unified
+  64              		.thumb
+  65              		.thumb_func
+  67              	BSP_SD_ReadBlocks:
+  68              	.LVL0:
+  69              	.LFB133:
+  92:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END InterruptMode */
+  93:FATFS/Target/bsp_driver_sd.c **** 
+  94:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeReadBlocksSection */
+  95:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+  96:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeReadBlocksSection */
+  97:FATFS/Target/bsp_driver_sd.c **** /**
+  98:FATFS/Target/bsp_driver_sd.c ****   * @brief  Reads block(s) from a specified address in an SD card, in polling mode.
+  99:FATFS/Target/bsp_driver_sd.c ****   * @param  pData: Pointer to the buffer that will contain the data to transmit
+ 100:FATFS/Target/bsp_driver_sd.c ****   * @param  ReadAddr: Address from where data is to be read
+ 101:FATFS/Target/bsp_driver_sd.c ****   * @param  NumOfBlocks: Number of SD blocks to read
+ 102:FATFS/Target/bsp_driver_sd.c ****   * @param  Timeout: Timeout for read operation
+ 103:FATFS/Target/bsp_driver_sd.c ****   * @retval SD status
+ 104:FATFS/Target/bsp_driver_sd.c ****   */
+ 105:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks, uint32_t
+ 106:FATFS/Target/bsp_driver_sd.c **** {
+  70              		.loc 1 106 1 view -0
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 4
+
+
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 0
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		.loc 1 106 1 is_stmt 0 view .LVU6
+  75 0000 00B5     		push	{lr}
+  76              	.LCFI0:
+  77              		.cfi_def_cfa_offset 4
+  78              		.cfi_offset 14, -4
+  79 0002 83B0     		sub	sp, sp, #12
+  80              	.LCFI1:
+  81              		.cfi_def_cfa_offset 16
+ 107:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+  82              		.loc 1 107 3 is_stmt 1 view .LVU7
+  83              	.LVL1:
+ 108:FATFS/Target/bsp_driver_sd.c **** 
+ 109:FATFS/Target/bsp_driver_sd.c ****   if (HAL_SD_ReadBlocks(&hsd, (uint8_t *)pData, ReadAddr, NumOfBlocks, Timeout) != HAL_OK)
+  84              		.loc 1 109 3 view .LVU8
+  85              		.loc 1 109 7 is_stmt 0 view .LVU9
+  86 0004 0093     		str	r3, [sp]
+  87 0006 1346     		mov	r3, r2
+  88              	.LVL2:
+  89              		.loc 1 109 7 view .LVU10
+  90 0008 0A46     		mov	r2, r1
+  91              	.LVL3:
+  92              		.loc 1 109 7 view .LVU11
+  93 000a 0146     		mov	r1, r0
+  94              	.LVL4:
+  95              		.loc 1 109 7 view .LVU12
+  96 000c 0348     		ldr	r0, .L7
+  97              	.LVL5:
+  98              		.loc 1 109 7 view .LVU13
+  99 000e FFF7FEFF 		bl	HAL_SD_ReadBlocks
+ 100              	.LVL6:
+ 101              		.loc 1 109 6 view .LVU14
+ 102 0012 00B1     		cbz	r0, .L4
+ 110:FATFS/Target/bsp_driver_sd.c ****   {
+ 111:FATFS/Target/bsp_driver_sd.c ****     sd_state = MSD_ERROR;
+ 103              		.loc 1 111 14 view .LVU15
+ 104 0014 0120     		movs	r0, #1
+ 105              	.L4:
+ 106              	.LVL7:
+ 112:FATFS/Target/bsp_driver_sd.c ****   }
+ 113:FATFS/Target/bsp_driver_sd.c **** 
+ 114:FATFS/Target/bsp_driver_sd.c ****   return sd_state;
+ 107              		.loc 1 114 3 is_stmt 1 view .LVU16
+ 115:FATFS/Target/bsp_driver_sd.c **** }
+ 108              		.loc 1 115 1 is_stmt 0 view .LVU17
+ 109 0016 03B0     		add	sp, sp, #12
+ 110              	.LCFI2:
+ 111              		.cfi_def_cfa_offset 4
+ 112              		@ sp needed
+ 113 0018 5DF804FB 		ldr	pc, [sp], #4
+ 114              	.L8:
+ 115              		.align	2
+ 116              	.L7:
+ 117 001c 00000000 		.word	hsd
+ 118              		.cfi_endproc
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 5
+
+
+ 119              	.LFE133:
+ 121              		.section	.text.BSP_SD_WriteBlocks,"ax",%progbits
+ 122              		.align	1
+ 123              		.weak	BSP_SD_WriteBlocks
+ 124              		.syntax unified
+ 125              		.thumb
+ 126              		.thumb_func
+ 128              	BSP_SD_WriteBlocks:
+ 129              	.LVL8:
+ 130              	.LFB134:
+ 116:FATFS/Target/bsp_driver_sd.c **** 
+ 117:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeWriteBlocksSection */
+ 118:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+ 119:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeWriteBlocksSection */
+ 120:FATFS/Target/bsp_driver_sd.c **** /**
+ 121:FATFS/Target/bsp_driver_sd.c ****   * @brief  Writes block(s) to a specified address in an SD card, in polling mode.
+ 122:FATFS/Target/bsp_driver_sd.c ****   * @param  pData: Pointer to the buffer that will contain the data to transmit
+ 123:FATFS/Target/bsp_driver_sd.c ****   * @param  WriteAddr: Address from where data is to be written
+ 124:FATFS/Target/bsp_driver_sd.c ****   * @param  NumOfBlocks: Number of SD blocks to write
+ 125:FATFS/Target/bsp_driver_sd.c ****   * @param  Timeout: Timeout for write operation
+ 126:FATFS/Target/bsp_driver_sd.c ****   * @retval SD status
+ 127:FATFS/Target/bsp_driver_sd.c ****   */
+ 128:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks, uint32
+ 129:FATFS/Target/bsp_driver_sd.c **** {
+ 131              		.loc 1 129 1 is_stmt 1 view -0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135              		.loc 1 129 1 is_stmt 0 view .LVU19
+ 136 0000 00B5     		push	{lr}
+ 137              	.LCFI3:
+ 138              		.cfi_def_cfa_offset 4
+ 139              		.cfi_offset 14, -4
+ 140 0002 83B0     		sub	sp, sp, #12
+ 141              	.LCFI4:
+ 142              		.cfi_def_cfa_offset 16
+ 130:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+ 143              		.loc 1 130 3 is_stmt 1 view .LVU20
+ 144              	.LVL9:
+ 131:FATFS/Target/bsp_driver_sd.c **** 
+ 132:FATFS/Target/bsp_driver_sd.c ****   if (HAL_SD_WriteBlocks(&hsd, (uint8_t *)pData, WriteAddr, NumOfBlocks, Timeout) != HAL_OK)
+ 145              		.loc 1 132 3 view .LVU21
+ 146              		.loc 1 132 7 is_stmt 0 view .LVU22
+ 147 0004 0093     		str	r3, [sp]
+ 148 0006 1346     		mov	r3, r2
+ 149              	.LVL10:
+ 150              		.loc 1 132 7 view .LVU23
+ 151 0008 0A46     		mov	r2, r1
+ 152              	.LVL11:
+ 153              		.loc 1 132 7 view .LVU24
+ 154 000a 0146     		mov	r1, r0
+ 155              	.LVL12:
+ 156              		.loc 1 132 7 view .LVU25
+ 157 000c 0348     		ldr	r0, .L13
+ 158              	.LVL13:
+ 159              		.loc 1 132 7 view .LVU26
+ 160 000e FFF7FEFF 		bl	HAL_SD_WriteBlocks
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 6
+
+
+ 161              	.LVL14:
+ 162              		.loc 1 132 6 view .LVU27
+ 163 0012 00B1     		cbz	r0, .L10
+ 133:FATFS/Target/bsp_driver_sd.c ****   {
+ 134:FATFS/Target/bsp_driver_sd.c ****     sd_state = MSD_ERROR;
+ 164              		.loc 1 134 14 view .LVU28
+ 165 0014 0120     		movs	r0, #1
+ 166              	.L10:
+ 167              	.LVL15:
+ 135:FATFS/Target/bsp_driver_sd.c ****   }
+ 136:FATFS/Target/bsp_driver_sd.c **** 
+ 137:FATFS/Target/bsp_driver_sd.c ****   return sd_state;
+ 168              		.loc 1 137 3 is_stmt 1 view .LVU29
+ 138:FATFS/Target/bsp_driver_sd.c **** }
+ 169              		.loc 1 138 1 is_stmt 0 view .LVU30
+ 170 0016 03B0     		add	sp, sp, #12
+ 171              	.LCFI5:
+ 172              		.cfi_def_cfa_offset 4
+ 173              		@ sp needed
+ 174 0018 5DF804FB 		ldr	pc, [sp], #4
+ 175              	.L14:
+ 176              		.align	2
+ 177              	.L13:
+ 178 001c 00000000 		.word	hsd
+ 179              		.cfi_endproc
+ 180              	.LFE134:
+ 182              		.section	.text.BSP_SD_ReadBlocks_DMA,"ax",%progbits
+ 183              		.align	1
+ 184              		.weak	BSP_SD_ReadBlocks_DMA
+ 185              		.syntax unified
+ 186              		.thumb
+ 187              		.thumb_func
+ 189              	BSP_SD_ReadBlocks_DMA:
+ 190              	.LVL16:
+ 191              	.LFB135:
+ 139:FATFS/Target/bsp_driver_sd.c **** 
+ 140:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeReadDMABlocksSection */
+ 141:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+ 142:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeReadDMABlocksSection */
+ 143:FATFS/Target/bsp_driver_sd.c **** /**
+ 144:FATFS/Target/bsp_driver_sd.c ****   * @brief  Reads block(s) from a specified address in an SD card, in DMA mode.
+ 145:FATFS/Target/bsp_driver_sd.c ****   * @param  pData: Pointer to the buffer that will contain the data to transmit
+ 146:FATFS/Target/bsp_driver_sd.c ****   * @param  ReadAddr: Address from where data is to be read
+ 147:FATFS/Target/bsp_driver_sd.c ****   * @param  NumOfBlocks: Number of SD blocks to read
+ 148:FATFS/Target/bsp_driver_sd.c ****   * @retval SD status
+ 149:FATFS/Target/bsp_driver_sd.c ****   */
+ 150:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks)
+ 151:FATFS/Target/bsp_driver_sd.c **** {
+ 192              		.loc 1 151 1 is_stmt 1 view -0
+ 193              		.cfi_startproc
+ 194              		@ args = 0, pretend = 0, frame = 0
+ 195              		@ frame_needed = 0, uses_anonymous_args = 0
+ 196              		.loc 1 151 1 is_stmt 0 view .LVU32
+ 197 0000 08B5     		push	{r3, lr}
+ 198              	.LCFI6:
+ 199              		.cfi_def_cfa_offset 8
+ 200              		.cfi_offset 3, -8
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 7
+
+
+ 201              		.cfi_offset 14, -4
+ 202 0002 1346     		mov	r3, r2
+ 152:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+ 203              		.loc 1 152 3 is_stmt 1 view .LVU33
+ 204              	.LVL17:
+ 153:FATFS/Target/bsp_driver_sd.c **** 
+ 154:FATFS/Target/bsp_driver_sd.c ****   /* Read block(s) in DMA transfer mode */
+ 155:FATFS/Target/bsp_driver_sd.c ****   if (HAL_SD_ReadBlocks_DMA(&hsd, (uint8_t *)pData, ReadAddr, NumOfBlocks) != HAL_OK)
+ 205              		.loc 1 155 3 view .LVU34
+ 206              		.loc 1 155 7 is_stmt 0 view .LVU35
+ 207 0004 0A46     		mov	r2, r1
+ 208              	.LVL18:
+ 209              		.loc 1 155 7 view .LVU36
+ 210 0006 0146     		mov	r1, r0
+ 211              	.LVL19:
+ 212              		.loc 1 155 7 view .LVU37
+ 213 0008 0248     		ldr	r0, .L19
+ 214              	.LVL20:
+ 215              		.loc 1 155 7 view .LVU38
+ 216 000a FFF7FEFF 		bl	HAL_SD_ReadBlocks_DMA
+ 217              	.LVL21:
+ 218              		.loc 1 155 6 view .LVU39
+ 219 000e 00B1     		cbz	r0, .L16
+ 156:FATFS/Target/bsp_driver_sd.c ****   {
+ 157:FATFS/Target/bsp_driver_sd.c ****     sd_state = MSD_ERROR;
+ 220              		.loc 1 157 14 view .LVU40
+ 221 0010 0120     		movs	r0, #1
+ 222              	.L16:
+ 223              	.LVL22:
+ 158:FATFS/Target/bsp_driver_sd.c ****   }
+ 159:FATFS/Target/bsp_driver_sd.c **** 
+ 160:FATFS/Target/bsp_driver_sd.c ****   return sd_state;
+ 224              		.loc 1 160 3 is_stmt 1 view .LVU41
+ 161:FATFS/Target/bsp_driver_sd.c **** }
+ 225              		.loc 1 161 1 is_stmt 0 view .LVU42
+ 226 0012 08BD     		pop	{r3, pc}
+ 227              	.L20:
+ 228              		.align	2
+ 229              	.L19:
+ 230 0014 00000000 		.word	hsd
+ 231              		.cfi_endproc
+ 232              	.LFE135:
+ 234              		.section	.text.BSP_SD_WriteBlocks_DMA,"ax",%progbits
+ 235              		.align	1
+ 236              		.weak	BSP_SD_WriteBlocks_DMA
+ 237              		.syntax unified
+ 238              		.thumb
+ 239              		.thumb_func
+ 241              	BSP_SD_WriteBlocks_DMA:
+ 242              	.LVL23:
+ 243              	.LFB136:
+ 162:FATFS/Target/bsp_driver_sd.c **** 
+ 163:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeWriteDMABlocksSection */
+ 164:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+ 165:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeWriteDMABlocksSection */
+ 166:FATFS/Target/bsp_driver_sd.c **** /**
+ 167:FATFS/Target/bsp_driver_sd.c ****   * @brief  Writes block(s) to a specified address in an SD card, in DMA mode.
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 8
+
+
+ 168:FATFS/Target/bsp_driver_sd.c ****   * @param  pData: Pointer to the buffer that will contain the data to transmit
+ 169:FATFS/Target/bsp_driver_sd.c ****   * @param  WriteAddr: Address from where data is to be written
+ 170:FATFS/Target/bsp_driver_sd.c ****   * @param  NumOfBlocks: Number of SD blocks to write
+ 171:FATFS/Target/bsp_driver_sd.c ****   * @retval SD status
+ 172:FATFS/Target/bsp_driver_sd.c ****   */
+ 173:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
+ 174:FATFS/Target/bsp_driver_sd.c **** {
+ 244              		.loc 1 174 1 is_stmt 1 view -0
+ 245              		.cfi_startproc
+ 246              		@ args = 0, pretend = 0, frame = 0
+ 247              		@ frame_needed = 0, uses_anonymous_args = 0
+ 248              		.loc 1 174 1 is_stmt 0 view .LVU44
+ 249 0000 08B5     		push	{r3, lr}
+ 250              	.LCFI7:
+ 251              		.cfi_def_cfa_offset 8
+ 252              		.cfi_offset 3, -8
+ 253              		.cfi_offset 14, -4
+ 254 0002 1346     		mov	r3, r2
+ 175:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+ 255              		.loc 1 175 3 is_stmt 1 view .LVU45
+ 256              	.LVL24:
+ 176:FATFS/Target/bsp_driver_sd.c **** 
+ 177:FATFS/Target/bsp_driver_sd.c ****   /* Write block(s) in DMA transfer mode */
+ 178:FATFS/Target/bsp_driver_sd.c ****   if (HAL_SD_WriteBlocks_DMA(&hsd, (uint8_t *)pData, WriteAddr, NumOfBlocks) != HAL_OK)
+ 257              		.loc 1 178 3 view .LVU46
+ 258              		.loc 1 178 7 is_stmt 0 view .LVU47
+ 259 0004 0A46     		mov	r2, r1
+ 260              	.LVL25:
+ 261              		.loc 1 178 7 view .LVU48
+ 262 0006 0146     		mov	r1, r0
+ 263              	.LVL26:
+ 264              		.loc 1 178 7 view .LVU49
+ 265 0008 0248     		ldr	r0, .L25
+ 266              	.LVL27:
+ 267              		.loc 1 178 7 view .LVU50
+ 268 000a FFF7FEFF 		bl	HAL_SD_WriteBlocks_DMA
+ 269              	.LVL28:
+ 270              		.loc 1 178 6 view .LVU51
+ 271 000e 00B1     		cbz	r0, .L22
+ 179:FATFS/Target/bsp_driver_sd.c ****   {
+ 180:FATFS/Target/bsp_driver_sd.c ****     sd_state = MSD_ERROR;
+ 272              		.loc 1 180 14 view .LVU52
+ 273 0010 0120     		movs	r0, #1
+ 274              	.L22:
+ 275              	.LVL29:
+ 181:FATFS/Target/bsp_driver_sd.c ****   }
+ 182:FATFS/Target/bsp_driver_sd.c **** 
+ 183:FATFS/Target/bsp_driver_sd.c ****   return sd_state;
+ 276              		.loc 1 183 3 is_stmt 1 view .LVU53
+ 184:FATFS/Target/bsp_driver_sd.c **** }
+ 277              		.loc 1 184 1 is_stmt 0 view .LVU54
+ 278 0012 08BD     		pop	{r3, pc}
+ 279              	.L26:
+ 280              		.align	2
+ 281              	.L25:
+ 282 0014 00000000 		.word	hsd
+ 283              		.cfi_endproc
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 9
+
+
+ 284              	.LFE136:
+ 286              		.section	.text.BSP_SD_Erase,"ax",%progbits
+ 287              		.align	1
+ 288              		.weak	BSP_SD_Erase
+ 289              		.syntax unified
+ 290              		.thumb
+ 291              		.thumb_func
+ 293              	BSP_SD_Erase:
+ 294              	.LVL30:
+ 295              	.LFB137:
+ 185:FATFS/Target/bsp_driver_sd.c **** 
+ 186:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeEraseSection */
+ 187:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+ 188:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeEraseSection */
+ 189:FATFS/Target/bsp_driver_sd.c **** /**
+ 190:FATFS/Target/bsp_driver_sd.c ****   * @brief  Erases the specified memory area of the given SD card.
+ 191:FATFS/Target/bsp_driver_sd.c ****   * @param  StartAddr: Start byte address
+ 192:FATFS/Target/bsp_driver_sd.c ****   * @param  EndAddr: End byte address
+ 193:FATFS/Target/bsp_driver_sd.c ****   * @retval SD status
+ 194:FATFS/Target/bsp_driver_sd.c ****   */
+ 195:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_Erase(uint32_t StartAddr, uint32_t EndAddr)
+ 196:FATFS/Target/bsp_driver_sd.c **** {
+ 296              		.loc 1 196 1 is_stmt 1 view -0
+ 297              		.cfi_startproc
+ 298              		@ args = 0, pretend = 0, frame = 0
+ 299              		@ frame_needed = 0, uses_anonymous_args = 0
+ 300              		.loc 1 196 1 is_stmt 0 view .LVU56
+ 301 0000 08B5     		push	{r3, lr}
+ 302              	.LCFI8:
+ 303              		.cfi_def_cfa_offset 8
+ 304              		.cfi_offset 3, -8
+ 305              		.cfi_offset 14, -4
+ 306 0002 0A46     		mov	r2, r1
+ 197:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+ 307              		.loc 1 197 3 is_stmt 1 view .LVU57
+ 308              	.LVL31:
+ 198:FATFS/Target/bsp_driver_sd.c **** 
+ 199:FATFS/Target/bsp_driver_sd.c ****   if (HAL_SD_Erase(&hsd, StartAddr, EndAddr) != HAL_OK)
+ 309              		.loc 1 199 3 view .LVU58
+ 310              		.loc 1 199 7 is_stmt 0 view .LVU59
+ 311 0004 0146     		mov	r1, r0
+ 312              	.LVL32:
+ 313              		.loc 1 199 7 view .LVU60
+ 314 0006 0348     		ldr	r0, .L31
+ 315              	.LVL33:
+ 316              		.loc 1 199 7 view .LVU61
+ 317 0008 FFF7FEFF 		bl	HAL_SD_Erase
+ 318              	.LVL34:
+ 319              		.loc 1 199 6 view .LVU62
+ 320 000c 00B1     		cbz	r0, .L28
+ 200:FATFS/Target/bsp_driver_sd.c ****   {
+ 201:FATFS/Target/bsp_driver_sd.c ****     sd_state = MSD_ERROR;
+ 321              		.loc 1 201 14 view .LVU63
+ 322 000e 0120     		movs	r0, #1
+ 323              	.L28:
+ 324              	.LVL35:
+ 202:FATFS/Target/bsp_driver_sd.c ****   }
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 10
+
+
+ 203:FATFS/Target/bsp_driver_sd.c **** 
+ 204:FATFS/Target/bsp_driver_sd.c ****   return sd_state;
+ 325              		.loc 1 204 3 is_stmt 1 view .LVU64
+ 205:FATFS/Target/bsp_driver_sd.c **** }
+ 326              		.loc 1 205 1 is_stmt 0 view .LVU65
+ 327 0010 08BD     		pop	{r3, pc}
+ 328              	.L32:
+ 329 0012 00BF     		.align	2
+ 330              	.L31:
+ 331 0014 00000000 		.word	hsd
+ 332              		.cfi_endproc
+ 333              	.LFE137:
+ 335              		.section	.text.BSP_SD_GetCardState,"ax",%progbits
+ 336              		.align	1
+ 337              		.weak	BSP_SD_GetCardState
+ 338              		.syntax unified
+ 339              		.thumb
+ 340              		.thumb_func
+ 342              	BSP_SD_GetCardState:
+ 343              	.LFB138:
+ 206:FATFS/Target/bsp_driver_sd.c **** 
+ 207:FATFS/Target/bsp_driver_sd.c **** /**
+ 208:FATFS/Target/bsp_driver_sd.c ****   * @brief  Gets the current SD card data status.
+ 209:FATFS/Target/bsp_driver_sd.c ****   * @param  None
+ 210:FATFS/Target/bsp_driver_sd.c ****   * @retval Data transfer state.
+ 211:FATFS/Target/bsp_driver_sd.c ****   *          This value can be one of the following values:
+ 212:FATFS/Target/bsp_driver_sd.c ****   *            @arg  SD_TRANSFER_OK: No data transfer is acting
+ 213:FATFS/Target/bsp_driver_sd.c ****   *            @arg  SD_TRANSFER_BUSY: Data transfer is acting
+ 214:FATFS/Target/bsp_driver_sd.c ****   */
+ 215:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_GetCardState(void)
+ 216:FATFS/Target/bsp_driver_sd.c **** {
+ 344              		.loc 1 216 1 is_stmt 1 view -0
+ 345              		.cfi_startproc
+ 346              		@ args = 0, pretend = 0, frame = 0
+ 347              		@ frame_needed = 0, uses_anonymous_args = 0
+ 348 0000 08B5     		push	{r3, lr}
+ 349              	.LCFI9:
+ 350              		.cfi_def_cfa_offset 8
+ 351              		.cfi_offset 3, -8
+ 352              		.cfi_offset 14, -4
+ 217:FATFS/Target/bsp_driver_sd.c ****   return ((HAL_SD_GetCardState(&hsd) == HAL_SD_CARD_TRANSFER ) ? SD_TRANSFER_OK : SD_TRANSFER_BUSY)
+ 353              		.loc 1 217 3 view .LVU67
+ 354              		.loc 1 217 12 is_stmt 0 view .LVU68
+ 355 0002 0348     		ldr	r0, .L35
+ 356 0004 FFF7FEFF 		bl	HAL_SD_GetCardState
+ 357              	.LVL36:
+ 218:FATFS/Target/bsp_driver_sd.c **** }
+ 358              		.loc 1 218 1 view .LVU69
+ 359 0008 0438     		subs	r0, r0, #4
+ 360 000a 18BF     		it	ne
+ 361 000c 0120     		movne	r0, #1
+ 362 000e 08BD     		pop	{r3, pc}
+ 363              	.L36:
+ 364              		.align	2
+ 365              	.L35:
+ 366 0010 00000000 		.word	hsd
+ 367              		.cfi_endproc
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 11
+
+
+ 368              	.LFE138:
+ 370              		.section	.text.BSP_SD_GetCardInfo,"ax",%progbits
+ 371              		.align	1
+ 372              		.weak	BSP_SD_GetCardInfo
+ 373              		.syntax unified
+ 374              		.thumb
+ 375              		.thumb_func
+ 377              	BSP_SD_GetCardInfo:
+ 378              	.LVL37:
+ 379              	.LFB139:
+ 219:FATFS/Target/bsp_driver_sd.c **** 
+ 220:FATFS/Target/bsp_driver_sd.c **** /**
+ 221:FATFS/Target/bsp_driver_sd.c ****   * @brief  Get SD information about specific SD card.
+ 222:FATFS/Target/bsp_driver_sd.c ****   * @param  CardInfo: Pointer to HAL_SD_CardInfoTypedef structure
+ 223:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 224:FATFS/Target/bsp_driver_sd.c ****   */
+ 225:FATFS/Target/bsp_driver_sd.c **** __weak void BSP_SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo)
+ 226:FATFS/Target/bsp_driver_sd.c **** {
+ 380              		.loc 1 226 1 is_stmt 1 view -0
+ 381              		.cfi_startproc
+ 382              		@ args = 0, pretend = 0, frame = 0
+ 383              		@ frame_needed = 0, uses_anonymous_args = 0
+ 384              		.loc 1 226 1 is_stmt 0 view .LVU71
+ 385 0000 08B5     		push	{r3, lr}
+ 386              	.LCFI10:
+ 387              		.cfi_def_cfa_offset 8
+ 388              		.cfi_offset 3, -8
+ 389              		.cfi_offset 14, -4
+ 390 0002 0146     		mov	r1, r0
+ 227:FATFS/Target/bsp_driver_sd.c ****   /* Get SD card Information */
+ 228:FATFS/Target/bsp_driver_sd.c ****   HAL_SD_GetCardInfo(&hsd, CardInfo);
+ 391              		.loc 1 228 3 is_stmt 1 view .LVU72
+ 392 0004 0148     		ldr	r0, .L39
+ 393              	.LVL38:
+ 394              		.loc 1 228 3 is_stmt 0 view .LVU73
+ 395 0006 FFF7FEFF 		bl	HAL_SD_GetCardInfo
+ 396              	.LVL39:
+ 229:FATFS/Target/bsp_driver_sd.c **** }
+ 397              		.loc 1 229 1 view .LVU74
+ 398 000a 08BD     		pop	{r3, pc}
+ 399              	.L40:
+ 400              		.align	2
+ 401              	.L39:
+ 402 000c 00000000 		.word	hsd
+ 403              		.cfi_endproc
+ 404              	.LFE139:
+ 406              		.section	.text.BSP_SD_AbortCallback,"ax",%progbits
+ 407              		.align	1
+ 408              		.weak	BSP_SD_AbortCallback
+ 409              		.syntax unified
+ 410              		.thumb
+ 411              		.thumb_func
+ 413              	BSP_SD_AbortCallback:
+ 414              	.LFB143:
+ 230:FATFS/Target/bsp_driver_sd.c **** 
+ 231:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN BeforeCallBacksSection */
+ 232:FATFS/Target/bsp_driver_sd.c **** /* can be used to modify previous code / undefine following code / add code */
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 12
+
+
+ 233:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END BeforeCallBacksSection */
+ 234:FATFS/Target/bsp_driver_sd.c **** /**
+ 235:FATFS/Target/bsp_driver_sd.c ****   * @brief SD Abort callbacks
+ 236:FATFS/Target/bsp_driver_sd.c ****   * @param hsd: SD handle
+ 237:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 238:FATFS/Target/bsp_driver_sd.c ****   */
+ 239:FATFS/Target/bsp_driver_sd.c **** void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd)
+ 240:FATFS/Target/bsp_driver_sd.c **** {
+ 241:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_AbortCallback();
+ 242:FATFS/Target/bsp_driver_sd.c **** }
+ 243:FATFS/Target/bsp_driver_sd.c **** 
+ 244:FATFS/Target/bsp_driver_sd.c **** /**
+ 245:FATFS/Target/bsp_driver_sd.c ****   * @brief Tx Transfer completed callback
+ 246:FATFS/Target/bsp_driver_sd.c ****   * @param hsd: SD handle
+ 247:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 248:FATFS/Target/bsp_driver_sd.c ****   */
+ 249:FATFS/Target/bsp_driver_sd.c **** void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd)
+ 250:FATFS/Target/bsp_driver_sd.c **** {
+ 251:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_WriteCpltCallback();
+ 252:FATFS/Target/bsp_driver_sd.c **** }
+ 253:FATFS/Target/bsp_driver_sd.c **** 
+ 254:FATFS/Target/bsp_driver_sd.c **** /**
+ 255:FATFS/Target/bsp_driver_sd.c ****   * @brief Rx Transfer completed callback
+ 256:FATFS/Target/bsp_driver_sd.c ****   * @param hsd: SD handle
+ 257:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 258:FATFS/Target/bsp_driver_sd.c ****   */
+ 259:FATFS/Target/bsp_driver_sd.c **** void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
+ 260:FATFS/Target/bsp_driver_sd.c **** {
+ 261:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_ReadCpltCallback();
+ 262:FATFS/Target/bsp_driver_sd.c **** }
+ 263:FATFS/Target/bsp_driver_sd.c **** 
+ 264:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN CallBacksSection_C */
+ 265:FATFS/Target/bsp_driver_sd.c **** /**
+ 266:FATFS/Target/bsp_driver_sd.c ****   * @brief BSP SD Abort callback
+ 267:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 268:FATFS/Target/bsp_driver_sd.c ****   * @note empty (up to the user to fill it in or to remove it if useless)
+ 269:FATFS/Target/bsp_driver_sd.c ****   */
+ 270:FATFS/Target/bsp_driver_sd.c **** __weak void BSP_SD_AbortCallback(void)
+ 271:FATFS/Target/bsp_driver_sd.c **** {
+ 415              		.loc 1 271 1 is_stmt 1 view -0
+ 416              		.cfi_startproc
+ 417              		@ args = 0, pretend = 0, frame = 0
+ 418              		@ frame_needed = 0, uses_anonymous_args = 0
+ 419              		@ link register save eliminated.
+ 272:FATFS/Target/bsp_driver_sd.c **** 
+ 273:FATFS/Target/bsp_driver_sd.c **** }
+ 420              		.loc 1 273 1 view .LVU76
+ 421 0000 7047     		bx	lr
+ 422              		.cfi_endproc
+ 423              	.LFE143:
+ 425              		.section	.text.HAL_SD_AbortCallback,"ax",%progbits
+ 426              		.align	1
+ 427              		.global	HAL_SD_AbortCallback
+ 428              		.syntax unified
+ 429              		.thumb
+ 430              		.thumb_func
+ 432              	HAL_SD_AbortCallback:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 13
+
+
+ 433              	.LVL40:
+ 434              	.LFB140:
+ 240:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_AbortCallback();
+ 435              		.loc 1 240 1 view -0
+ 436              		.cfi_startproc
+ 437              		@ args = 0, pretend = 0, frame = 0
+ 438              		@ frame_needed = 0, uses_anonymous_args = 0
+ 240:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_AbortCallback();
+ 439              		.loc 1 240 1 is_stmt 0 view .LVU78
+ 440 0000 08B5     		push	{r3, lr}
+ 441              	.LCFI11:
+ 442              		.cfi_def_cfa_offset 8
+ 443              		.cfi_offset 3, -8
+ 444              		.cfi_offset 14, -4
+ 241:FATFS/Target/bsp_driver_sd.c **** }
+ 445              		.loc 1 241 3 is_stmt 1 view .LVU79
+ 446 0002 FFF7FEFF 		bl	BSP_SD_AbortCallback
+ 447              	.LVL41:
+ 242:FATFS/Target/bsp_driver_sd.c **** 
+ 448              		.loc 1 242 1 is_stmt 0 view .LVU80
+ 449 0006 08BD     		pop	{r3, pc}
+ 450              		.cfi_endproc
+ 451              	.LFE140:
+ 453              		.section	.text.BSP_SD_WriteCpltCallback,"ax",%progbits
+ 454              		.align	1
+ 455              		.weak	BSP_SD_WriteCpltCallback
+ 456              		.syntax unified
+ 457              		.thumb
+ 458              		.thumb_func
+ 460              	BSP_SD_WriteCpltCallback:
+ 461              	.LFB144:
+ 274:FATFS/Target/bsp_driver_sd.c **** 
+ 275:FATFS/Target/bsp_driver_sd.c **** /**
+ 276:FATFS/Target/bsp_driver_sd.c ****   * @brief BSP Tx Transfer completed callback
+ 277:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 278:FATFS/Target/bsp_driver_sd.c ****   * @note empty (up to the user to fill it in or to remove it if useless)
+ 279:FATFS/Target/bsp_driver_sd.c ****   */
+ 280:FATFS/Target/bsp_driver_sd.c **** __weak void BSP_SD_WriteCpltCallback(void)
+ 281:FATFS/Target/bsp_driver_sd.c **** {
+ 462              		.loc 1 281 1 is_stmt 1 view -0
+ 463              		.cfi_startproc
+ 464              		@ args = 0, pretend = 0, frame = 0
+ 465              		@ frame_needed = 0, uses_anonymous_args = 0
+ 466              		@ link register save eliminated.
+ 282:FATFS/Target/bsp_driver_sd.c **** 
+ 283:FATFS/Target/bsp_driver_sd.c **** }
+ 467              		.loc 1 283 1 view .LVU82
+ 468 0000 7047     		bx	lr
+ 469              		.cfi_endproc
+ 470              	.LFE144:
+ 472              		.section	.text.HAL_SD_TxCpltCallback,"ax",%progbits
+ 473              		.align	1
+ 474              		.global	HAL_SD_TxCpltCallback
+ 475              		.syntax unified
+ 476              		.thumb
+ 477              		.thumb_func
+ 479              	HAL_SD_TxCpltCallback:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 14
+
+
+ 480              	.LVL42:
+ 481              	.LFB141:
+ 250:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_WriteCpltCallback();
+ 482              		.loc 1 250 1 view -0
+ 483              		.cfi_startproc
+ 484              		@ args = 0, pretend = 0, frame = 0
+ 485              		@ frame_needed = 0, uses_anonymous_args = 0
+ 250:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_WriteCpltCallback();
+ 486              		.loc 1 250 1 is_stmt 0 view .LVU84
+ 487 0000 08B5     		push	{r3, lr}
+ 488              	.LCFI12:
+ 489              		.cfi_def_cfa_offset 8
+ 490              		.cfi_offset 3, -8
+ 491              		.cfi_offset 14, -4
+ 251:FATFS/Target/bsp_driver_sd.c **** }
+ 492              		.loc 1 251 3 is_stmt 1 view .LVU85
+ 493 0002 FFF7FEFF 		bl	BSP_SD_WriteCpltCallback
+ 494              	.LVL43:
+ 252:FATFS/Target/bsp_driver_sd.c **** 
+ 495              		.loc 1 252 1 is_stmt 0 view .LVU86
+ 496 0006 08BD     		pop	{r3, pc}
+ 497              		.cfi_endproc
+ 498              	.LFE141:
+ 500              		.section	.text.BSP_SD_ReadCpltCallback,"ax",%progbits
+ 501              		.align	1
+ 502              		.weak	BSP_SD_ReadCpltCallback
+ 503              		.syntax unified
+ 504              		.thumb
+ 505              		.thumb_func
+ 507              	BSP_SD_ReadCpltCallback:
+ 508              	.LFB145:
+ 284:FATFS/Target/bsp_driver_sd.c **** 
+ 285:FATFS/Target/bsp_driver_sd.c **** /**
+ 286:FATFS/Target/bsp_driver_sd.c ****   * @brief BSP Rx Transfer completed callback
+ 287:FATFS/Target/bsp_driver_sd.c ****   * @retval None
+ 288:FATFS/Target/bsp_driver_sd.c ****   * @note empty (up to the user to fill it in or to remove it if useless)
+ 289:FATFS/Target/bsp_driver_sd.c ****   */
+ 290:FATFS/Target/bsp_driver_sd.c **** __weak void BSP_SD_ReadCpltCallback(void)
+ 291:FATFS/Target/bsp_driver_sd.c **** {
+ 509              		.loc 1 291 1 is_stmt 1 view -0
+ 510              		.cfi_startproc
+ 511              		@ args = 0, pretend = 0, frame = 0
+ 512              		@ frame_needed = 0, uses_anonymous_args = 0
+ 513              		@ link register save eliminated.
+ 292:FATFS/Target/bsp_driver_sd.c **** 
+ 293:FATFS/Target/bsp_driver_sd.c **** }
+ 514              		.loc 1 293 1 view .LVU88
+ 515 0000 7047     		bx	lr
+ 516              		.cfi_endproc
+ 517              	.LFE145:
+ 519              		.section	.text.HAL_SD_RxCpltCallback,"ax",%progbits
+ 520              		.align	1
+ 521              		.global	HAL_SD_RxCpltCallback
+ 522              		.syntax unified
+ 523              		.thumb
+ 524              		.thumb_func
+ 526              	HAL_SD_RxCpltCallback:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 15
+
+
+ 527              	.LVL44:
+ 528              	.LFB142:
+ 260:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_ReadCpltCallback();
+ 529              		.loc 1 260 1 view -0
+ 530              		.cfi_startproc
+ 531              		@ args = 0, pretend = 0, frame = 0
+ 532              		@ frame_needed = 0, uses_anonymous_args = 0
+ 260:FATFS/Target/bsp_driver_sd.c ****   BSP_SD_ReadCpltCallback();
+ 533              		.loc 1 260 1 is_stmt 0 view .LVU90
+ 534 0000 08B5     		push	{r3, lr}
+ 535              	.LCFI13:
+ 536              		.cfi_def_cfa_offset 8
+ 537              		.cfi_offset 3, -8
+ 538              		.cfi_offset 14, -4
+ 261:FATFS/Target/bsp_driver_sd.c **** }
+ 539              		.loc 1 261 3 is_stmt 1 view .LVU91
+ 540 0002 FFF7FEFF 		bl	BSP_SD_ReadCpltCallback
+ 541              	.LVL45:
+ 262:FATFS/Target/bsp_driver_sd.c **** 
+ 542              		.loc 1 262 1 is_stmt 0 view .LVU92
+ 543 0006 08BD     		pop	{r3, pc}
+ 544              		.cfi_endproc
+ 545              	.LFE142:
+ 547              		.section	.text.BSP_SD_IsDetected,"ax",%progbits
+ 548              		.align	1
+ 549              		.weak	BSP_SD_IsDetected
+ 550              		.syntax unified
+ 551              		.thumb
+ 552              		.thumb_func
+ 554              	BSP_SD_IsDetected:
+ 555              	.LFB146:
+ 294:FATFS/Target/bsp_driver_sd.c **** /* USER CODE END CallBacksSection_C */
+ 295:FATFS/Target/bsp_driver_sd.c **** #endif
+ 296:FATFS/Target/bsp_driver_sd.c **** 
+ 297:FATFS/Target/bsp_driver_sd.c **** /**
+ 298:FATFS/Target/bsp_driver_sd.c ****  * @brief  Detects if SD card is correctly plugged in the memory slot or not.
+ 299:FATFS/Target/bsp_driver_sd.c ****  * @param  None
+ 300:FATFS/Target/bsp_driver_sd.c ****  * @retval Returns if SD is detected or not
+ 301:FATFS/Target/bsp_driver_sd.c ****  */
+ 302:FATFS/Target/bsp_driver_sd.c **** __weak uint8_t BSP_SD_IsDetected(void)
+ 303:FATFS/Target/bsp_driver_sd.c **** {
+ 556              		.loc 1 303 1 is_stmt 1 view -0
+ 557              		.cfi_startproc
+ 558              		@ args = 0, pretend = 0, frame = 8
+ 559              		@ frame_needed = 0, uses_anonymous_args = 0
+ 560 0000 00B5     		push	{lr}
+ 561              	.LCFI14:
+ 562              		.cfi_def_cfa_offset 4
+ 563              		.cfi_offset 14, -4
+ 564 0002 83B0     		sub	sp, sp, #12
+ 565              	.LCFI15:
+ 566              		.cfi_def_cfa_offset 16
+ 304:FATFS/Target/bsp_driver_sd.c ****   __IO uint8_t status = SD_PRESENT;
+ 567              		.loc 1 304 3 view .LVU94
+ 568              		.loc 1 304 16 is_stmt 0 view .LVU95
+ 569 0004 0123     		movs	r3, #1
+ 570 0006 8DF80730 		strb	r3, [sp, #7]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 16
+
+
+ 305:FATFS/Target/bsp_driver_sd.c **** 
+ 306:FATFS/Target/bsp_driver_sd.c ****   if (BSP_PlatformIsDetected() == 0x0)
+ 571              		.loc 1 306 3 is_stmt 1 view .LVU96
+ 572              		.loc 1 306 7 is_stmt 0 view .LVU97
+ 573 000a FFF7FEFF 		bl	BSP_PlatformIsDetected
+ 574              	.LVL46:
+ 575              		.loc 1 306 6 view .LVU98
+ 576 000e 10B9     		cbnz	r0, .L51
+ 307:FATFS/Target/bsp_driver_sd.c ****   {
+ 308:FATFS/Target/bsp_driver_sd.c ****     status = SD_NOT_PRESENT;
+ 577              		.loc 1 308 5 is_stmt 1 view .LVU99
+ 578              		.loc 1 308 12 is_stmt 0 view .LVU100
+ 579 0010 0023     		movs	r3, #0
+ 580 0012 8DF80730 		strb	r3, [sp, #7]
+ 581              	.L51:
+ 309:FATFS/Target/bsp_driver_sd.c ****   }
+ 310:FATFS/Target/bsp_driver_sd.c **** 
+ 311:FATFS/Target/bsp_driver_sd.c ****   return status;
+ 582              		.loc 1 311 3 is_stmt 1 view .LVU101
+ 583              		.loc 1 311 10 is_stmt 0 view .LVU102
+ 584 0016 9DF80700 		ldrb	r0, [sp, #7]	@ zero_extendqisi2
+ 312:FATFS/Target/bsp_driver_sd.c **** }
+ 585              		.loc 1 312 1 view .LVU103
+ 586 001a 03B0     		add	sp, sp, #12
+ 587              	.LCFI16:
+ 588              		.cfi_def_cfa_offset 4
+ 589              		@ sp needed
+ 590 001c 5DF804FB 		ldr	pc, [sp], #4
+ 591              		.cfi_endproc
+ 592              	.LFE146:
+ 594              		.section	.text.BSP_SD_Init,"ax",%progbits
+ 595              		.align	1
+ 596              		.weak	BSP_SD_Init
+ 597              		.syntax unified
+ 598              		.thumb
+ 599              		.thumb_func
+ 601              	BSP_SD_Init:
+ 602              	.LFB130:
+  49:FATFS/Target/bsp_driver_sd.c ****   uint8_t sd_state = MSD_OK;
+ 603              		.loc 1 49 1 is_stmt 1 view -0
+ 604              		.cfi_startproc
+ 605              		@ args = 0, pretend = 0, frame = 0
+ 606              		@ frame_needed = 0, uses_anonymous_args = 0
+ 607 0000 38B5     		push	{r3, r4, r5, lr}
+ 608              	.LCFI17:
+ 609              		.cfi_def_cfa_offset 16
+ 610              		.cfi_offset 3, -16
+ 611              		.cfi_offset 4, -12
+ 612              		.cfi_offset 5, -8
+ 613              		.cfi_offset 14, -4
+  50:FATFS/Target/bsp_driver_sd.c ****   /* Check if the SD card is plugged in the slot */
+ 614              		.loc 1 50 3 view .LVU105
+ 615              	.LVL47:
+  52:FATFS/Target/bsp_driver_sd.c ****   {
+ 616              		.loc 1 52 3 view .LVU106
+  52:FATFS/Target/bsp_driver_sd.c ****   {
+ 617              		.loc 1 52 7 is_stmt 0 view .LVU107
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 17
+
+
+ 618 0002 FFF7FEFF 		bl	BSP_SD_IsDetected
+ 619              	.LVL48:
+  52:FATFS/Target/bsp_driver_sd.c ****   {
+ 620              		.loc 1 52 6 view .LVU108
+ 621 0006 0128     		cmp	r0, #1
+ 622 0008 02D0     		beq	.L58
+  54:FATFS/Target/bsp_driver_sd.c ****   }
+ 623              		.loc 1 54 12 view .LVU109
+ 624 000a 0125     		movs	r5, #1
+ 625              	.LVL49:
+ 626              	.L54:
+  69:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN AfterInitSection */
+ 627              		.loc 1 69 1 view .LVU110
+ 628 000c 2846     		mov	r0, r5
+ 629 000e 38BD     		pop	{r3, r4, r5, pc}
+ 630              	.LVL50:
+ 631              	.L58:
+  69:FATFS/Target/bsp_driver_sd.c **** /* USER CODE BEGIN AfterInitSection */
+ 632              		.loc 1 69 1 view .LVU111
+ 633 0010 0446     		mov	r4, r0
+  57:FATFS/Target/bsp_driver_sd.c ****   /* Configure SD Bus width (4 bits mode selected) */
+ 634              		.loc 1 57 3 is_stmt 1 view .LVU112
+  57:FATFS/Target/bsp_driver_sd.c ****   /* Configure SD Bus width (4 bits mode selected) */
+ 635              		.loc 1 57 14 is_stmt 0 view .LVU113
+ 636 0012 0748     		ldr	r0, .L59
+ 637 0014 FFF7FEFF 		bl	HAL_SD_Init
+ 638              	.LVL51:
+  59:FATFS/Target/bsp_driver_sd.c ****   {
+ 639              		.loc 1 59 3 is_stmt 1 view .LVU114
+  59:FATFS/Target/bsp_driver_sd.c ****   {
+ 640              		.loc 1 59 6 is_stmt 0 view .LVU115
+ 641 0018 0546     		mov	r5, r0
+ 642 001a 0028     		cmp	r0, #0
+ 643 001c F6D1     		bne	.L54
+  62:FATFS/Target/bsp_driver_sd.c ****     {
+ 644              		.loc 1 62 5 is_stmt 1 view .LVU116
+  62:FATFS/Target/bsp_driver_sd.c ****     {
+ 645              		.loc 1 62 9 is_stmt 0 view .LVU117
+ 646 001e 4FF40061 		mov	r1, #2048
+ 647 0022 0348     		ldr	r0, .L59
+ 648              	.LVL52:
+  62:FATFS/Target/bsp_driver_sd.c ****     {
+ 649              		.loc 1 62 9 view .LVU118
+ 650 0024 FFF7FEFF 		bl	HAL_SD_ConfigWideBusOperation
+ 651              	.LVL53:
+  62:FATFS/Target/bsp_driver_sd.c ****     {
+ 652              		.loc 1 62 8 view .LVU119
+ 653 0028 0028     		cmp	r0, #0
+ 654 002a EFD0     		beq	.L54
+  64:FATFS/Target/bsp_driver_sd.c ****     }
+ 655              		.loc 1 64 16 view .LVU120
+ 656 002c 2546     		mov	r5, r4
+ 657 002e EDE7     		b	.L54
+ 658              	.L60:
+ 659              		.align	2
+ 660              	.L59:
+ 661 0030 00000000 		.word	hsd
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 18
+
+
+ 662              		.cfi_endproc
+ 663              	.LFE130:
+ 665              		.text
+ 666              	.Letext0:
+ 667              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 668              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 669              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h"
+ 670              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 671              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 672              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h"
+ 673              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h"
+ 674              		.file 9 "FATFS/Target/fatfs_platform.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 bsp_driver_sd.c
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:20     .text.BSP_SD_ITConfig:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:26     .text.BSP_SD_ITConfig:00000000 BSP_SD_ITConfig
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:42     .text.BSP_SD_DetectIT:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:48     .text.BSP_SD_DetectIT:00000000 BSP_SD_DetectIT
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:61     .text.BSP_SD_ReadBlocks:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:67     .text.BSP_SD_ReadBlocks:00000000 BSP_SD_ReadBlocks
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:117    .text.BSP_SD_ReadBlocks:0000001c $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:122    .text.BSP_SD_WriteBlocks:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:128    .text.BSP_SD_WriteBlocks:00000000 BSP_SD_WriteBlocks
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:178    .text.BSP_SD_WriteBlocks:0000001c $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:183    .text.BSP_SD_ReadBlocks_DMA:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:189    .text.BSP_SD_ReadBlocks_DMA:00000000 BSP_SD_ReadBlocks_DMA
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:230    .text.BSP_SD_ReadBlocks_DMA:00000014 $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:235    .text.BSP_SD_WriteBlocks_DMA:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:241    .text.BSP_SD_WriteBlocks_DMA:00000000 BSP_SD_WriteBlocks_DMA
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:282    .text.BSP_SD_WriteBlocks_DMA:00000014 $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:287    .text.BSP_SD_Erase:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:293    .text.BSP_SD_Erase:00000000 BSP_SD_Erase
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:331    .text.BSP_SD_Erase:00000014 $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:336    .text.BSP_SD_GetCardState:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:342    .text.BSP_SD_GetCardState:00000000 BSP_SD_GetCardState
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:366    .text.BSP_SD_GetCardState:00000010 $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:371    .text.BSP_SD_GetCardInfo:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:377    .text.BSP_SD_GetCardInfo:00000000 BSP_SD_GetCardInfo
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:402    .text.BSP_SD_GetCardInfo:0000000c $d
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:407    .text.BSP_SD_AbortCallback:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:413    .text.BSP_SD_AbortCallback:00000000 BSP_SD_AbortCallback
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:426    .text.HAL_SD_AbortCallback:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:432    .text.HAL_SD_AbortCallback:00000000 HAL_SD_AbortCallback
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:454    .text.BSP_SD_WriteCpltCallback:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:460    .text.BSP_SD_WriteCpltCallback:00000000 BSP_SD_WriteCpltCallback
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:473    .text.HAL_SD_TxCpltCallback:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:479    .text.HAL_SD_TxCpltCallback:00000000 HAL_SD_TxCpltCallback
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:501    .text.BSP_SD_ReadCpltCallback:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:507    .text.BSP_SD_ReadCpltCallback:00000000 BSP_SD_ReadCpltCallback
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:520    .text.HAL_SD_RxCpltCallback:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:526    .text.HAL_SD_RxCpltCallback:00000000 HAL_SD_RxCpltCallback
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:548    .text.BSP_SD_IsDetected:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:554    .text.BSP_SD_IsDetected:00000000 BSP_SD_IsDetected
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:595    .text.BSP_SD_Init:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:601    .text.BSP_SD_Init:00000000 BSP_SD_Init
+C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s:661    .text.BSP_SD_Init:00000030 $d
+
+UNDEFINED SYMBOLS
+HAL_SD_ReadBlocks
+hsd
+HAL_SD_WriteBlocks
+HAL_SD_ReadBlocks_DMA
+HAL_SD_WriteBlocks_DMA
+HAL_SD_Erase
+HAL_SD_GetCardState
+HAL_SD_GetCardInfo
+BSP_PlatformIsDetected
+HAL_SD_Init
+HAL_SD_ConfigWideBusOperation
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccIHQjiL.s 			page 20
+
+

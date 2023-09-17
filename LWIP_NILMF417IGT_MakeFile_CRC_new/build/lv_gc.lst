@@ -1,0 +1,401 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_gc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text._lv_gc_clear_roots,"ax",%progbits
+  20              		.align	1
+  21              		.global	_lv_gc_clear_roots
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	_lv_gc_clear_roots:
+  27              	.LFB23:
+  28              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  * @file lv_gc.c
+   3:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** #include "lv_gc.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  11:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /*********************
+  12:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *      DEFINES
+  13:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *********************/
+  14:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  15:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /**********************
+  16:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *      TYPEDEFS
+  17:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  **********************/
+  18:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  19:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /**********************
+  20:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *  STATIC PROTOTYPES
+  21:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  **********************/
+  22:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  23:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /**********************
+  24:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *  STATIC VARIABLES
+  25:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  **********************/
+  26:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  27:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** #if(!defined(LV_ENABLE_GC)) || LV_ENABLE_GC == 0
+  28:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****     LV_ROOTS
+  29:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** #endif /*LV_ENABLE_GC*/
+  30:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 2
+
+
+  31:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /**********************
+  32:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *      MACROS
+  33:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  **********************/
+  34:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  35:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** /**********************
+  36:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  *   GLOBAL FUNCTIONS
+  37:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****  **********************/
+  38:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** 
+  39:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** void _lv_gc_clear_roots(void)
+  40:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** {
+  29              		.loc 1 40 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  41:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** #define LV_CLEAR_ROOT(root_type, root_name) lv_memset_00(&LV_GC_ROOT(root_name), sizeof(LV_GC_ROOT(
+  42:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c ****     LV_ITERATE_ROOTS(LV_CLEAR_ROOT)
+  38              		.loc 1 42 5 view .LVU1
+  39 0002 0C21     		movs	r1, #12
+  40 0004 2148     		ldr	r0, .L3
+  41 0006 FFF7FEFF 		bl	lv_memset_00
+  42              	.LVL0:
+  43              		.loc 1 42 5 view .LVU2
+  44 000a 0C21     		movs	r1, #12
+  45 000c 2048     		ldr	r0, .L3+4
+  46 000e FFF7FEFF 		bl	lv_memset_00
+  47              	.LVL1:
+  48              		.loc 1 42 5 view .LVU3
+  49 0012 0C21     		movs	r1, #12
+  50 0014 1F48     		ldr	r0, .L3+8
+  51 0016 FFF7FEFF 		bl	lv_memset_00
+  52              	.LVL2:
+  53              		.loc 1 42 5 view .LVU4
+  54 001a 0C21     		movs	r1, #12
+  55 001c 1E48     		ldr	r0, .L3+12
+  56 001e FFF7FEFF 		bl	lv_memset_00
+  57              	.LVL3:
+  58              		.loc 1 42 5 view .LVU5
+  59 0022 0C21     		movs	r1, #12
+  60 0024 1D48     		ldr	r0, .L3+16
+  61 0026 FFF7FEFF 		bl	lv_memset_00
+  62              	.LVL4:
+  63              		.loc 1 42 5 view .LVU6
+  64 002a 0C21     		movs	r1, #12
+  65 002c 1C48     		ldr	r0, .L3+20
+  66 002e FFF7FEFF 		bl	lv_memset_00
+  67              	.LVL5:
+  68              		.loc 1 42 5 view .LVU7
+  69 0032 0C21     		movs	r1, #12
+  70 0034 1B48     		ldr	r0, .L3+24
+  71 0036 FFF7FEFF 		bl	lv_memset_00
+  72              	.LVL6:
+  73              		.loc 1 42 5 view .LVU8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 3
+
+
+  74 003a 0C21     		movs	r1, #12
+  75 003c 1A48     		ldr	r0, .L3+28
+  76 003e FFF7FEFF 		bl	lv_memset_00
+  77              	.LVL7:
+  78              		.loc 1 42 5 view .LVU9
+  79 0042 0421     		movs	r1, #4
+  80 0044 1948     		ldr	r0, .L3+32
+  81 0046 FFF7FEFF 		bl	lv_memset_00
+  82              	.LVL8:
+  83              		.loc 1 42 5 view .LVU10
+  84 004a 2C21     		movs	r1, #44
+  85 004c 1848     		ldr	r0, .L3+36
+  86 004e FFF7FEFF 		bl	lv_memset_00
+  87              	.LVL9:
+  88              		.loc 1 42 5 view .LVU11
+  89 0052 0421     		movs	r1, #4
+  90 0054 1748     		ldr	r0, .L3+40
+  91 0056 FFF7FEFF 		bl	lv_memset_00
+  92              	.LVL10:
+  93              		.loc 1 42 5 view .LVU12
+  94 005a 8021     		movs	r1, #128
+  95 005c 1648     		ldr	r0, .L3+44
+  96 005e FFF7FEFF 		bl	lv_memset_00
+  97              	.LVL11:
+  98              		.loc 1 42 5 view .LVU13
+  99 0062 7021     		movs	r1, #112
+ 100 0064 1548     		ldr	r0, .L3+48
+ 101 0066 FFF7FEFF 		bl	lv_memset_00
+ 102              	.LVL12:
+ 103              		.loc 1 42 5 view .LVU14
+ 104 006a 8021     		movs	r1, #128
+ 105 006c 1448     		ldr	r0, .L3+52
+ 106 006e FFF7FEFF 		bl	lv_memset_00
+ 107              	.LVL13:
+ 108              		.loc 1 42 5 view .LVU15
+ 109 0072 0421     		movs	r1, #4
+ 110 0074 1348     		ldr	r0, .L3+56
+ 111 0076 FFF7FEFF 		bl	lv_memset_00
+ 112              	.LVL14:
+ 113              		.loc 1 42 5 view .LVU16
+ 114 007a 0421     		movs	r1, #4
+ 115 007c 1248     		ldr	r0, .L3+60
+ 116 007e FFF7FEFF 		bl	lv_memset_00
+ 117              	.LVL15:
+ 118              		.loc 1 42 5 view .LVU17
+ 119 0082 0421     		movs	r1, #4
+ 120 0084 1148     		ldr	r0, .L3+64
+ 121 0086 FFF7FEFF 		bl	lv_memset_00
+ 122              	.LVL16:
+  43:Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.c **** }
+ 123              		.loc 1 43 1 is_stmt 0 view .LVU18
+ 124 008a 08BD     		pop	{r3, pc}
+ 125              	.L4:
+ 126              		.align	2
+ 127              	.L3:
+ 128 008c 00000000 		.word	.LANCHOR0
+ 129 0090 00000000 		.word	.LANCHOR1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 4
+
+
+ 130 0094 00000000 		.word	.LANCHOR2
+ 131 0098 00000000 		.word	.LANCHOR3
+ 132 009c 00000000 		.word	.LANCHOR4
+ 133 00a0 00000000 		.word	.LANCHOR5
+ 134 00a4 00000000 		.word	.LANCHOR6
+ 135 00a8 00000000 		.word	.LANCHOR7
+ 136 00ac 00000000 		.word	.LANCHOR8
+ 137 00b0 00000000 		.word	.LANCHOR9
+ 138 00b4 00000000 		.word	.LANCHOR10
+ 139 00b8 00000000 		.word	.LANCHOR11
+ 140 00bc 00000000 		.word	.LANCHOR12
+ 141 00c0 00000000 		.word	.LANCHOR13
+ 142 00c4 00000000 		.word	.LANCHOR14
+ 143 00c8 00000000 		.word	.LANCHOR15
+ 144 00cc 00000000 		.word	.LANCHOR16
+ 145              		.cfi_endproc
+ 146              	.LFE23:
+ 148              		.global	_lv_grad_cache_mem
+ 149              		.global	_lv_theme_basic_styles
+ 150              		.global	_lv_theme_default_styles
+ 151              		.global	_lv_draw_mask_list
+ 152              		.global	_lv_circle_cache
+ 153              		.global	lv_mem_buf
+ 154              		.global	_lv_timer_act
+ 155              		.global	_lv_img_cache_single
+ 156              		.global	_lv_layout_list
+ 157              		.global	_lv_obj_style_trans_ll
+ 158              		.global	_lv_img_decoder_ll
+ 159              		.global	_lv_group_ll
+ 160              		.global	_lv_anim_ll
+ 161              		.global	_lv_fsdrv_ll
+ 162              		.global	_lv_indev_ll
+ 163              		.global	_lv_disp_ll
+ 164              		.global	_lv_timer_ll
+ 165              		.section	.bss._lv_anim_ll,"aw",%nobits
+ 166              		.align	2
+ 167              		.set	.LANCHOR4,. + 0
+ 170              	_lv_anim_ll:
+ 171 0000 00000000 		.space	12
+ 171      00000000 
+ 171      00000000 
+ 172              		.section	.bss._lv_circle_cache,"aw",%nobits
+ 173              		.align	2
+ 174              		.set	.LANCHOR12,. + 0
+ 177              	_lv_circle_cache:
+ 178 0000 00000000 		.space	112
+ 178      00000000 
+ 178      00000000 
+ 178      00000000 
+ 178      00000000 
+ 179              		.section	.bss._lv_disp_ll,"aw",%nobits
+ 180              		.align	2
+ 181              		.set	.LANCHOR1,. + 0
+ 184              	_lv_disp_ll:
+ 185 0000 00000000 		.space	12
+ 185      00000000 
+ 185      00000000 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 5
+
+
+ 186              		.section	.bss._lv_draw_mask_list,"aw",%nobits
+ 187              		.align	2
+ 188              		.set	.LANCHOR13,. + 0
+ 191              	_lv_draw_mask_list:
+ 192 0000 00000000 		.space	128
+ 192      00000000 
+ 192      00000000 
+ 192      00000000 
+ 192      00000000 
+ 193              		.section	.bss._lv_fsdrv_ll,"aw",%nobits
+ 194              		.align	2
+ 195              		.set	.LANCHOR3,. + 0
+ 198              	_lv_fsdrv_ll:
+ 199 0000 00000000 		.space	12
+ 199      00000000 
+ 199      00000000 
+ 200              		.section	.bss._lv_grad_cache_mem,"aw",%nobits
+ 201              		.align	2
+ 202              		.set	.LANCHOR16,. + 0
+ 205              	_lv_grad_cache_mem:
+ 206 0000 00000000 		.space	4
+ 207              		.section	.bss._lv_group_ll,"aw",%nobits
+ 208              		.align	2
+ 209              		.set	.LANCHOR5,. + 0
+ 212              	_lv_group_ll:
+ 213 0000 00000000 		.space	12
+ 213      00000000 
+ 213      00000000 
+ 214              		.section	.bss._lv_img_cache_single,"aw",%nobits
+ 215              		.align	2
+ 216              		.set	.LANCHOR9,. + 0
+ 219              	_lv_img_cache_single:
+ 220 0000 00000000 		.space	44
+ 220      00000000 
+ 220      00000000 
+ 220      00000000 
+ 220      00000000 
+ 221              		.section	.bss._lv_img_decoder_ll,"aw",%nobits
+ 222              		.align	2
+ 223              		.set	.LANCHOR6,. + 0
+ 226              	_lv_img_decoder_ll:
+ 227 0000 00000000 		.space	12
+ 227      00000000 
+ 227      00000000 
+ 228              		.section	.bss._lv_indev_ll,"aw",%nobits
+ 229              		.align	2
+ 230              		.set	.LANCHOR2,. + 0
+ 233              	_lv_indev_ll:
+ 234 0000 00000000 		.space	12
+ 234      00000000 
+ 234      00000000 
+ 235              		.section	.bss._lv_layout_list,"aw",%nobits
+ 236              		.align	2
+ 237              		.set	.LANCHOR8,. + 0
+ 240              	_lv_layout_list:
+ 241 0000 00000000 		.space	4
+ 242              		.section	.bss._lv_obj_style_trans_ll,"aw",%nobits
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 6
+
+
+ 243              		.align	2
+ 244              		.set	.LANCHOR7,. + 0
+ 247              	_lv_obj_style_trans_ll:
+ 248 0000 00000000 		.space	12
+ 248      00000000 
+ 248      00000000 
+ 249              		.section	.bss._lv_theme_basic_styles,"aw",%nobits
+ 250              		.align	2
+ 251              		.set	.LANCHOR15,. + 0
+ 254              	_lv_theme_basic_styles:
+ 255 0000 00000000 		.space	4
+ 256              		.section	.bss._lv_theme_default_styles,"aw",%nobits
+ 257              		.align	2
+ 258              		.set	.LANCHOR14,. + 0
+ 261              	_lv_theme_default_styles:
+ 262 0000 00000000 		.space	4
+ 263              		.section	.bss._lv_timer_act,"aw",%nobits
+ 264              		.align	2
+ 265              		.set	.LANCHOR10,. + 0
+ 268              	_lv_timer_act:
+ 269 0000 00000000 		.space	4
+ 270              		.section	.bss._lv_timer_ll,"aw",%nobits
+ 271              		.align	2
+ 272              		.set	.LANCHOR0,. + 0
+ 275              	_lv_timer_ll:
+ 276 0000 00000000 		.space	12
+ 276      00000000 
+ 276      00000000 
+ 277              		.section	.bss.lv_mem_buf,"aw",%nobits
+ 278              		.align	2
+ 279              		.set	.LANCHOR11,. + 0
+ 282              	lv_mem_buf:
+ 283 0000 00000000 		.space	128
+ 283      00000000 
+ 283      00000000 
+ 283      00000000 
+ 283      00000000 
+ 284              		.text
+ 285              	.Letext0:
+ 286              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 287              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 288              		.file 4 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_types.h"
+ 289              		.file 5 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.h"
+ 290              		.file 6 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_ll.h"
+ 291              		.file 7 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_timer.h"
+ 292              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/misc/../draw/../misc/lv_color.h"
+ 293              		.file 9 "Middlewares/LVGL/GUI/lvgl/src/misc/../draw/../misc/lv_area.h"
+ 294              		.file 10 "Middlewares/LVGL/GUI/lvgl/src/misc/../draw/lv_img_buf.h"
+ 295              		.file 11 "Middlewares/LVGL/GUI/lvgl/src/misc/../draw/lv_img_decoder.h"
+ 296              		.file 12 "Middlewares/LVGL/GUI/lvgl/src/misc/../draw/lv_img_cache.h"
+ 297              		.file 13 "Middlewares/LVGL/GUI/lvgl/src/misc/../draw/lv_draw_mask.h"
+ 298              		.file 14 "Middlewares/LVGL/GUI/lvgl/src/misc/../core/lv_obj_pos.h"
+ 299              		.file 15 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_gc.c
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:20     .text._lv_gc_clear_roots:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:26     .text._lv_gc_clear_roots:00000000 _lv_gc_clear_roots
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:128    .text._lv_gc_clear_roots:0000008c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:205    .bss._lv_grad_cache_mem:00000000 _lv_grad_cache_mem
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:254    .bss._lv_theme_basic_styles:00000000 _lv_theme_basic_styles
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:261    .bss._lv_theme_default_styles:00000000 _lv_theme_default_styles
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:191    .bss._lv_draw_mask_list:00000000 _lv_draw_mask_list
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:177    .bss._lv_circle_cache:00000000 _lv_circle_cache
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:282    .bss.lv_mem_buf:00000000 lv_mem_buf
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:268    .bss._lv_timer_act:00000000 _lv_timer_act
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:219    .bss._lv_img_cache_single:00000000 _lv_img_cache_single
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:240    .bss._lv_layout_list:00000000 _lv_layout_list
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:247    .bss._lv_obj_style_trans_ll:00000000 _lv_obj_style_trans_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:226    .bss._lv_img_decoder_ll:00000000 _lv_img_decoder_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:212    .bss._lv_group_ll:00000000 _lv_group_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:170    .bss._lv_anim_ll:00000000 _lv_anim_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:198    .bss._lv_fsdrv_ll:00000000 _lv_fsdrv_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:233    .bss._lv_indev_ll:00000000 _lv_indev_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:184    .bss._lv_disp_ll:00000000 _lv_disp_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:275    .bss._lv_timer_ll:00000000 _lv_timer_ll
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:166    .bss._lv_anim_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:173    .bss._lv_circle_cache:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:180    .bss._lv_disp_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:187    .bss._lv_draw_mask_list:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:194    .bss._lv_fsdrv_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:201    .bss._lv_grad_cache_mem:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:208    .bss._lv_group_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:215    .bss._lv_img_cache_single:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:222    .bss._lv_img_decoder_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:229    .bss._lv_indev_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:236    .bss._lv_layout_list:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:243    .bss._lv_obj_style_trans_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:250    .bss._lv_theme_basic_styles:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:257    .bss._lv_theme_default_styles:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:264    .bss._lv_timer_act:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:271    .bss._lv_timer_ll:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4FqjGa.s:278    .bss.lv_mem_buf:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_memset_00

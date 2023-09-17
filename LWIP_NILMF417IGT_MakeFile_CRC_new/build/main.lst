@@ -1,0 +1,1873 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Error_Handler,"ax",%progbits
+  20              		.align	1
+  21              		.global	Error_Handler
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	Error_Handler:
+  27              	.LFB158:
+  28              		.file 1 "Core/Src/main.c"
+   1:Core/Src/main.c **** /* USER CODE BEGIN Header */
+   2:Core/Src/main.c **** /**
+   3:Core/Src/main.c ****  ******************************************************************************
+   4:Core/Src/main.c ****  * @file           : main.c
+   5:Core/Src/main.c ****  * @brief          : Main program body
+   6:Core/Src/main.c ****  ******************************************************************************
+   7:Core/Src/main.c ****  * @attention
+   8:Core/Src/main.c ****  *
+   9:Core/Src/main.c ****  * Copyright (c) 2023 STMicroelectronics.
+  10:Core/Src/main.c ****  * All rights reserved.
+  11:Core/Src/main.c ****  *
+  12:Core/Src/main.c ****  * This software is licensed under terms that can be found in the LICENSE file
+  13:Core/Src/main.c ****  * in the root directory of this software component.
+  14:Core/Src/main.c ****  * If no LICENSE file comes with this software, it is provided AS-IS.
+  15:Core/Src/main.c ****  *
+  16:Core/Src/main.c ****  ******************************************************************************
+  17:Core/Src/main.c ****  */
+  18:Core/Src/main.c **** /* USER CODE END Header */
+  19:Core/Src/main.c **** /* Includes ------------------------------------------------------------------*/
+  20:Core/Src/main.c **** #include "main.h"
+  21:Core/Src/main.c **** #include "crc.h"
+  22:Core/Src/main.c **** #include "dma.h"
+  23:Core/Src/main.c **** #include "lwip.h"
+  24:Core/Src/main.c **** #include "rtc.h"
+  25:Core/Src/main.c **** #include "sdio.h"
+  26:Core/Src/main.c **** #include "tim.h"
+  27:Core/Src/main.c **** #include "usart.h"
+  28:Core/Src/main.c **** #include "gpio.h"
+  29:Core/Src/main.c **** #include "fsmc.h"
+  30:Core/Src/main.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 2
+
+
+  31:Core/Src/main.c **** /* Private includes ----------------------------------------------------------*/
+  32:Core/Src/main.c **** /* USER CODE BEGIN Includes */
+  33:Core/Src/main.c **** #include "ad7606.h"
+  34:Core/Src/main.c **** #include "lcd_init.h"
+  35:Core/Src/main.c **** #include "lcd.h"
+  36:Core/Src/main.c **** #include "pic.h"
+  37:Core/Src/main.c **** 
+  38:Core/Src/main.c **** /* USER CODE END Includes */
+  39:Core/Src/main.c **** 
+  40:Core/Src/main.c **** /* Private typedef -----------------------------------------------------------*/
+  41:Core/Src/main.c **** /* USER CODE BEGIN PTD */
+  42:Core/Src/main.c **** 
+  43:Core/Src/main.c **** /* USER CODE END PTD */
+  44:Core/Src/main.c **** 
+  45:Core/Src/main.c **** /* Private define ------------------------------------------------------------*/
+  46:Core/Src/main.c **** /* USER CODE BEGIN PD */
+  47:Core/Src/main.c **** /* USER CODE END PD */
+  48:Core/Src/main.c **** 
+  49:Core/Src/main.c **** /* Private macro -------------------------------------------------------------*/
+  50:Core/Src/main.c **** /* USER CODE BEGIN PM */
+  51:Core/Src/main.c **** 
+  52:Core/Src/main.c **** /* USER CODE END PM */
+  53:Core/Src/main.c **** 
+  54:Core/Src/main.c **** /* Private variables ---------------------------------------------------------*/
+  55:Core/Src/main.c **** 
+  56:Core/Src/main.c **** /* USER CODE BEGIN PV */
+  57:Core/Src/main.c **** AD7606Dev ad7606dev;
+  58:Core/Src/main.c **** // AD7606Dev ad7606dev __attribute__((at(0X64080000)));
+  59:Core/Src/main.c **** // struct netif gnetif;
+  60:Core/Src/main.c **** // struct dhcp *dhcp;
+  61:Core/Src/main.c **** /* USER CODE END PV */
+  62:Core/Src/main.c **** 
+  63:Core/Src/main.c **** /* Private function prototypes -----------------------------------------------*/
+  64:Core/Src/main.c **** void SystemClock_Config(void);
+  65:Core/Src/main.c **** /* USER CODE BEGIN PFP */
+  66:Core/Src/main.c **** 
+  67:Core/Src/main.c **** /* USER CODE END PFP */
+  68:Core/Src/main.c **** 
+  69:Core/Src/main.c **** /* Private user code ---------------------------------------------------------*/
+  70:Core/Src/main.c **** /* USER CODE BEGIN 0 */
+  71:Core/Src/main.c **** 
+  72:Core/Src/main.c **** /* USER CODE END 0 */
+  73:Core/Src/main.c **** 
+  74:Core/Src/main.c **** /**
+  75:Core/Src/main.c ****   * @brief  The application entry point.
+  76:Core/Src/main.c ****   * @retval int
+  77:Core/Src/main.c ****   */
+  78:Core/Src/main.c **** int main(void)
+  79:Core/Src/main.c **** {
+  80:Core/Src/main.c ****   /* USER CODE BEGIN 1 */
+  81:Core/Src/main.c **** 
+  82:Core/Src/main.c ****   /* USER CODE END 1 */
+  83:Core/Src/main.c **** 
+  84:Core/Src/main.c ****   /* MCU Configuration--------------------------------------------------------*/
+  85:Core/Src/main.c **** 
+  86:Core/Src/main.c ****   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  87:Core/Src/main.c ****   HAL_Init();
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 3
+
+
+  88:Core/Src/main.c **** 
+  89:Core/Src/main.c ****   /* USER CODE BEGIN Init */
+  90:Core/Src/main.c **** 
+  91:Core/Src/main.c ****   /* USER CODE END Init */
+  92:Core/Src/main.c **** 
+  93:Core/Src/main.c ****   /* Configure the system clock */
+  94:Core/Src/main.c ****   SystemClock_Config();
+  95:Core/Src/main.c **** 
+  96:Core/Src/main.c ****   /* USER CODE BEGIN SysInit */
+  97:Core/Src/main.c ****   /* USER CODE END SysInit */
+  98:Core/Src/main.c **** 
+  99:Core/Src/main.c ****   /* Initialize all configured peripherals */
+ 100:Core/Src/main.c ****   MX_GPIO_Init();
+ 101:Core/Src/main.c ****   MX_DMA_Init();
+ 102:Core/Src/main.c ****   MX_TIM2_Init();
+ 103:Core/Src/main.c ****   MX_FSMC_Init();
+ 104:Core/Src/main.c ****   MX_SDIO_SD_Init();
+ 105:Core/Src/main.c ****   MX_USART1_UART_Init();
+ 106:Core/Src/main.c ****   MX_RTC_Init();
+ 107:Core/Src/main.c ****   MX_LWIP_Init();
+ 108:Core/Src/main.c ****   MX_CRC_Init();
+ 109:Core/Src/main.c ****   /* USER CODE BEGIN 2 */
+ 110:Core/Src/main.c **** 
+ 111:Core/Src/main.c ****   TCP_Client_Init();
+ 112:Core/Src/main.c **** 
+ 113:Core/Src/main.c ****   printf("\r\nUsart1 Test11111!\r\n");
+ 114:Core/Src/main.c ****   ad7606ini(&ad7606dev);
+ 115:Core/Src/main.c **** 
+ 116:Core/Src/main.c ****   HAL_GPIO_WritePin(ADC_RST_GPIO_Port, ADC_RST_Pin, GPIO_PIN_SET);
+ 117:Core/Src/main.c **** 
+ 118:Core/Src/main.c ****   HAL_Delay(500);
+ 119:Core/Src/main.c ****   HAL_GPIO_WritePin(ADC_RST_GPIO_Port, ADC_RST_Pin, GPIO_PIN_RESET);
+ 120:Core/Src/main.c ****   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+ 121:Core/Src/main.c **** 
+ 122:Core/Src/main.c ****   // TestRAM();
+ 123:Core/Src/main.c **** 
+ 124:Core/Src/main.c ****   // uint8_t CRCTest[20];
+ 125:Core/Src/main.c ****   // uint32_t CrCValue[3] = {0, 0, 0};
+ 126:Core/Src/main.c ****   // uint8_t CRC_Index = 0;
+ 127:Core/Src/main.c ****   // uint32_t CrcRes;
+ 128:Core/Src/main.c ****   // uint8_t k = 0;
+ 129:Core/Src/main.c ****   // // ff0007e7030701212c010141
+ 130:Core/Src/main.c ****   // // ff0007e7030701212c010141
+ 131:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0xff;
+ 132:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x00;
+ 133:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x07;
+ 134:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0xe7;
+ 135:Core/Src/main.c **** 
+ 136:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x03;
+ 137:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x07;
+ 138:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x01;
+ 139:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x21;
+ 140:Core/Src/main.c **** 
+ 141:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x2c;
+ 142:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x01;
+ 143:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x01;
+ 144:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x41;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 4
+
+
+ 145:Core/Src/main.c **** 
+ 146:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0xe7;
+ 147:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x07;
+ 148:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x00;
+ 149:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0xff;
+ 150:Core/Src/main.c **** 
+ 151:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x21;
+ 152:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x01;
+ 153:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x07;
+ 154:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x03;
+ 155:Core/Src/main.c **** 
+ 156:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x41;
+ 157:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x01;
+ 158:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x01;
+ 159:Core/Src/main.c ****   // CRCTest[CRC_Index++] = 0x2c;
+ 160:Core/Src/main.c **** 
+ 161:Core/Src/main.c ****   // for (uint8_t i = 0; i < CRC_Index; i = i + 4)
+ 162:Core/Src/main.c ****   // {
+ 163:Core/Src/main.c ****   //   uint8_t t = i + 3;
+ 164:Core/Src/main.c ****   //   CrCValue[k] = CRCTest[t--];
+ 165:Core/Src/main.c ****   //   CrCValue[k] += CRCTest[t--] << 8;
+ 166:Core/Src/main.c ****   //   CrCValue[k] += CRCTest[t--] << 16;
+ 167:Core/Src/main.c ****   //   CrCValue[k] += CRCTest[t--] << 24;
+ 168:Core/Src/main.c ****   //   k++;
+ 169:Core/Src/main.c ****   // }
+ 170:Core/Src/main.c **** 
+ 171:Core/Src/main.c ****   // CrcRes = HAL_CRC_Calculate(&hcrc, (uint32_t *)CrCValue, 3);
+ 172:Core/Src/main.c ****   // CRCTest[CRC_Index++] = CrcRes;
+ 173:Core/Src/main.c **** 
+ 174:Core/Src/main.c ****   // LWIP_Send_data(CRCTest, CRC_Index, 1);
+ 175:Core/Src/main.c **** 
+ 176:Core/Src/main.c ****   /* USER CODE END 2 */
+ 177:Core/Src/main.c **** 
+ 178:Core/Src/main.c ****   /* Infinite loop */
+ 179:Core/Src/main.c ****   /* USER CODE BEGIN WHILE */
+ 180:Core/Src/main.c ****   while (1)
+ 181:Core/Src/main.c ****   {
+ 182:Core/Src/main.c ****     ana_AD7606();
+ 183:Core/Src/main.c ****     // lv_timer_handler();
+ 184:Core/Src/main.c ****     // HAL_Delay(5);
+ 185:Core/Src/main.c ****     MX_LWIP_Process();
+ 186:Core/Src/main.c **** 
+ 187:Core/Src/main.c ****     /* USER CODE END WHILE */
+ 188:Core/Src/main.c **** 
+ 189:Core/Src/main.c ****     /* USER CODE BEGIN 3 */
+ 190:Core/Src/main.c ****   }
+ 191:Core/Src/main.c ****   /* USER CODE END 3 */
+ 192:Core/Src/main.c **** }
+ 193:Core/Src/main.c **** 
+ 194:Core/Src/main.c **** /**
+ 195:Core/Src/main.c ****   * @brief System Clock Configuration
+ 196:Core/Src/main.c ****   * @retval None
+ 197:Core/Src/main.c ****   */
+ 198:Core/Src/main.c **** void SystemClock_Config(void)
+ 199:Core/Src/main.c **** {
+ 200:Core/Src/main.c ****   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+ 201:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 5
+
+
+ 202:Core/Src/main.c **** 
+ 203:Core/Src/main.c ****   /** Configure the main internal regulator output voltage
+ 204:Core/Src/main.c ****   */
+ 205:Core/Src/main.c ****   __HAL_RCC_PWR_CLK_ENABLE();
+ 206:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+ 207:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 208:Core/Src/main.c ****   * in the RCC_OscInitTypeDef structure.
+ 209:Core/Src/main.c ****   */
+ 210:Core/Src/main.c ****   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+ 211:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 212:Core/Src/main.c ****   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+ 213:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 214:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 215:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLM = 4;
+ 216:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLN = 168;
+ 217:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+ 218:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLQ = 7;
+ 219:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 220:Core/Src/main.c ****   {
+ 221:Core/Src/main.c ****     Error_Handler();
+ 222:Core/Src/main.c ****   }
+ 223:Core/Src/main.c ****   /** Initializes the CPU, AHB and APB buses clocks
+ 224:Core/Src/main.c ****   */
+ 225:Core/Src/main.c ****   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+ 226:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 227:Core/Src/main.c ****   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+ 228:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 229:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+ 230:Core/Src/main.c ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+ 231:Core/Src/main.c **** 
+ 232:Core/Src/main.c ****   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+ 233:Core/Src/main.c ****   {
+ 234:Core/Src/main.c ****     Error_Handler();
+ 235:Core/Src/main.c ****   }
+ 236:Core/Src/main.c **** }
+ 237:Core/Src/main.c **** 
+ 238:Core/Src/main.c **** /* USER CODE BEGIN 4 */
+ 239:Core/Src/main.c **** 
+ 240:Core/Src/main.c **** /* USER CODE END 4 */
+ 241:Core/Src/main.c **** 
+ 242:Core/Src/main.c **** /**
+ 243:Core/Src/main.c ****   * @brief  This function is executed in case of error occurrence.
+ 244:Core/Src/main.c ****   * @retval None
+ 245:Core/Src/main.c ****   */
+ 246:Core/Src/main.c **** void Error_Handler(void)
+ 247:Core/Src/main.c **** {
+  29              		.loc 1 247 1 view -0
+  30              		.cfi_startproc
+  31              		@ Volatile: function does not return.
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+ 248:Core/Src/main.c ****   /* USER CODE BEGIN Error_Handler_Debug */
+ 249:Core/Src/main.c ****   /* User can add his own implementation to report the HAL error return state */
+ 250:Core/Src/main.c ****   __disable_irq();
+  35              		.loc 1 250 3 view .LVU1
+  36              	.LBB4:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 6
+
+
+  37              	.LBI4:
+  38              		.file 2 "Drivers/CMSIS/Include/cmsis_gcc.h"
+   1:Drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:Drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:Drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:Drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  10:Drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:Drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:Drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:Drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  18:Drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:Drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:Drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:Drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:Drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  25:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:Drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:Drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:Drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 7
+
+
+  56:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:Drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 8
+
+
+ 113:Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 117:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 118:Drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:Drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:Drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:Drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 123:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 124:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 129:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 130:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 131:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 132:Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 133:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 134:Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 135:Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 136:Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 137:Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 138:Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 139:Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 140:Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+  39              		.loc 2 140 27 view .LVU2
+  40              	.LBB5:
+ 141:Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 142:Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+  41              		.loc 2 142 3 view .LVU3
+  42              		.syntax unified
+  43              	@ 142 "Drivers/CMSIS/Include/cmsis_gcc.h" 1
+  44 0000 72B6     		cpsid i
+  45              	@ 0 "" 2
+  46              		.thumb
+  47              		.syntax unified
+  48              	.L2:
+  49              	.LBE5:
+  50              	.LBE4:
+ 251:Core/Src/main.c ****   while (1)
+  51              		.loc 1 251 3 discriminator 1 view .LVU4
+ 252:Core/Src/main.c ****   {
+ 253:Core/Src/main.c ****   }
+  52              		.loc 1 253 3 discriminator 1 view .LVU5
+ 251:Core/Src/main.c ****   while (1)
+  53              		.loc 1 251 9 discriminator 1 view .LVU6
+  54 0002 FEE7     		b	.L2
+  55              		.cfi_endproc
+  56              	.LFE158:
+  58              		.section	.text.SystemClock_Config,"ax",%progbits
+  59              		.align	1
+  60              		.global	SystemClock_Config
+  61              		.syntax unified
+  62              		.thumb
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 9
+
+
+  63              		.thumb_func
+  65              	SystemClock_Config:
+  66              	.LFB157:
+ 199:Core/Src/main.c ****   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  67              		.loc 1 199 1 view -0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 80
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71 0000 00B5     		push	{lr}
+  72              	.LCFI0:
+  73              		.cfi_def_cfa_offset 4
+  74              		.cfi_offset 14, -4
+  75 0002 95B0     		sub	sp, sp, #84
+  76              	.LCFI1:
+  77              		.cfi_def_cfa_offset 88
+ 200:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  78              		.loc 1 200 3 view .LVU8
+ 200:Core/Src/main.c ****   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  79              		.loc 1 200 22 is_stmt 0 view .LVU9
+  80 0004 3022     		movs	r2, #48
+  81 0006 0021     		movs	r1, #0
+  82 0008 08A8     		add	r0, sp, #32
+  83 000a FFF7FEFF 		bl	memset
+  84              	.LVL0:
+ 201:Core/Src/main.c **** 
+  85              		.loc 1 201 3 is_stmt 1 view .LVU10
+ 201:Core/Src/main.c **** 
+  86              		.loc 1 201 22 is_stmt 0 view .LVU11
+  87 000e 0023     		movs	r3, #0
+  88 0010 0393     		str	r3, [sp, #12]
+  89 0012 0493     		str	r3, [sp, #16]
+  90 0014 0593     		str	r3, [sp, #20]
+  91 0016 0693     		str	r3, [sp, #24]
+  92 0018 0793     		str	r3, [sp, #28]
+ 205:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  93              		.loc 1 205 3 is_stmt 1 view .LVU12
+  94              	.LBB6:
+ 205:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  95              		.loc 1 205 3 view .LVU13
+  96 001a 0193     		str	r3, [sp, #4]
+ 205:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  97              		.loc 1 205 3 view .LVU14
+  98 001c 214A     		ldr	r2, .L9
+  99 001e 116C     		ldr	r1, [r2, #64]
+ 100 0020 41F08051 		orr	r1, r1, #268435456
+ 101 0024 1164     		str	r1, [r2, #64]
+ 205:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+ 102              		.loc 1 205 3 view .LVU15
+ 103 0026 126C     		ldr	r2, [r2, #64]
+ 104 0028 02F08052 		and	r2, r2, #268435456
+ 105 002c 0192     		str	r2, [sp, #4]
+ 205:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+ 106              		.loc 1 205 3 view .LVU16
+ 107 002e 019A     		ldr	r2, [sp, #4]
+ 108              	.LBE6:
+ 205:Core/Src/main.c ****   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+ 109              		.loc 1 205 3 view .LVU17
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 10
+
+
+ 206:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 110              		.loc 1 206 3 view .LVU18
+ 111              	.LBB7:
+ 206:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 112              		.loc 1 206 3 view .LVU19
+ 113 0030 0293     		str	r3, [sp, #8]
+ 206:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 114              		.loc 1 206 3 view .LVU20
+ 115 0032 1D4B     		ldr	r3, .L9+4
+ 116 0034 1A68     		ldr	r2, [r3]
+ 117 0036 42F48042 		orr	r2, r2, #16384
+ 118 003a 1A60     		str	r2, [r3]
+ 206:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 119              		.loc 1 206 3 view .LVU21
+ 120 003c 1B68     		ldr	r3, [r3]
+ 121 003e 03F48043 		and	r3, r3, #16384
+ 122 0042 0293     		str	r3, [sp, #8]
+ 206:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 123              		.loc 1 206 3 view .LVU22
+ 124 0044 029B     		ldr	r3, [sp, #8]
+ 125              	.LBE7:
+ 206:Core/Src/main.c ****   /** Initializes the RCC Oscillators according to the specified parameters
+ 126              		.loc 1 206 3 view .LVU23
+ 210:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 127              		.loc 1 210 3 view .LVU24
+ 210:Core/Src/main.c ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 128              		.loc 1 210 36 is_stmt 0 view .LVU25
+ 129 0046 0523     		movs	r3, #5
+ 130 0048 0893     		str	r3, [sp, #32]
+ 211:Core/Src/main.c ****   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+ 131              		.loc 1 211 3 is_stmt 1 view .LVU26
+ 211:Core/Src/main.c ****   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+ 132              		.loc 1 211 30 is_stmt 0 view .LVU27
+ 133 004a 4FF48033 		mov	r3, #65536
+ 134 004e 0993     		str	r3, [sp, #36]
+ 212:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 135              		.loc 1 212 3 is_stmt 1 view .LVU28
+ 212:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 136              		.loc 1 212 30 is_stmt 0 view .LVU29
+ 137 0050 0123     		movs	r3, #1
+ 138 0052 0A93     		str	r3, [sp, #40]
+ 213:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 139              		.loc 1 213 3 is_stmt 1 view .LVU30
+ 213:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 140              		.loc 1 213 34 is_stmt 0 view .LVU31
+ 141 0054 0223     		movs	r3, #2
+ 142 0056 0E93     		str	r3, [sp, #56]
+ 214:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLM = 4;
+ 143              		.loc 1 214 3 is_stmt 1 view .LVU32
+ 214:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLM = 4;
+ 144              		.loc 1 214 35 is_stmt 0 view .LVU33
+ 145 0058 4FF48002 		mov	r2, #4194304
+ 146 005c 0F92     		str	r2, [sp, #60]
+ 215:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLN = 168;
+ 147              		.loc 1 215 3 is_stmt 1 view .LVU34
+ 215:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLN = 168;
+ 148              		.loc 1 215 30 is_stmt 0 view .LVU35
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 11
+
+
+ 149 005e 0422     		movs	r2, #4
+ 150 0060 1092     		str	r2, [sp, #64]
+ 216:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+ 151              		.loc 1 216 3 is_stmt 1 view .LVU36
+ 216:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+ 152              		.loc 1 216 30 is_stmt 0 view .LVU37
+ 153 0062 A822     		movs	r2, #168
+ 154 0064 1192     		str	r2, [sp, #68]
+ 217:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLQ = 7;
+ 155              		.loc 1 217 3 is_stmt 1 view .LVU38
+ 217:Core/Src/main.c ****   RCC_OscInitStruct.PLL.PLLQ = 7;
+ 156              		.loc 1 217 30 is_stmt 0 view .LVU39
+ 157 0066 1293     		str	r3, [sp, #72]
+ 218:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 158              		.loc 1 218 3 is_stmt 1 view .LVU40
+ 218:Core/Src/main.c ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 159              		.loc 1 218 30 is_stmt 0 view .LVU41
+ 160 0068 0723     		movs	r3, #7
+ 161 006a 1393     		str	r3, [sp, #76]
+ 219:Core/Src/main.c ****   {
+ 162              		.loc 1 219 3 is_stmt 1 view .LVU42
+ 219:Core/Src/main.c ****   {
+ 163              		.loc 1 219 7 is_stmt 0 view .LVU43
+ 164 006c 08A8     		add	r0, sp, #32
+ 165 006e FFF7FEFF 		bl	HAL_RCC_OscConfig
+ 166              	.LVL1:
+ 219:Core/Src/main.c ****   {
+ 167              		.loc 1 219 6 view .LVU44
+ 168 0072 98B9     		cbnz	r0, .L7
+ 225:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 169              		.loc 1 225 3 is_stmt 1 view .LVU45
+ 225:Core/Src/main.c ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 170              		.loc 1 225 31 is_stmt 0 view .LVU46
+ 171 0074 0F23     		movs	r3, #15
+ 172 0076 0393     		str	r3, [sp, #12]
+ 227:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 173              		.loc 1 227 3 is_stmt 1 view .LVU47
+ 227:Core/Src/main.c ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 174              		.loc 1 227 34 is_stmt 0 view .LVU48
+ 175 0078 0223     		movs	r3, #2
+ 176 007a 0493     		str	r3, [sp, #16]
+ 228:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+ 177              		.loc 1 228 3 is_stmt 1 view .LVU49
+ 228:Core/Src/main.c ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+ 178              		.loc 1 228 35 is_stmt 0 view .LVU50
+ 179 007c 0023     		movs	r3, #0
+ 180 007e 0593     		str	r3, [sp, #20]
+ 229:Core/Src/main.c ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+ 181              		.loc 1 229 3 is_stmt 1 view .LVU51
+ 229:Core/Src/main.c ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+ 182              		.loc 1 229 36 is_stmt 0 view .LVU52
+ 183 0080 4FF4A053 		mov	r3, #5120
+ 184 0084 0693     		str	r3, [sp, #24]
+ 230:Core/Src/main.c **** 
+ 185              		.loc 1 230 3 is_stmt 1 view .LVU53
+ 230:Core/Src/main.c **** 
+ 186              		.loc 1 230 36 is_stmt 0 view .LVU54
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 12
+
+
+ 187 0086 4FF48053 		mov	r3, #4096
+ 188 008a 0793     		str	r3, [sp, #28]
+ 232:Core/Src/main.c ****   {
+ 189              		.loc 1 232 3 is_stmt 1 view .LVU55
+ 232:Core/Src/main.c ****   {
+ 190              		.loc 1 232 7 is_stmt 0 view .LVU56
+ 191 008c 0521     		movs	r1, #5
+ 192 008e 03A8     		add	r0, sp, #12
+ 193 0090 FFF7FEFF 		bl	HAL_RCC_ClockConfig
+ 194              	.LVL2:
+ 232:Core/Src/main.c ****   {
+ 195              		.loc 1 232 6 view .LVU57
+ 196 0094 20B9     		cbnz	r0, .L8
+ 236:Core/Src/main.c **** 
+ 197              		.loc 1 236 1 view .LVU58
+ 198 0096 15B0     		add	sp, sp, #84
+ 199              	.LCFI2:
+ 200              		.cfi_remember_state
+ 201              		.cfi_def_cfa_offset 4
+ 202              		@ sp needed
+ 203 0098 5DF804FB 		ldr	pc, [sp], #4
+ 204              	.L7:
+ 205              	.LCFI3:
+ 206              		.cfi_restore_state
+ 221:Core/Src/main.c ****   }
+ 207              		.loc 1 221 5 is_stmt 1 view .LVU59
+ 208 009c FFF7FEFF 		bl	Error_Handler
+ 209              	.LVL3:
+ 210              	.L8:
+ 234:Core/Src/main.c ****   }
+ 211              		.loc 1 234 5 view .LVU60
+ 212 00a0 FFF7FEFF 		bl	Error_Handler
+ 213              	.LVL4:
+ 214              	.L10:
+ 215              		.align	2
+ 216              	.L9:
+ 217 00a4 00380240 		.word	1073887232
+ 218 00a8 00700040 		.word	1073770496
+ 219              		.cfi_endproc
+ 220              	.LFE157:
+ 222              		.section	.rodata.main.str1.4,"aMS",%progbits,1
+ 223              		.align	2
+ 224              	.LC0:
+ 225 0000 0D0A5573 		.ascii	"\015\012Usart1 Test11111!\015\000"
+ 225      61727431 
+ 225      20546573 
+ 225      74313131 
+ 225      3131210D 
+ 226              		.section	.text.main,"ax",%progbits
+ 227              		.align	1
+ 228              		.global	main
+ 229              		.syntax unified
+ 230              		.thumb
+ 231              		.thumb_func
+ 233              	main:
+ 234              	.LFB156:
+  79:Core/Src/main.c ****   /* USER CODE BEGIN 1 */
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 13
+
+
+ 235              		.loc 1 79 1 view -0
+ 236              		.cfi_startproc
+ 237              		@ Volatile: function does not return.
+ 238              		@ args = 0, pretend = 0, frame = 0
+ 239              		@ frame_needed = 0, uses_anonymous_args = 0
+ 240 0000 08B5     		push	{r3, lr}
+ 241              	.LCFI4:
+ 242              		.cfi_def_cfa_offset 8
+ 243              		.cfi_offset 3, -8
+ 244              		.cfi_offset 14, -4
+  87:Core/Src/main.c **** 
+ 245              		.loc 1 87 3 view .LVU62
+ 246 0002 FFF7FEFF 		bl	HAL_Init
+ 247              	.LVL5:
+  94:Core/Src/main.c **** 
+ 248              		.loc 1 94 3 view .LVU63
+ 249 0006 FFF7FEFF 		bl	SystemClock_Config
+ 250              	.LVL6:
+ 100:Core/Src/main.c ****   MX_DMA_Init();
+ 251              		.loc 1 100 3 view .LVU64
+ 252 000a FFF7FEFF 		bl	MX_GPIO_Init
+ 253              	.LVL7:
+ 101:Core/Src/main.c ****   MX_TIM2_Init();
+ 254              		.loc 1 101 3 view .LVU65
+ 255 000e FFF7FEFF 		bl	MX_DMA_Init
+ 256              	.LVL8:
+ 102:Core/Src/main.c ****   MX_FSMC_Init();
+ 257              		.loc 1 102 3 view .LVU66
+ 258 0012 FFF7FEFF 		bl	MX_TIM2_Init
+ 259              	.LVL9:
+ 103:Core/Src/main.c ****   MX_SDIO_SD_Init();
+ 260              		.loc 1 103 3 view .LVU67
+ 261 0016 FFF7FEFF 		bl	MX_FSMC_Init
+ 262              	.LVL10:
+ 104:Core/Src/main.c ****   MX_USART1_UART_Init();
+ 263              		.loc 1 104 3 view .LVU68
+ 264 001a FFF7FEFF 		bl	MX_SDIO_SD_Init
+ 265              	.LVL11:
+ 105:Core/Src/main.c ****   MX_RTC_Init();
+ 266              		.loc 1 105 3 view .LVU69
+ 267 001e FFF7FEFF 		bl	MX_USART1_UART_Init
+ 268              	.LVL12:
+ 106:Core/Src/main.c ****   MX_LWIP_Init();
+ 269              		.loc 1 106 3 view .LVU70
+ 270 0022 FFF7FEFF 		bl	MX_RTC_Init
+ 271              	.LVL13:
+ 107:Core/Src/main.c ****   MX_CRC_Init();
+ 272              		.loc 1 107 3 view .LVU71
+ 273 0026 FFF7FEFF 		bl	MX_LWIP_Init
+ 274              	.LVL14:
+ 108:Core/Src/main.c ****   /* USER CODE BEGIN 2 */
+ 275              		.loc 1 108 3 view .LVU72
+ 276 002a FFF7FEFF 		bl	MX_CRC_Init
+ 277              	.LVL15:
+ 111:Core/Src/main.c **** 
+ 278              		.loc 1 111 3 view .LVU73
+ 279 002e FFF7FEFF 		bl	TCP_Client_Init
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 14
+
+
+ 280              	.LVL16:
+ 113:Core/Src/main.c ****   ad7606ini(&ad7606dev);
+ 281              		.loc 1 113 3 view .LVU74
+ 282 0032 0F48     		ldr	r0, .L14
+ 283 0034 FFF7FEFF 		bl	puts
+ 284              	.LVL17:
+ 114:Core/Src/main.c **** 
+ 285              		.loc 1 114 3 view .LVU75
+ 286 0038 0E48     		ldr	r0, .L14+4
+ 287 003a FFF7FEFF 		bl	ad7606ini
+ 288              	.LVL18:
+ 116:Core/Src/main.c **** 
+ 289              		.loc 1 116 3 view .LVU76
+ 290 003e 0E4C     		ldr	r4, .L14+8
+ 291 0040 0122     		movs	r2, #1
+ 292 0042 4021     		movs	r1, #64
+ 293 0044 2046     		mov	r0, r4
+ 294 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 295              	.LVL19:
+ 118:Core/Src/main.c ****   HAL_GPIO_WritePin(ADC_RST_GPIO_Port, ADC_RST_Pin, GPIO_PIN_RESET);
+ 296              		.loc 1 118 3 view .LVU77
+ 297 004a 4FF4FA70 		mov	r0, #500
+ 298 004e FFF7FEFF 		bl	HAL_Delay
+ 299              	.LVL20:
+ 119:Core/Src/main.c ****   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+ 300              		.loc 1 119 3 view .LVU78
+ 301 0052 0022     		movs	r2, #0
+ 302 0054 4021     		movs	r1, #64
+ 303 0056 2046     		mov	r0, r4
+ 304 0058 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 305              	.LVL21:
+ 120:Core/Src/main.c **** 
+ 306              		.loc 1 120 3 view .LVU79
+ 307 005c 0021     		movs	r1, #0
+ 308 005e 0748     		ldr	r0, .L14+12
+ 309 0060 FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 310              	.LVL22:
+ 311              	.L12:
+ 180:Core/Src/main.c ****   {
+ 312              		.loc 1 180 3 discriminator 1 view .LVU80
+ 182:Core/Src/main.c ****     // lv_timer_handler();
+ 313              		.loc 1 182 5 discriminator 1 view .LVU81
+ 314 0064 FFF7FEFF 		bl	ana_AD7606
+ 315              	.LVL23:
+ 185:Core/Src/main.c **** 
+ 316              		.loc 1 185 5 discriminator 1 view .LVU82
+ 317 0068 FFF7FEFF 		bl	MX_LWIP_Process
+ 318              	.LVL24:
+ 180:Core/Src/main.c ****   {
+ 319              		.loc 1 180 9 discriminator 1 view .LVU83
+ 320 006c FAE7     		b	.L12
+ 321              	.L15:
+ 322 006e 00BF     		.align	2
+ 323              	.L14:
+ 324 0070 00000000 		.word	.LC0
+ 325 0074 00000000 		.word	ad7606dev
+ 326 0078 000C0240 		.word	1073875968
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 15
+
+
+ 327 007c 00000000 		.word	htim2
+ 328              		.cfi_endproc
+ 329              	.LFE156:
+ 331              		.global	ad7606dev
+ 332              		.global	gImage_1
+ 333              		.section	.bss.ad7606dev,"aw",%nobits
+ 334              		.align	2
+ 337              	ad7606dev:
+ 338 0000 00000000 		.space	8200
+ 338      00000000 
+ 338      00000000 
+ 338      00000000 
+ 338      00000000 
+ 339              		.section	.rodata.gImage_1,"a"
+ 340              		.align	2
+ 343              	gImage_1:
+ 344 0000 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 344      FFFFFFFF 
+ 344      FFFFFFFF 
+ 344      FF
+ 345 000d FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 345      FFFFFFFF 
+ 345      FFFFFFFF 
+ 345      FF
+ 346 001a FFFFFFFF 		.ascii	"\377\377\377\377\367\276\377\377\377\336\3068\214\222"
+ 346      F7BEFFFF 
+ 346      FFDEC638 
+ 346      8C92
+ 347 0028 6B8E6B6E 		.ascii	"k\216kn|\020\255\226\347<\377\377\377\377\377\377\377"
+ 347      7C10AD96 
+ 347      E73CFFFF 
+ 347      FFFFFFFF 
+ 347      FF
+ 348 0039 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 348      FFFFFFFF 
+ 348      FFFFFFFF 
+ 348      FF
+ 349 0046 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 349      FFFFFFFF 
+ 349      FFFFFFFF 
+ 349      FF
+ 350 0053 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 350      FFFFFFFF 
+ 350      FFFFFFFF 
+ 350      FF
+ 351 0060 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 351      FFFFFFFF 
+ 351      FFFFFFFF 
+ 351      FF
+ 352 006d FFEF5D9D 		.ascii	"\377\357]\235\025cOBl2\012)\210\031F\031%!E1\350k\216"
+ 352      15634F42 
+ 352      6C320A29 
+ 352      88194619 
+ 352      25214531 
+ 353 0084 C638FFFF 		.ascii	"\3068\377\377\377\377\377\377\377\377\377\377\377\377"
+ 353      FFFFFFFF 
+ 353      FFFFFFFF 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 16
+
+
+ 353      FFFF
+ 354 0092 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 354      FFFFFFFF 
+ 354      FFFFFFFF 
+ 354      FF
+ 355 009f FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 355      FFFFFFFF 
+ 355      FFFFFFFF 
+ 355      FF
+ 356 00ac FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 356      FFFFFFFF 
+ 356      FFFFFFFF 
+ 356      FF
+ 357 00b9 FFFFFFA5 		.ascii	"\377\377\377\2456S\020K\020SQK\017:l1\351!g\031%\020"
+ 357      3653104B 
+ 357      1053514B 
+ 357      0F3A6C31 
+ 357      E9216719 
+ 358 00cf E408A300 		.ascii	"\344\010\243\000b\010\203R\313\326\232\377\377\377\377"
+ 358      62088352 
+ 358      CBD69AFF 
+ 358      FFFFFF
+ 359 00de FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 359      FFFFFFFF 
+ 359      FFFFFFFF 
+ 359      FF
+ 360 00eb FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 360      FFFFFFFF 
+ 360      FFFFFFFF 
+ 360      FF
+ 361 00f8 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 361      FFFFFFFF 
+ 361      FFFFFFFF 
+ 361      FF
+ 362 0105 FFFFFFE7 		.ascii	"\377\377\377\347<cpc\263|\270c\365C\0212M)\352!\210"
+ 362      3C637063 
+ 362      B37CB863 
+ 362      F5431132 
+ 362      4D29EA21 
+ 363 011a 19261905 		.ascii	"\031&\031\005\031\005\021\004\021\004\020\344\000\203"
+ 363      19051104 
+ 363      110410E4 
+ 363      0083
+ 364 0128 08A38C72 		.ascii	"\010\243\214r\377\377\377\377\377\377\377\377\377\377"
+ 364      FFFFFFFF 
+ 364      FFFFFFFF 
+ 364      FFFF
+ 365 0136 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 365      FFFFFFFF 
+ 365      FFFFFFFF 
+ 365      FF
+ 366 0143 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 366      FFFFFFFF 
+ 366      FFFFFFFF 
+ 366      FF
+ 367 0150 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\336\333:KB\360l5KT2\261*.!"
+ 367      FFFFDEDB 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 17
+
+
+ 367      3A4B42F0 
+ 367      6C354B54 
+ 367      32B12A2E 
+ 368 0165 EB21A919 		.ascii	"\353!\251\031g\031\005\021\004\021\004\021\004\021\004"
+ 368      67190511 
+ 368      04110411 
+ 368      041104
+ 369 0174 11041905 		.ascii	"\021\004\031\005\020\344\000Bs\257\377\377\377\377\377"
+ 369      10E40042 
+ 369      73AFFFFF 
+ 369      FFFFFF
+ 370 0183 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 370      FFFFFFFF 
+ 370      FFFFFFFF 
+ 370      FF
+ 371 0190 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 371      FFFFFFFF 
+ 371      FFFFFFFF 
+ 371      FF
+ 372 019d FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\357]2\0112LK\0202\217*"
+ 372      FFFFFFEF 
+ 372      5D320932 
+ 372      4C4B1032 
+ 372      8F2A
+ 373 01af 4F2A2E19 		.ascii	"O*.\031\314\031\211!\211\031G\031\005\021\004\021\004"
+ 373      CC198921 
+ 373      89194719 
+ 373      05110411 
+ 373      04
+ 374 01c0 10C410C4 		.ascii	"\020\304\020\304\021\004\021\004\021\004\020\344\000"
+ 374      11041104 
+ 374      110410E4 
+ 374      00
+ 375 01cd 428431FF 		.ascii	"B\2041\377\377\377\377\377\377\377\377\377\377\377\377"
+ 375      FFFFFFFF 
+ 375      FFFFFFFF 
+ 375      FFFFFF
+ 376 01dc FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 376      FFFFFFFF 
+ 376      FFFFFFFF 
+ 376      FF
+ 377 01e9 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377R\354\031"
+ 377      FFFFFFFF 
+ 377      FFFFFF52 
+ 377      EC19
+ 378 01f7 47324C2A 		.ascii	"G2L*\013!\354!\354\"\014[\221J\356\021\006\031&\031"
+ 378      0B21EC21 
+ 378      EC220C5B 
+ 378      914AEE11 
+ 378      06192619 
+ 379 020b 0410E410 		.ascii	"\004\020\344\020\344)\247!f\010\243\031\005\021\004"
+ 379      E429A721 
+ 379      6608A319 
+ 379      051104
+ 380 021a 110410E4 		.ascii	"\021\004\020\344\000\202\275\367\377\377\377\377\377"
+ 380      0082BDF7 
+ 380      FFFFFFFF 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 18
+
+
+ 380      FF
+ 381 0227 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 381      FFFFFFFF 
+ 381      FFFFFFFF 
+ 381      FF
+ 382 0234 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 382      FFFFFFFF 
+ 382      FFFFFFFF 
+ 382      FF
+ 383 0241 FFA53508 		.ascii	"\377\2455\010\203!\210!\210!\211!\252!\212Bk\214q\377"
+ 383      83218821 
+ 383      88218921 
+ 383      AA218A42 
+ 383      6B8C71FF 
+ 384 0255 FF8C7208 		.ascii	"\377\214r\010\203\021\004\010\304B)\336\373\357]Z\354"
+ 384      83110408 
+ 384      C44229DE 
+ 384      FBEF5D5A 
+ 384      EC
+ 385 0266 08831104 		.ascii	"\010\203\021\004\021\004\021\004\010\2031\350\377\337"
+ 385      11041104 
+ 385      088331E8 
+ 385      FFDF
+ 386 0274 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 386      FFFFFFFF 
+ 386      FFFFFFFF 
+ 386      FF
+ 387 0281 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 387      FFFFFFFF 
+ 387      FFFFFFFF 
+ 387      FF
+ 388 028e FFFFF7BE 		.ascii	"\377\377\367\2761\307\020\304\031%\031&\031G\031G)\250"
+ 388      31C710C4 
+ 388      19251926 
+ 388      19471947 
+ 388      29A8
+ 389 02a0 528A4A28 		.ascii	"R\212J(\255U\377\3771\350\010\243\031\005kMkM\377\377"
+ 389      AD55FFFF 
+ 389      31E808A3 
+ 389      19056B4D 
+ 389      6B4DFFFF 
+ 390 02b4 EF7D2145 		.ascii	"\357}!E\020\304\021\004\021\004\021\004\000b\255v\377"
+ 390      10C41104 
+ 390      11041104 
+ 390      0062AD76 
+ 390      FF
+ 391 02c5 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 391      FFFFFFFF 
+ 391      FFFFFFFF 
+ 391      FF
+ 392 02d2 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 392      FFFFFFFF 
+ 392      FFFFFFFF 
+ 392      FF
+ 393 02df FFB59600 		.ascii	"\377\265\226\000b\021\004\031\004\021\005\031\005\010"
+ 393      62110419 
+ 393      04110519 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 19
+
+
+ 393      0508
+ 394 02ed C44A8BB5 		.ascii	"\304J\213\265\266\357]\275\367\377\377k\216\000bB)Z"
+ 394      B6EF5DBD 
+ 394      F7FFFF6B 
+ 394      8E006242 
+ 394      295A
+ 395 02ff AA4208FF 		.ascii	"\252B\010\377\377\377\377R\314\010\203\021\004\021\004"
+ 395      FFFFFF52 
+ 395      CC088311 
+ 395      041104
+ 396 030e 110408A3 		.ascii	"\021\004\010\243R\255\377\377\377\377\377\377\377\377"
+ 396      52ADFFFF 
+ 396      FFFFFFFF 
+ 396      FFFF
+ 397 031c FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\347\034\377"
+ 397      FFFFFFFF 
+ 397      FFFFE71C 
+ 397      FF
+ 398 0329 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377cN\000b\021\004\021\004"
+ 398      FFFFFF63 
+ 398      4E006211 
+ 398      041104
+ 399 0338 110410E4 		.ascii	"\021\004\020\344\000bc\216\377\377\377\377\377\377\377"
+ 399      0062638E 
+ 399      FFFFFFFF 
+ 399      FFFFFF
+ 400 0347 FF73CF00 		.ascii	"\377s\317\000\001\234\363c,\265\226\377\377\377\377"
+ 400      019CF363 
+ 400      2CB596FF 
+ 400      FFFFFF
+ 401 0356 5B2D0083 		.ascii	"[-\000\203\021\004\021\004\021\004\020\344!g\357=\377"
+ 401      11041104 
+ 401      110410E4 
+ 401      2167EF3D 
+ 401      FF
+ 402 0367 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\275\370\265\267"
+ 402      FFFFFFFF 
+ 402      FFBDF8B5 
+ 402      B7
+ 403 0374 EF9E52CB 		.ascii	"\357\236R\313\224\263\377\377\377\377\377\3371\350\010"
+ 403      94B3FFFF 
+ 403      FFFFFFDF 
+ 403      31E808
+ 404 0383 A3110411 		.ascii	"\243\021\004\021\004\021\004\021\004\010\243BI\367\377"
+ 404      04110411 
+ 404      0408A342 
+ 404      49F7FF
+ 405 0392 F7FFFFFF 		.ascii	"\367\377\377\377\377\377Jj\000\001\204r\377\377\377"
+ 405      FFFF4A6A 
+ 405      00018472 
+ 405      FFFFFF
+ 406 03a1 FFF7FFEF 		.ascii	"\377\367\377\357\337:\011\010\243\021\004\021\004\021"
+ 406      DF3A0908 
+ 406      A3110411 
+ 406      0411
+ 407 03af 04110411 		.ascii	"\004\021\004\021\005\276\030\377\377\377\377\377\377"
+ 407      05BE18FF 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 20
+
+
+ 407      FFFFFFFF 
+ 407      FF
+ 408 03bc FFFFFFFF 		.ascii	"\377\377\377\377{\360\000b1\3501\307\000A\2455\377\377"
+ 408      7BF00062 
+ 408      31E831C7 
+ 408      0041A535 
+ 408      FFFF
+ 409 03ce EF5D2146 		.ascii	"\357]!F\020\304\021\004\021\004\021\004\021\004\020"
+ 409      10C41104 
+ 409      11041104 
+ 409      110410
+ 410 03dd E408A39D 		.ascii	"\344\010\243\235v\367\377\377\377\255\267\010\243\010"
+ 410      76F7FFFF 
+ 410      FFADB708 
+ 410      A308
+ 411 03eb A331C7E7 		.ascii	"\2431\307\347\236\367\377\367\377\245v\010\243\020\344"
+ 411      9EF7FFF7 
+ 411      FFA57608 
+ 411      A310E4
+ 412 03fa 11041104 		.ascii	"\021\004\021\004\021\004\021\005\021\005\2455\377\377"
+ 412      11041105 
+ 412      1105A535 
+ 412      FFFF
+ 413 0408 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\336\333)\247\000\203"
+ 413      FFFFFFFF 
+ 413      DEDB29A7 
+ 413      0083
+ 414 0416 10C410C4 		.ascii	"\020\304\020\304\020\304\347\034\357\236\021\005\020"
+ 414      10C4E71C 
+ 414      EF9E1105 
+ 414      10
+ 415 0423 E4110411 		.ascii	"\344\021\004\021\004\021\004\021\004\031\004\010\304"
+ 415      04110411 
+ 415      04190408 
+ 415      C4
+ 416 0430 10E56BD1 		.ascii	"\020\345k\321k\321\010\305\000d\010\245\000C2+\235w"
+ 416      6BD108C5 
+ 416      006408A5 
+ 416      0043322B 
+ 416      9D77
+ 417 0442 84B31925 		.ascii	"\204\263\031%\020\304\021\004\021\004\021\004\021\004"
+ 417      10C41104 
+ 417      11041104 
+ 417      1104
+ 418 0450 19250926 		.ascii	"\031%\011&\2355\377\377\377\377\377\377\377\377\377"
+ 418      9D35FFFF 
+ 418      FFFFFFFF 
+ 418      FFFFFF
+ 419 045f FFFFFF73 		.ascii	"\377\377\377s\257\000b\031\004\031\005\000\202[\015"
+ 419      AF006219 
+ 419      04190500 
+ 419      825B0D
+ 420 046e 9B8E1062 		.ascii	"\233\216\020b\021\005\021\004\021\004\031\004\020\344"
+ 420      11051104 
+ 420      11041904 
+ 420      10E4
+ 421 047c 00851105 		.ascii	"\000\205\021\0059\304Z\201{@\234\"\254C\244\003\233"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 21
+
+
+ 421      39C45A81 
+ 421      7B409C22 
+ 421      AC43A403 
+ 421      9B
+ 422 048d 83728249 		.ascii	"\203r\202I\202\030\302\000\244\000\305\020\344\031\004"
+ 422      8218C200 
+ 422      A400C510 
+ 422      E41904
+ 423 049c 11041905 		.ascii	"\021\004\031\005\031G\021gZ\354\377\276\377\377\377"
+ 423      19471167 
+ 423      5AECFFBE 
+ 423      FFFFFF
+ 424 04ab FFFFFFFF 		.ascii	"\377\377\377\377\377\377\337\336\333\020\304\020\344"
+ 424      FFFFDFDE 
+ 424      DB10C410 
+ 424      E4
+ 425 04b8 11041105 		.ascii	"\021\004\021\005\030\244\300\001\210\203\000\344\031"
+ 425      18A4C001 
+ 425      888300E4 
+ 425      19
+ 426 04c5 05190408 		.ascii	"\005\031\004\010\305!D\203C\325#\376B\376\344\377'\377"
+ 426      C5214483 
+ 426      43D523FE 
+ 426      42FEE4FF 
+ 426      27FF
+ 427 04d7 07FEA4FE 		.ascii	"\007\376\244\376d\376\003\375\243\374\342\354B\263\203"
+ 427      64FE03FD 
+ 427      A3FCE2EC 
+ 427      42B383
+ 428 04e6 622410E5 		.ascii	"b$\020\345\010\304\031\004\031&\031\250!\207\220\000"
+ 428      08C41904 
+ 428      192619A8 
+ 428      21879000 
+ 429 04f6 BCD3FFFF 		.ascii	"\274\323\377\377\377\377\377\377\377\377\377\337\377"
+ 429      FFFFFFFF 
+ 429      FFFFFFDF 
+ 429      FF
+ 430 0503 FF7C1000 		.ascii	"\377|\020\000B\031\005\021\005(\203\320\001\370DH\243"
+ 430      42190511 
+ 430      052883D0 
+ 430      01F84448 
+ 430      A3
+ 431 0514 00E408C5 		.ascii	"\000\344\010\305ZD\355\002\375\342\376\002\376f\377"
+ 431      5A44ED02 
+ 431      FDE2FE02 
+ 431      FE66FF
+ 432 0523 74FFB8FF 		.ascii	"t\377\270\377s\366\347\366\246\366E\365\244\374\303"
+ 432      73F6E7F6 
+ 432      A6F645F5 
+ 432      A4FCC3
+ 433 0532 FC62FCC2 		.ascii	"\374b\374\302\374\302\313\343I\304\021\006\031\210\001"
+ 433      FCC2CBE3 
+ 433      49C41106 
+ 433      198801
+ 434 0541 8790A4F8 		.ascii	"\207\220\244\370\001\232\354\377\377\377\377\377\377"
+ 434      019AECFF 
+ 434      FFFFFFFF 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 22
+
+
+ 434      FF
+ 435 054e FFFFFFFF 		.ascii	"\377\377\377\377\377\377\367\2761\350\000\203\011\005"
+ 435      FFFFF7BE 
+ 435      31E80083 
+ 435      0905
+ 436 055c 4082C001 		.ascii	"@\202\300\001\370#\360\205H\243\000\244ZD\375\002\314"
+ 436      F823F085 
+ 436      48A300A4 
+ 436      5A44FD02 
+ 436      CC
+ 437 056d 23DCC2FE 		.ascii	"#\334\302\376\004\376(\366H\366F\366$\365\344\375d\374"
+ 437      04FE28F6 
+ 437      48F646F6 
+ 437      24F5E4FD 
+ 437      64FC
+ 438 057f E3FC62FC 		.ascii	"\343\374b\374\302\344\002\334\002\374\342z\244\001H"
+ 438      C2E402DC 
+ 438      02FCE27A 
+ 438      A40148
+ 439 058e 016778C4 		.ascii	"\001gx\304\370$\370\002\260\204\347}\377\377\377\377"
+ 439      F824F802 
+ 439      B084E77D 
+ 439      FFFFFFFF 
+ 440 059e FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\336\333\031%\000\243"
+ 440      FFFFFFFF 
+ 440      DEDB1925 
+ 440      00A3
+ 441 05ac 38C4E002 		.ascii	"8\304\340\002\330\"\370D\370\246x\244\000c!Cr\2039\203"
+ 441      D822F844 
+ 441      F8A678A4 
+ 441      00632143 
+ 441      72833983 
+ 442 05c0 9B82F521 		.ascii	"\233\202\365!\375a\375\"\374\342\374\242\374B\374B\374"
+ 442      FD61FD22 
+ 442      FCE2FCA2 
+ 442      FC42FC42 
+ 442      FC
+ 443 05d1 42AB2241 		.ascii	"B\253\"A\203\222\303R\004\001&\031%\230\244\370D\370"
+ 443      8392C352 
+ 443      04012619 
+ 443      2598A4F8 
+ 443      44F8
+ 444 05e3 23F802D0 		.ascii	"#\370\002\320\244\357\236\377\377\377\377\377\377\377"
+ 444      A4EF9EFF 
+ 444      FFFFFFFF 
+ 444      FFFF
+ 445 05f1 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\326\232)\207\000\245\270"
+ 445      FFFFFFD6 
+ 445      9A298700 
+ 445      A5B8
+ 446 05ff 43F822E0 		.ascii	"C\370\"\340#\370e\370\350\311\007H\203\000B\000\243"
+ 446      23F865F8 
+ 446      E8C90748 
+ 446      83004200 
+ 446      A3
+ 447 0610 00842963 		.ascii	"\000\204)cz\242\263b\313\242\323b\273\002\212\2029\203"
+ 447      7AA2B362 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 23
+
+
+ 447      CBA2D362 
+ 447      BB028A82 
+ 447      3983
+ 448 0622 00A400E5 		.ascii	"\000\244\000\345\000\345\010\345`\304\330d\370D\370"
+ 448      00E508E5 
+ 448      60C4D864 
+ 448      F844F8
+ 449 0631 24F823F8 		.ascii	"$\370#\370\002\210\203\306\333\377\377\377\377\377\377"
+ 449      028883C6 
+ 449      DBFFFFFF 
+ 449      FFFFFF
+ 450 0640 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\347=[P1\010"
+ 450      FFFFFFFF 
+ 450      FFFFE73D 
+ 450      5B503108 
+ 451 0650 E823F843 		.ascii	"\350#\370C\360D\370e\371\011\371\253\321\211\211\006"
+ 451      F044F865 
+ 451      F909F9AB 
+ 451      D1898906 
+ 452 0660 48A31842 		.ascii	"H\243\030B\000\002\000B\000a\000\202\000b\000b\000\203"
+ 452      00020042 
+ 452      00610082 
+ 452      00620062 
+ 452      0083
+ 453 0672 20A350C4 		.ascii	" \243P\304\210\245\330\205\370e\370D\370D\370#\370#"
+ 453      88A5D885 
+ 453      F865F844 
+ 453      F844F823 
+ 453      F823
+ 454 0684 D0031082 		.ascii	"\320\003\020\202)\307\357]\377\377\377\377\377\377\377"
+ 454      29C7EF5D 
+ 454      FFFFFFFF 
+ 454      FFFFFF
+ 455 0693 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\3772l8\245"
+ 455      FFFFFFFF 
+ 455      FFFFFF32 
+ 455      6C38A5
+ 456 06a2 D802F823 		.ascii	"\330\002\370#\370e\370f\370\247\371J\372\014\372M\352"
+ 456      F865F866 
+ 456      F8A7F94A 
+ 456      FA0CFA4D 
+ 456      EA
+ 457 06b3 4CD20BB9 		.ascii	"L\322\013\271\251\261h\251G\261'\271\007\321\007\350"
+ 457      A9B168A9 
+ 457      47B127B9 
+ 457      07D107E8 
+ 458 06c3 E7F8C7F8 		.ascii	"\347\370\307\370\247\370e\370e\370D\370#\370\003\320"
+ 458      A7F865F8 
+ 458      65F844F8 
+ 458      23F803D0 
+ 459 06d3 0228A309 		.ascii	"\002(\243\011\005\010\304Z\354\377\377\377\377\377\377"
+ 459      0508C45A 
+ 459      ECFFFFFF 
+ 459      FFFFFF
+ 460 06e2 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\336\373\031"
+ 460      FFFFFFFF 
+ 460      FFFFDEFB 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 24
+
+
+ 460      19
+ 461 06ef 0500C441 		.ascii	"\005\000\304A\247\300\346\370\003\370\206\370\247\370"
+ 461      A7C0E6F8 
+ 461      03F886F8 
+ 461      A7F8
+ 462 06fd 87F886F8 		.ascii	"\207\370\206\370\307\371)\371\212\371\253\371\253\371"
+ 462      C7F929F9 
+ 462      8AF9ABF9 
+ 462      ABF9
+ 463 070b 8BF96AF9 		.ascii	"\213\371j\371)\371\010\370\307\370\246\370\206\370e"
+ 463      29F908F8 
+ 463      C7F8A6F8 
+ 463      86F865
+ 464 071a F864F823 		.ascii	"\370d\370#\360\002\261\006)%\000\344\020\344\031%\031"
+ 464      F002B106 
+ 464      292500E4 
+ 464      10E41925 
+ 464      19
+ 465 072b 259D14FF 		.ascii	"%\235\024\377\377\377\377\377\377\377\377\377\377\377"
+ 465      FFFFFFFF 
+ 465      FFFFFFFF 
+ 465      FFFF
+ 466 0739 FFFFFFAD 		.ascii	"\377\377\377\255\226\000b\010\202\2255\316\272\242\213"
+ 466      96006208 
+ 466      829535CE 
+ 466      BAA28B
+ 467 0748 D044F825 		.ascii	"\320D\370%\370\207\370\247\370\307\370\247\370\207\370"
+ 467      F887F8A7 
+ 467      F8C7F8A7 
+ 467      F887F8
+ 468 0757 86F886F8 		.ascii	"\206\370\206\370\206\370\207\370\247\370\247\370\246"
+ 468      86F887F8 
+ 468      A7F8A7F8 
+ 468      A6
+ 469 0764 F885F865 		.ascii	"\370\205\370e\370d\360$\270d\223\015\266\273c\317\010"
+ 469      F864F024 
+ 469      B864930D 
+ 469      B6BB63CF 
+ 469      08
+ 470 0775 83110410 		.ascii	"\203\021\004\020\344!f:I\357]\377\377\377\377\377\377"
+ 470      E421663A 
+ 470      49EF5DFF 
+ 470      FFFFFFFF 
+ 470      FF
+ 471 0786 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\224\323\000B\020\344\316\273"
+ 471      FFFF94D3 
+ 471      004210E4 
+ 471      CEBB
+ 472 0794 FFFFE7BE 		.ascii	"\377\377\347\276\265v\252\314\301\007\340E\370E\370"
+ 472      B576AACC 
+ 472      C107E045 
+ 472      F845F8
+ 473 07a3 46F866F8 		.ascii	"F\370f\370\206\370\206\370\206\370\206\370e\370E\370"
+ 473      86F886F8 
+ 473      86F886F8 
+ 473      65F845F8 
+ 474 07b3 65E865D0 		.ascii	"e\350e\320D\250C\210\001\220\202\327<\357\377\225U\010"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 25
+
+
+ 474      44A84388 
+ 474      019082D7 
+ 474      3CEFFF95 
+ 474      5508
+ 475 07c5 83110411 		.ascii	"\203\021\004\021\004\031\005\031F\224\263"
+ 475      04190519 
+ 475      4694B3
+ 476 07d0 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\224"
+ 476      FFFFFFFF 
+ 476      FFFFFFFF 
+ 476      94
+ 477 07dd B3004121 		.ascii	"\263\000A!\206\337]\377\377\377\377\377\377\347\337"
+ 477      86DF5DFF 
+ 477      FFFFFFFF 
+ 477      FFE7DF
+ 478 07ec C67AB4D3 		.ascii	"\306z\264\323\263N\302*\321h\340\346\350\246\350\245"
+ 478      B34EC22A 
+ 478      D168E0E6 
+ 478      E8A6E8A5 
+ 479 07fc E8A5D8E6 		.ascii	"\350\245\330\346\311\210\251\006\250\"\250\002\240\000"
+ 479      C988A906 
+ 479      A822A802 
+ 479      A000
+ 480 080a C800D800 		.ascii	"\310\000\330\000\345\367\347\377\255\370\020\304\020"
+ 480      E5F7E7FF 
+ 480      ADF810C4 
+ 480      10
+ 481 0817 E4110410 		.ascii	"\344\021\004\020\344\021\005J\213\377\377\377\377\377"
+ 481      E411054A 
+ 481      8BFFFFFF 
+ 481      FFFF
+ 482 0825 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\245U\000A)\247\337]\367"
+ 482      FFFFFFA5 
+ 482      55004129 
+ 482      A7DF5DF7 
+ 483 0835 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\357\377"
+ 483      FFFFFFFF 
+ 483      FFFFFFEF 
+ 483      FF
+ 484 0842 DF7DCEDB 		.ascii	"\337}\316\333\316Y\315\370\315\327\305\367\316y\276"
+ 484      CE59CDF8 
+ 484      CDD7C5F7 
+ 484      CE79BE
+ 485 0851 FBA2ABF0 		.ascii	"\373\242\253\360\003\370E\320B\350C\360\000\324r\337"
+ 485      03F845D0 
+ 485      42E843F0 
+ 485      00D472DF 
+ 486 0861 FFAE3910 		.ascii	"\377\2569\020\344\020\344\021\004\020\344\021\005)\207"
+ 486      E410E411 
+ 486      0410E411 
+ 486      052987
+ 487 0870 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\316"
+ 487      FFFFFFFF 
+ 487      FFFFFFFF 
+ 487      CE
+ 488 087d 59088321 		.ascii	"Y\010\203!F\327\034\367\377\377\377\377\377\377\377"
+ 488      46D71CF7 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 26
+
+
+ 488      FFFFFFFF 
+ 488      FFFFFF
+ 489 088c FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 489      FFFFFFFF 
+ 489      FFFFFFFF 
+ 489      FF
+ 490 0899 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\357\377\272\213\370\004"
+ 490      FFFFFFEF 
+ 490      FFBA8BF8 
+ 490      04
+ 491 08a6 F845E062 		.ascii	"\370E\340b\360D\370\000\333\216\337\377\245\370\020"
+ 491      F044F800 
+ 491      DB8EDFFF 
+ 491      A5F810
+ 492 08b5 C410E410 		.ascii	"\304\020\344\020\344\021\004\020\344\031%\377\377\377"
+ 492      E4110410 
+ 492      E41925FF 
+ 492      FFFF
+ 493 08c3 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\367\276)\207\010"
+ 493      FFFFFFFF 
+ 493      FFF7BE29 
+ 493      8708
+ 494 08d1 83B639F7 		.ascii	"\203\2669\367\377\367\337\377\377\377\377\377\377\377"
+ 494      FFF7DFFF 
+ 494      FFFFFFFF 
+ 494      FFFF
+ 495 08df FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 495      FFFFFFFF 
+ 495      FFFFFFFF 
+ 495      FF
+ 496 08ec FFFFFFFF 		.ascii	"\377\377\377\377\347\276\272J\370\003\370E\370d\370"
+ 496      E7BEBA4A 
+ 496      F803F845 
+ 496      F864F8
+ 497 08fb 44F800E3 		.ascii	"D\370\000\343n\327\377\214\364\010\203\021\004\020\344"
+ 497      6ED7FF8C 
+ 497      F4088311 
+ 497      0410E4
+ 498 090a 10E410E4 		.ascii	"\020\344\020\344\031\005\377\377\377\377\377\377\377"
+ 498      1905FFFF 
+ 498      FFFFFFFF 
+ 498      FF
+ 499 0917 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377s\357\000\000\204r\357\377"
+ 499      FFFFFF73 
+ 499      EF000084 
+ 499      72EFFF
+ 500 0926 EFBEFFDF 		.ascii	"\357\276\377\337\377\377\377\377\377\377\377\377\377"
+ 500      FFFFFFFF 
+ 500      FFFFFFFF 
+ 500      FF
+ 501 0933 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 501      FFFFFFFF 
+ 501      FFFFFFFF 
+ 501      FF
+ 502 0940 E7DFBA8B 		.ascii	"\347\337\272\213\370\003\370E\370E\370#\370\000\324"
+ 502      F803F845 
+ 502      F845F823 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 27
+
+
+ 502      F800D4
+ 503 094f D3D7FF5B 		.ascii	"\323\327\377[N\000!:)\245U\010\203\020\304\031%\377"
+ 503      4E00213A 
+ 503      29A55508 
+ 503      8310C419 
+ 503      25FF
+ 504 0961 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 504      FFFFFFFF 
+ 504      FFFFFFFF 
+ 504      FF
+ 505 096e DEFB08A3 		.ascii	"\336\373\010\2431\350\337\236\347\236\357\277\377\377"
+ 505      31E8DF9E 
+ 505      E79EEFBF 
+ 505      FFFF
+ 506 097c FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 506      FFFFFFFF 
+ 506      FFFFFFFF 
+ 506      FF
+ 507 0989 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\367\377\274Q\340\002\370"
+ 507      FFFFFFF7 
+ 507      FFBC51E0 
+ 507      02F8
+ 508 0997 03F003E0 		.ascii	"\003\360\003\340C\302\354\317~\276\374!F\000!\224\323"
+ 508      43C2ECCF 
+ 508      7EBEFC21 
+ 508      46002194 
+ 508      D3
+ 509 09a8 FFFF8451 		.ascii	"\377\377\204Q\000\000)\207\377\377\377\377\377\377\377"
+ 509      00002987 
+ 509      FFFFFFFF 
+ 509      FFFFFF
+ 510 09b7 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\204Q\000\000\214"
+ 510      FFFFFFFF 
+ 510      FF845100 
+ 510      008C
+ 511 09c5 F4EFFFE7 		.ascii	"\364\357\377\347\236\357\277\377\337\377\377\377\377"
+ 511      9EEFBFFF 
+ 511      DFFFFFFF 
+ 511      FF
+ 512 09d2 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 512      FFFFFFFF 
+ 512      FFFFFFFF 
+ 512      FF
+ 513 09df FFFFFFDF 		.ascii	"\377\377\377\337=\275U\274R\274r\265\267\307]\337\377"
+ 513      3DBD55BC 
+ 513      52BC72B5 
+ 513      B7C75DDF 
+ 513      FF
+ 514 09f0 6BF00000 		.ascii	"k\360\000\000:\011\367\277\377\377\377\377\235\024\245"
+ 514      3A09F7BF 
+ 514      FFFFFFFF 
+ 514      9D14A5
+ 515 09ff 55FFFFFF 		.ascii	"U\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 515      FFFFFFFF 
+ 515      FFFFFFFF 
+ 515      FFFF
+ 516 0a0d FFFFFFFF 		.ascii	"\377\377\377\377\377J\254\010\244\276\273\347\337\347"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 28
+
+
+ 516      FF4AAC08 
+ 516      A4BEBBE7 
+ 516      DFE7
+ 517 0a1b 7EEFBEF7 		.ascii	"~\357\276\367\337\377\337\377\377\377\377\377\377\377"
+ 517      DFFFDFFF 
+ 517      FFFFFFFF 
+ 517      FFFF
+ 518 0a29 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\337\367\337\357\377"
+ 518      FFFFFFFF 
+ 518      DFF7DFEF 
+ 518      FF
+ 519 0a36 DFDFD7BF 		.ascii	"\337\337\327\277\327\236\337\337\245\330\010\203\021"
+ 519      D79EDFDF 
+ 519      A5D80883 
+ 519      11
+ 520 0a43 26D6DBFF 		.ascii	"&\326\333\377\377\377\377\377\377\377\377\377\377\377"
+ 520      FFFFFFFF 
+ 520      FFFFFFFF 
+ 520      FFFF
+ 521 0a51 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 521      FFFFFFFF 
+ 521      FFFFFFFF 
+ 521      FF
+ 522 0a5e FFFFEE79 		.ascii	"\377\377\356y\334\2131!!\251\317=\337\277\337~\347\236"
+ 522      DC8B3121 
+ 522      21A9CF3D 
+ 522      DFBFDF7E 
+ 522      E79E
+ 523 0a70 EFBEEFBF 		.ascii	"\357\276\357\277\367\337\367\337\367\337\367\337\367"
+ 523      F7DFF7DF 
+ 523      F7DFF7DF 
+ 523      F7
+ 524 0a7d DFEFBFEF 		.ascii	"\337\357\277\357\276\347\236\337~\327^\327^\337\337"
+ 524      BEE79EDF 
+ 524      7ED75ED7 
+ 524      5EDFDF
+ 525 0a8c B69A1926 		.ascii	"\266\232\031&\010B\243\355\377\277\377\377\377\377\377"
+ 525      0842A3ED 
+ 525      FFBFFFFF 
+ 525      FFFFFF
+ 526 0a9b FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 526      FFFFFFFF 
+ 526      FFFFFFFF 
+ 526      FF
+ 527 0aa8 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\335t\333\300\376\000\356BB"
+ 527      FFFFDD74 
+ 527      DBC0FE00 
+ 527      EE4242
+ 528 0ab7 022189B6 		.ascii	"\002!\211\266{\337\337\327~\337~\337~\347\236\347\236"
+ 528      7BDFDFD7 
+ 528      7EDF7EDF 
+ 528      7EE79EE7 
+ 528      9E
+ 529 0ac8 E79EE79E 		.ascii	"\347\236\347\236\347\236\337~\337~\327]\327]\337\236"
+ 529      E79EDF7E 
+ 529      DF7ED75D 
+ 529      D75DDF9E 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 29
+
+
+ 530 0ad8 E7FFA5F8 		.ascii	"\347\377\245\370\021\007\030\343\305\002\375`\323\346"
+ 530      110718E3 
+ 530      C502FD60 
+ 530      D3E6
+ 531 0ae6 EEDBFFFF 		.ascii	"\356\333\377\377\377\377\377\377\377\377\377\377\377"
+ 531      FFFFFFFF 
+ 531      FFFFFFFF 
+ 531      FF
+ 532 0af3 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\367\236\272\204"
+ 532      FFFFFFFF 
+ 532      FFF79EBA 
+ 532      84
+ 533 0b00 FCC1FE42 		.ascii	"\374\301\376B\376\202\376\242\203\201!Ett\307^\337\337"
+ 533      FE82FEA2 
+ 533      83812145 
+ 533      7474C75E 
+ 533      DFDF
+ 534 0b12 D77ED75E 		.ascii	"\327~\327^\327]\327^\327^\327]\327]\327^\337\236\347"
+ 534      D75DD75E 
+ 534      D75ED75D 
+ 534      D75DD75E 
+ 534      DF9EE7
+ 535 0b25 FFC73D63 		.ascii	"\377\307=c\361\010\204RB\346&\377)\376\206\363\340\303"
+ 535      F1088452 
+ 535      42E626FF 
+ 535      29FE86F3 
+ 535      E0C3
+ 536 0b37 6AFFFFFF 		.ascii	"j\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 536      FFFFFFFF 
+ 536      FFFFFFFF 
+ 536      FFFF
+ 537 0b45 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\336\030\322\301\375\242"
+ 537      FFFFFFDE 
+ 537      18D2C1FD 
+ 537      A2
+ 538 0b52 FE22FE42 		.ascii	"\376\"\376B\376B\376b\324\342jABItS\246;\307>\327\277"
+ 538      FE42FE62 
+ 538      D4E26A41 
+ 538      42497453 
+ 538      A63BC73E 
+ 539 0b68 D7BFD7BF 		.ascii	"\327\277\327\277\337\277\327\277\307>\246\032c\362)"
+ 539      DFBFD7BF 
+ 539      C73EA61A 
+ 539      63F229
+ 540 0b77 A74182B4 		.ascii	"\247A\202\264\"\376b\376\203\376\252\377\017\375g\272"
+ 540      22FE62FE 
+ 540      83FEAAFF 
+ 540      0FFD67BA 
+ 541 0b87 63EF3CFF 		.ascii	"c\357<\377\377\377\377\377\377\377\377\377\377\377\377"
+ 541      FFFFFFFF 
+ 541      FFFFFFFF 
+ 541      FFFFFF
+ 542 0b96 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\346\232\322\200\375!\375\302"
+ 542      FFFFE69A 
+ 542      D280FD21 
+ 542      FDC2
+ 543 0ba4 F5E2F5C2 		.ascii	"\365\342\365\302\365\202\375\202\375b\334a\233!j\204"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 30
+
+
+ 543      F582FD82 
+ 543      FD62DC61 
+ 543      9B216A84 
+ 544 0bb4 6AE9632C 		.ascii	"j\351c,c\257t\021cnc,Z\211R\004z\201\313\302\374\342"
+ 544      63AF7411 
+ 544      636E632C 
+ 544      5A895204 
+ 544      7A81CBC2 
+ 545 0bca FD62FD82 		.ascii	"\375b\375\202\375\302\375\302\375\344\375$\312b\347"
+ 545      FDC2FDC2 
+ 545      FDE4FD24 
+ 545      CA62E7
+ 546 0bd9 1CFFFFFF 		.ascii	"\034\377\377\377\377\377\377\377\377\377\377\377\377"
+ 546      FFFFFFFF 
+ 546      FFFFFFFF 
+ 546      FF
+ 547 0be6 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\314\261\322\201\363"
+ 547      FFFFFFFF 
+ 547      CCB1D281 
+ 547      F3
+ 548 0bf3 C0FCC1FD 		.ascii	"\300\374\301\375\002\375\002\374\342\374\302\374\302"
+ 548      02FD02FC 
+ 548      E2FCC2FC 
+ 548      C2
+ 549 0c00 FC81FB80 		.ascii	"\374\201\373\200\311\300\201\244\2555\316Y\234q\201"
+ 549      C9C081A4 
+ 549      AD35CE59 
+ 549      9C7181
+ 550 0c0f 21DA00FB 		.ascii	"!\332\000\373\241\374\202\374\242\374\202\374\242\375"
+ 550      A1FC82FC 
+ 550      A2FC82FC 
+ 550      A2FD
+ 551 0c1d 02FD22FC 		.ascii	"\002\375\"\374\342\374\000\332`\314\220\377\377\377"
+ 551      E2FC00DA 
+ 551      60CC90FF 
+ 551      FFFF
+ 552 0c2b FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\377\377\377\377\377"
+ 552      FFFFFFFF 
+ 552      FFFFFFFF 
+ 552      FF
+ 553 0c38 FFFFFFFF 		.ascii	"\377\377\377\377\377\377\377\377\336Y\304\015\313\006"
+ 553      FFFFFFFF 
+ 553      DE59C40D 
+ 553      CB06
+ 554 0c46 D2E4DB03 		.ascii	"\322\344\333\003\333\003\332\343\322\303\302\244\263"
+ 554      DB03DAE3 
+ 554      D2C3C2A4 
+ 554      B3
+ 555 0c53 09BCD2F7 		.ascii	"\011\274\322\367\236\377\377\377\377\377\377\346\373"
+ 555      9EFFFFFF 
+ 555      FFFFFFE6 
+ 555      FB
+ 556 0c60 B40EBAA6 		.ascii	"\264\016\272\246\322\203\342\343\353\002\353\"\343\""
+ 556      D283E2E3 
+ 556      EB02EB22 
+ 556      E322
+ 557 0c6e DB03D2E4 		.ascii	"\333\003\322\344\303j\325\266\377\377\377\377\377\377"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 31
+
+
+ 557      C36AD5B6 
+ 557      FFFFFFFF 
+ 557      FFFF
+ 558 0c7c FFFFFFFF 		.ascii	"\377\377\377\377"
+ 559              		.text
+ 560              	.Letext0:
+ 561              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 562              		.file 4 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 563              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h"
+ 564              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 565              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h"
+ 566              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h"
+ 567              		.file 9 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 568              		.file 10 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 569              		.file 11 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h"
+ 570              		.file 12 "Core/Inc/ad7606.h"
+ 571              		.file 13 "Core/Inc/tim.h"
+ 572              		.file 14 "Drivers/LCD/Inc/pic.h"
+ 573              		.file 15 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 574              		.file 16 "Core/Inc/gpio.h"
+ 575              		.file 17 "Core/Inc/dma.h"
+ 576              		.file 18 "Core/Inc/fsmc.h"
+ 577              		.file 19 "Core/Inc/sdio.h"
+ 578              		.file 20 "Core/Inc/usart.h"
+ 579              		.file 21 "Core/Inc/rtc.h"
+ 580              		.file 22 "LWIP/App/lwip.h"
+ 581              		.file 23 "Core/Inc/crc.h"
+ 582              		.file 24 "<built-in>"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s 			page 32
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:20     .text.Error_Handler:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:26     .text.Error_Handler:00000000 Error_Handler
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:59     .text.SystemClock_Config:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:65     .text.SystemClock_Config:00000000 SystemClock_Config
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:217    .text.SystemClock_Config:000000a4 $d
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:223    .rodata.main.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:227    .text.main:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:233    .text.main:00000000 main
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:324    .text.main:00000070 $d
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:337    .bss.ad7606dev:00000000 ad7606dev
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:343    .rodata.gImage_1:00000000 gImage_1
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:334    .bss.ad7606dev:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccJxjPlO.s:340    .rodata.gImage_1:00000000 $d
+
+UNDEFINED SYMBOLS
+memset
+HAL_RCC_OscConfig
+HAL_RCC_ClockConfig
+HAL_Init
+MX_GPIO_Init
+MX_DMA_Init
+MX_TIM2_Init
+MX_FSMC_Init
+MX_SDIO_SD_Init
+MX_USART1_UART_Init
+MX_RTC_Init
+MX_LWIP_Init
+MX_CRC_Init
+TCP_Client_Init
+puts
+ad7606ini
+HAL_GPIO_WritePin
+HAL_Delay
+HAL_TIM_PWM_Start
+ana_AD7606
+MX_LWIP_Process
+htim2

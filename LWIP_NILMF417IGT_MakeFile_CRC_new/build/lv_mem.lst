@@ -1,0 +1,3118 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_mem.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_mem_walker,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	lv_mem_walker:
+  26              	.LVL0:
+  27              	.LFB37:
+  28              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @file lv_mem.c
+   3:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * General and portable implementation of malloc and free.
+   4:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * The dynamic memory monitoring is also supported.
+   5:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+   6:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+   7:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /*********************
+   8:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *      INCLUDES
+   9:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *********************/
+  10:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #include "lv_mem.h"
+  11:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #include "lv_tlsf.h"
+  12:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #include "lv_gc.h"
+  13:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #include "lv_assert.h"
+  14:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #include "lv_log.h"
+  15:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  16:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM != 0
+  17:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #include LV_MEM_CUSTOM_INCLUDE
+  18:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  19:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  20:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #ifdef LV_MEM_POOL_INCLUDE
+  21:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #include LV_MEM_POOL_INCLUDE
+  22:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  23:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  24:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /*********************
+  25:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *      DEFINES
+  26:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *********************/
+  27:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /*memset the allocated memories to 0xaa and freed memories to 0xbb (just for testing purposes)*/
+  28:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #ifndef LV_MEM_ADD_JUNK
+  29:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define LV_MEM_ADD_JUNK  0
+  30:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 2
+
+
+  31:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  32:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #ifdef LV_ARCH_64
+  33:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define MEM_UNIT         uint64_t
+  34:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define ALIGN_MASK       0x7
+  35:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+  36:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define MEM_UNIT         uint32_t
+  37:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define ALIGN_MASK       0x3
+  38:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  39:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  40:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #define ZERO_MEM_SENTINEL  0xa1b2c3d4
+  41:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  42:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**********************
+  43:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *      TYPEDEFS
+  44:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  **********************/
+  45:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  46:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**********************
+  47:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *  STATIC PROTOTYPES
+  48:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  **********************/
+  49:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+  50:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     static void lv_mem_walker(void * ptr, size_t size, int used, void * user);
+  51:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  52:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**********************
+  54:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *  STATIC VARIABLES
+  55:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  **********************/
+  56:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+  57:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     static lv_tlsf_t tlsf;
+  58:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  59:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  60:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** static uint32_t zero_mem = ZERO_MEM_SENTINEL; /*Give the address of this variable if 0 byte should 
+  61:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**********************
+  63:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *      MACROS
+  64:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  **********************/
+  65:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_LOG_TRACE_MEM
+  66:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define MEM_TRACE(...) LV_LOG_TRACE(__VA_ARGS__)
+  67:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+  68:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     #define MEM_TRACE(...)
+  69:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  70:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  71:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #define COPY32 *d32 = *s32; d32++; s32++;
+  72:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #define COPY8 *d8 = *s8; d8++; s8++;
+  73:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #define SET32(x) *d32 = x; d32++;
+  74:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #define SET8(x) *d8 = x; d8++;
+  75:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #define REPEAT8(expr) expr expr expr expr expr expr expr expr
+  76:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  77:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**********************
+  78:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *   GLOBAL FUNCTIONS
+  79:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  **********************/
+  80:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+  81:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+  82:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Initialize the dyn_mem module (work memory and other variables)
+  83:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+  84:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void lv_mem_init(void)
+  85:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+  86:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+  87:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 3
+
+
+  88:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_ADR == 0
+  89:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #ifdef LV_MEM_POOL_ALLOC
+  90:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     tlsf = lv_tlsf_create_with_pool((void *)LV_MEM_POOL_ALLOC(LV_MEM_SIZE), LV_MEM_SIZE);
+  91:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+  92:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Allocate a large array to store the dynamically allocated data*/
+  93:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     static LV_ATTRIBUTE_LARGE_RAM_ARRAY MEM_UNIT work_mem_int[LV_MEM_SIZE / sizeof(MEM_UNIT)];
+  94:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     tlsf = lv_tlsf_create_with_pool((void *)work_mem_int, LV_MEM_SIZE);
+  95:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  96:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+  97:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     tlsf = lv_tlsf_create_with_pool((void *)LV_MEM_ADR, LV_MEM_SIZE);
+  98:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  99:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 100:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 101:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_ADD_JUNK
+ 102:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     LV_LOG_WARN("LV_MEM_ADD_JUNK is enabled which makes LVGL much slower");
+ 103:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 104:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 105:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 106:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 107:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Clean up the memory buffer which frees all the allocated memories.
+ 108:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @note It work only if `LV_MEM_CUSTOM == 0`
+ 109:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 110:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void lv_mem_deinit(void)
+ 111:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 112:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 113:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_tlsf_destroy(tlsf);
+ 114:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_mem_init();
+ 115:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 116:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 117:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 119:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Allocate a memory dynamically
+ 120:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param size size of the memory to allocate in bytes
+ 121:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @return pointer to the allocated memory
+ 122:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 123:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void * lv_mem_alloc(size_t size)
+ 124:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 125:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("allocating %lu bytes", (unsigned long)size);
+ 126:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(size == 0) {
+ 127:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("using zero_mem");
+ 128:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return &zero_mem;
+ 129:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 130:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 131:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 132:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     void * alloc = lv_tlsf_malloc(tlsf, size);
+ 133:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 134:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     void * alloc = LV_MEM_CUSTOM_ALLOC(size);
+ 135:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 136:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 137:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(alloc == NULL) {
+ 138:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+ 139:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_monitor_t mon;
+ 140:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_monitor(&mon);
+ 141:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("used: %6d (%3d %%), frag: %3d %%, biggest free: %6d",
+ 142:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                      (int)(mon.total_size - mon.free_size), mon.used_pct, mon.frag_pct,
+ 143:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                      (int)mon.free_biggest_size);
+ 144:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 4
+
+
+ 145:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_ADD_JUNK
+ 146:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     else {
+ 147:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_memset(alloc, 0xaa, size);
+ 148:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 149:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 150:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 151:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("allocated at %p", alloc);
+ 152:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return alloc;
+ 153:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 154:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 155:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 156:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Free an allocated data
+ 157:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param data pointer to an allocated memory
+ 158:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 159:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void lv_mem_free(void * data)
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 161:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("freeing %p", data);
+ 162:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(data == &zero_mem) return;
+ 163:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(data == NULL) return;
+ 164:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 165:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 166:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #  if LV_MEM_ADD_JUNK
+ 167:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_memset(data, 0xbb, lv_tlsf_block_size(data));
+ 168:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #  endif
+ 169:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_tlsf_free(tlsf, data);
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 171:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     LV_MEM_CUSTOM_FREE(data);
+ 172:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 173:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 174:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 175:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 176:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Reallocate a memory with a new size. The old content will be kept.
+ 177:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param data pointer to an allocated memory.
+ 178:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Its content will be copied to the new memory block and freed
+ 179:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param new_size the desired new size in byte
+ 180:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @return pointer to the new memory
+ 181:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 182:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void * lv_mem_realloc(void * data_p, size_t new_size)
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("reallocating %p with %lu size", data_p, (unsigned long)new_size);
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(new_size == 0) {
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("using zero_mem");
+ 187:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_free(data_p);
+ 188:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return &zero_mem;
+ 189:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 190:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(data_p == &zero_mem) return lv_mem_alloc(new_size);
+ 192:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 193:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 194:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     void * new_p = lv_tlsf_realloc(tlsf, data_p, new_size);
+ 195:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 196:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     void * new_p = LV_MEM_CUSTOM_REALLOC(data_p, new_size);
+ 197:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 198:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(new_p == NULL) {
+ 199:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("couldn't allocate memory");
+ 200:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return NULL;
+ 201:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 5
+
+
+ 202:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 203:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("allocated at %p", new_p);
+ 204:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return new_p;
+ 205:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 206:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 207:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** lv_res_t lv_mem_test(void)
+ 208:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 209:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(zero_mem != ZERO_MEM_SENTINEL) {
+ 210:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("zero_mem is written");
+ 211:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return LV_RES_INV;
+ 212:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 213:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 214:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 215:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(lv_tlsf_check(tlsf)) {
+ 216:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("failed");
+ 217:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return LV_RES_INV;
+ 218:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 219:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 220:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(lv_tlsf_check_pool(lv_tlsf_get_pool(tlsf))) {
+ 221:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("pool failed");
+ 222:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return LV_RES_INV;
+ 223:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 224:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 225:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("passed");
+ 226:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return LV_RES_OK;
+ 227:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 228:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 229:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 230:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Give information about the work memory of dynamic allocation
+ 231:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param mon_p pointer to a lv_mem_monitor_t variable,
+ 232:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *              the result of the analysis will be stored here
+ 233:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 234:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void lv_mem_monitor(lv_mem_monitor_t * mon_p)
+ 235:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 236:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Init the data*/
+ 237:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_memset(mon_p, 0, sizeof(lv_mem_monitor_t));
+ 238:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 239:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("begin");
+ 240:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 241:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_tlsf_walk_pool(lv_tlsf_get_pool(tlsf), lv_mem_walker, mon_p);
+ 242:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 243:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     mon_p->total_size = LV_MEM_SIZE;
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     mon_p->used_pct = 100 - (100U * mon_p->free_size) / mon_p->total_size;
+ 245:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = mon_p->free_biggest_size * 100U / mon_p->free_size;
+ 247:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 100 - mon_p->frag_pct;
+ 248:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 249:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     else {
+ 250:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 0; /*no fragmentation if all the RAM is used*/
+ 251:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 252:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 253:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("finished");
+ 254:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 255:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 256:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 257:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 258:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 6
+
+
+ 259:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Get a temporal buffer with the given size.
+ 260:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param size the required size
+ 261:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 262:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void * lv_mem_buf_get(uint32_t size)
+ 263:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 264:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(size == 0) return NULL;
+ 265:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 266:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("begin, getting %d bytes", size);
+ 267:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 268:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Try to find a free buffer with suitable size*/
+ 269:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     int8_t i_guess = -1;
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 271:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 272:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(LV_GC_ROOT(lv_mem_buf[i]).size == size) {
+ 273:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 LV_GC_ROOT(lv_mem_buf[i]).used = 1;
+ 274:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 return LV_GC_ROOT(lv_mem_buf[i]).p;
+ 275:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 276:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             else if(i_guess < 0) {
+ 277:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 278:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 279:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             /*If size of `i` is closer to `size` prefer it*/
+ 280:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             else if(LV_GC_ROOT(lv_mem_buf[i]).size < LV_GC_ROOT(lv_mem_buf[i_guess]).size) {
+ 281:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 282:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 283:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 284:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 285:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 286:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(i_guess >= 0) {
+ 287:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_GC_ROOT(lv_mem_buf[i_guess]).used = 1;
+ 288:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("returning already allocated buffer (buffer id: %d, address: %p)", i_guess,
+ 289:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                   LV_GC_ROOT(lv_mem_buf[i_guess]).p);
+ 290:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return LV_GC_ROOT(lv_mem_buf[i_guess]).p;
+ 291:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 292:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 293:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Reallocate a free buffer*/
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 295:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 296:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             /*if this fails you probably need to increase your LV_MEM_SIZE/heap size*/
+ 297:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             void * buf = lv_mem_realloc(LV_GC_ROOT(lv_mem_buf[i]).p, size);
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_ASSERT_MSG(buf != NULL, "Out of memory, can't allocate a new buffer (increase your L
+ 299:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 300:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 301:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 1;
+ 302:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).size = size;
+ 303:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).p    = buf;
+ 304:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             MEM_TRACE("allocated (buffer id: %d, address: %p)", i, LV_GC_ROOT(lv_mem_buf[i]).p);
+ 305:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             return LV_GC_ROOT(lv_mem_buf[i]).p;
+ 306:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 307:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 308:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 309:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     LV_LOG_ERROR("no more buffers. (increase LV_MEM_BUF_MAX_NUM)");
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     LV_ASSERT_MSG(false, "No more buffers. Increase LV_MEM_BUF_MAX_NUM.");
+ 311:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 312:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 313:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 314:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 315:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Release a memory buffer
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 7
+
+
+ 316:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param p buffer to release
+ 317:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 318:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void lv_mem_buf_release(void * p)
+ 319:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 320:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("begin (address: %p)", p);
+ 321:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 323:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 324:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 325:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             return;
+ 326:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 327:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 328:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 329:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     LV_LOG_ERROR("p is not a known buffer");
+ 330:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 331:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 332:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 333:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Free all memory buffers
+ 334:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 335:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** void lv_mem_buf_free_all(void)
+ 336:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 338:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 339:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             lv_mem_free(LV_GC_ROOT(lv_mem_buf[i]).p);
+ 340:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).p = NULL;
+ 341:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 342:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).size = 0;
+ 343:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 344:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 345:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 346:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 347:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEMCPY_MEMSET_STD == 0
+ 348:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 349:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Same as `memcpy` but optimized for 4 byte operation.
+ 350:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param dst pointer to the destination buffer
+ 351:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param src pointer to the source buffer
+ 352:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param len number of byte to copy
+ 353:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 354:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** LV_ATTRIBUTE_FAST_MEM void * lv_memcpy(void * dst, const void * src, size_t len)
+ 355:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = dst;
+ 357:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 358:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 359:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_uintptr_t d_align = (lv_uintptr_t)d8 & ALIGN_MASK;
+ 360:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_uintptr_t s_align = (lv_uintptr_t)s8 & ALIGN_MASK;
+ 361:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 362:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Byte copy for unaligned memories*/
+ 363:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(s_align != d_align) {
+ 364:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(len > 32) {
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 369:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 370:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 371:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(len) {
+ 372:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 8
+
+
+ 373:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 374:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 375:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return dst;
+ 376:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 377:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 378:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Make the memories aligned*/
+ 379:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(d_align) {
+ 380:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 381:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 382:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8;
+ 383:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 384:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 385:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 386:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 387:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 388:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint32_t * d32 = (uint32_t *)d8;
+ 389:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint32_t * s32 = (uint32_t *)s8;
+ 390:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 32) {
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(COPY32)
+ 392:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 393:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 394:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 395:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 4) {
+ 396:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         COPY32;
+ 397:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 398:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 399:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 400:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     d8 = (uint8_t *)d32;
+ 401:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     s8 = (const uint8_t *)s32;
+ 402:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len) {
+ 403:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         COPY8
+ 404:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 405:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 406:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 407:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return dst;
+ 408:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 409:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 410:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 411:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Same as `memset` but optimized for 4 byte operation.
+ 412:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param dst pointer to the destination buffer
+ 413:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param v value to set [0..255]
+ 414:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param len number of byte to set
+ 415:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 416:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** LV_ATTRIBUTE_FAST_MEM void lv_memset(void * dst, uint8_t v, size_t len)
+ 417:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 418:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 419:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = (uint8_t *)dst;
+ 420:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 421:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uintptr_t d_align = (lv_uintptr_t) d8 & ALIGN_MASK;
+ 422:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 423:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Make the address aligned*/
+ 424:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(d_align) {
+ 425:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 426:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 427:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(v);
+ 428:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 429:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 9
+
+
+ 430:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 431:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 432:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 433:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint32_t v32 = (uint32_t)v + ((uint32_t)v << 8) + ((uint32_t)v << 16) + ((uint32_t)v << 24);
+ 434:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 435:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint32_t * d32 = (uint32_t *)d8;
+ 436:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 437:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 32) {
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(v32));
+ 439:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 440:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 441:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 442:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 4) {
+ 443:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET32(v32);
+ 444:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 445:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 446:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 447:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     d8 = (uint8_t *)d32;
+ 448:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len) {
+ 449:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET8(v);
+ 450:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 451:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 452:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 453:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 454:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 455:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Same as `memset(dst, 0x00, len)` but optimized for 4 byte operation.
+ 456:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param dst pointer to the destination buffer
+ 457:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param len number of byte to set
+ 458:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 459:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** LV_ATTRIBUTE_FAST_MEM void lv_memset_00(void * dst, size_t len)
+ 460:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 461:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = (uint8_t *)dst;
+ 462:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uintptr_t d_align = (lv_uintptr_t) d8 & ALIGN_MASK;
+ 463:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 464:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Make the address aligned*/
+ 465:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(d_align) {
+ 466:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 467:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 468:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0);
+ 469:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 470:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 471:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 472:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 473:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 474:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint32_t * d32 = (uint32_t *)d8;
+ 475:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 32) {
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(0));
+ 477:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 478:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 479:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 480:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 4) {
+ 481:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET32(0);
+ 482:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 483:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 484:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 485:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     d8 = (uint8_t *)d32;
+ 486:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len) {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 10
+
+
+ 487:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET8(0);
+ 488:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 489:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 490:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 491:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 492:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**
+ 493:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * Same as `memset(dst, 0xFF, len)` but optimized for 4 byte operation.
+ 494:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param dst pointer to the destination buffer
+ 495:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  * @param len number of byte to set
+ 496:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  */
+ 497:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** LV_ATTRIBUTE_FAST_MEM void lv_memset_ff(void * dst, size_t len)
+ 498:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+ 499:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = (uint8_t *)dst;
+ 500:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uintptr_t d_align = (lv_uintptr_t) d8 & ALIGN_MASK;
+ 501:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 502:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Make the address aligned*/
+ 503:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(d_align) {
+ 504:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 505:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 506:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0xFF);
+ 507:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 508:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 509:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 510:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 511:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 512:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint32_t * d32 = (uint32_t *)d8;
+ 513:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 32) {
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(0xFFFFFFFF));
+ 515:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 516:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 517:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 518:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len > 4) {
+ 519:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET32(0xFFFFFFFF);
+ 520:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 521:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 522:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 523:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     d8 = (uint8_t *)d32;
+ 524:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     while(len) {
+ 525:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET8(0xFF);
+ 526:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 527:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 528:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 529:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 530:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif /*LV_MEMCPY_MEMSET_STD*/
+ 531:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 532:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** /**********************
+ 533:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  *   STATIC FUNCTIONS
+ 534:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****  **********************/
+ 535:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 536:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 537:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** static void lv_mem_walker(void * ptr, size_t size, int used, void * user)
+ 538:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** {
+  29              		.loc 1 538 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 11
+
+
+ 539:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     LV_UNUSED(ptr);
+  34              		.loc 1 539 5 view .LVU1
+ 540:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 541:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_mem_monitor_t * mon_p = user;
+  35              		.loc 1 541 5 view .LVU2
+ 542:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(used) {
+  36              		.loc 1 542 5 view .LVU3
+  37              		.loc 1 542 7 is_stmt 0 view .LVU4
+  38 0000 1AB1     		cbz	r2, .L2
+ 543:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->used_cnt++;
+  39              		.loc 1 543 9 is_stmt 1 view .LVU5
+  40              		.loc 1 543 14 is_stmt 0 view .LVU6
+  41 0002 1A69     		ldr	r2, [r3, #16]
+  42              	.LVL1:
+  43              		.loc 1 543 24 view .LVU7
+  44 0004 0132     		adds	r2, r2, #1
+  45 0006 1A61     		str	r2, [r3, #16]
+  46 0008 7047     		bx	lr
+  47              	.LVL2:
+  48              	.L2:
+ 544:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 545:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     else {
+ 546:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->free_cnt++;
+  49              		.loc 1 546 9 is_stmt 1 view .LVU8
+  50              		.loc 1 546 14 is_stmt 0 view .LVU9
+  51 000a 5A68     		ldr	r2, [r3, #4]
+  52              	.LVL3:
+  53              		.loc 1 546 24 view .LVU10
+  54 000c 0132     		adds	r2, r2, #1
+  55 000e 5A60     		str	r2, [r3, #4]
+ 547:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->free_size += size;
+  56              		.loc 1 547 9 is_stmt 1 view .LVU11
+  57              		.loc 1 547 26 is_stmt 0 view .LVU12
+  58 0010 9A68     		ldr	r2, [r3, #8]
+  59 0012 0A44     		add	r2, r2, r1
+  60 0014 9A60     		str	r2, [r3, #8]
+ 548:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(size > mon_p->free_biggest_size)
+  61              		.loc 1 548 9 is_stmt 1 view .LVU13
+  62              		.loc 1 548 24 is_stmt 0 view .LVU14
+  63 0016 DA68     		ldr	r2, [r3, #12]
+  64              		.loc 1 548 11 view .LVU15
+  65 0018 8A42     		cmp	r2, r1
+  66 001a 00D2     		bcs	.L1
+ 549:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             mon_p->free_biggest_size = size;
+  67              		.loc 1 549 13 is_stmt 1 view .LVU16
+  68              		.loc 1 549 38 is_stmt 0 view .LVU17
+  69 001c D960     		str	r1, [r3, #12]
+  70              	.L1:
+ 550:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 551:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+  71              		.loc 1 551 1 view .LVU18
+  72 001e 7047     		bx	lr
+  73              		.cfi_endproc
+  74              	.LFE37:
+  76              		.section	.text.lv_mem_init,"ax",%progbits
+  77              		.align	1
+  78              		.global	lv_mem_init
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 12
+
+
+  79              		.syntax unified
+  80              		.thumb
+  81              		.thumb_func
+  83              	lv_mem_init:
+  84              	.LFB23:
+  85:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+  85              		.loc 1 85 1 is_stmt 1 view -0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89 0000 08B5     		push	{r3, lr}
+  90              	.LCFI0:
+  91              		.cfi_def_cfa_offset 8
+  92              		.cfi_offset 3, -8
+  93              		.cfi_offset 14, -4
+  93:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     tlsf = lv_tlsf_create_with_pool((void *)work_mem_int, LV_MEM_SIZE);
+  94              		.loc 1 93 5 view .LVU20
+  94:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  95              		.loc 1 94 5 view .LVU21
+  94:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+  96              		.loc 1 94 12 is_stmt 0 view .LVU22
+  97 0002 4FF44041 		mov	r1, #49152
+  98 0006 0348     		ldr	r0, .L6
+  99 0008 FFF7FEFF 		bl	lv_tlsf_create_with_pool
+ 100              	.LVL4:
+  94:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 101              		.loc 1 94 10 view .LVU23
+ 102 000c 024B     		ldr	r3, .L6+4
+ 103 000e 1860     		str	r0, [r3]
+ 104:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 104              		.loc 1 104 1 view .LVU24
+ 105 0010 08BD     		pop	{r3, pc}
+ 106              	.L7:
+ 107 0012 00BF     		.align	2
+ 108              	.L6:
+ 109 0014 00000000 		.word	work_mem_int.0
+ 110 0018 00000000 		.word	.LANCHOR0
+ 111              		.cfi_endproc
+ 112              	.LFE23:
+ 114              		.section	.text.lv_mem_deinit,"ax",%progbits
+ 115              		.align	1
+ 116              		.global	lv_mem_deinit
+ 117              		.syntax unified
+ 118              		.thumb
+ 119              		.thumb_func
+ 121              	lv_mem_deinit:
+ 122              	.LFB24:
+ 111:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 123              		.loc 1 111 1 is_stmt 1 view -0
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 0
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127 0000 08B5     		push	{r3, lr}
+ 128              	.LCFI1:
+ 129              		.cfi_def_cfa_offset 8
+ 130              		.cfi_offset 3, -8
+ 131              		.cfi_offset 14, -4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 13
+
+
+ 113:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_mem_init();
+ 132              		.loc 1 113 5 view .LVU26
+ 133 0002 034B     		ldr	r3, .L10
+ 134 0004 1868     		ldr	r0, [r3]
+ 135 0006 FFF7FEFF 		bl	lv_tlsf_destroy
+ 136              	.LVL5:
+ 114:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 137              		.loc 1 114 5 view .LVU27
+ 138 000a FFF7FEFF 		bl	lv_mem_init
+ 139              	.LVL6:
+ 116:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 140              		.loc 1 116 1 is_stmt 0 view .LVU28
+ 141 000e 08BD     		pop	{r3, pc}
+ 142              	.L11:
+ 143              		.align	2
+ 144              	.L10:
+ 145 0010 00000000 		.word	.LANCHOR0
+ 146              		.cfi_endproc
+ 147              	.LFE24:
+ 149              		.section	.text.lv_mem_free,"ax",%progbits
+ 150              		.align	1
+ 151              		.global	lv_mem_free
+ 152              		.syntax unified
+ 153              		.thumb
+ 154              		.thumb_func
+ 156              	lv_mem_free:
+ 157              	.LVL7:
+ 158              	.LFB26:
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("freeing %p", data);
+ 159              		.loc 1 160 1 is_stmt 1 view -0
+ 160              		.cfi_startproc
+ 161              		@ args = 0, pretend = 0, frame = 0
+ 162              		@ frame_needed = 0, uses_anonymous_args = 0
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("freeing %p", data);
+ 163              		.loc 1 160 1 is_stmt 0 view .LVU30
+ 164 0000 08B5     		push	{r3, lr}
+ 165              	.LCFI2:
+ 166              		.cfi_def_cfa_offset 8
+ 167              		.cfi_offset 3, -8
+ 168              		.cfi_offset 14, -4
+ 161:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(data == &zero_mem) return;
+ 169              		.loc 1 161 34 is_stmt 1 view .LVU31
+ 162:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(data == NULL) return;
+ 170              		.loc 1 162 5 view .LVU32
+ 162:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(data == NULL) return;
+ 171              		.loc 1 162 7 is_stmt 0 view .LVU33
+ 172 0002 054B     		ldr	r3, .L15
+ 173 0004 9842     		cmp	r0, r3
+ 174 0006 05D0     		beq	.L12
+ 175 0008 0146     		mov	r1, r0
+ 163:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 176              		.loc 1 163 5 is_stmt 1 view .LVU34
+ 163:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 177              		.loc 1 163 7 is_stmt 0 view .LVU35
+ 178 000a 18B1     		cbz	r0, .L12
+ 169:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 179              		.loc 1 169 5 is_stmt 1 view .LVU36
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 14
+
+
+ 180 000c 034B     		ldr	r3, .L15+4
+ 181 000e 1868     		ldr	r0, [r3]
+ 182              	.LVL8:
+ 169:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 183              		.loc 1 169 5 is_stmt 0 view .LVU37
+ 184 0010 FFF7FEFF 		bl	lv_tlsf_free
+ 185              	.LVL9:
+ 186              	.L12:
+ 173:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 187              		.loc 1 173 1 view .LVU38
+ 188 0014 08BD     		pop	{r3, pc}
+ 189              	.L16:
+ 190 0016 00BF     		.align	2
+ 191              	.L15:
+ 192 0018 00000000 		.word	.LANCHOR1
+ 193 001c 00000000 		.word	.LANCHOR0
+ 194              		.cfi_endproc
+ 195              	.LFE26:
+ 197              		.section	.text.lv_mem_test,"ax",%progbits
+ 198              		.align	1
+ 199              		.global	lv_mem_test
+ 200              		.syntax unified
+ 201              		.thumb
+ 202              		.thumb_func
+ 204              	lv_mem_test:
+ 205              	.LFB28:
+ 208:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(zero_mem != ZERO_MEM_SENTINEL) {
+ 206              		.loc 1 208 1 is_stmt 1 view -0
+ 207              		.cfi_startproc
+ 208              		@ args = 0, pretend = 0, frame = 0
+ 209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 210 0000 08B5     		push	{r3, lr}
+ 211              	.LCFI3:
+ 212              		.cfi_def_cfa_offset 8
+ 213              		.cfi_offset 3, -8
+ 214              		.cfi_offset 14, -4
+ 209:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("zero_mem is written");
+ 215              		.loc 1 209 5 view .LVU40
+ 209:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("zero_mem is written");
+ 216              		.loc 1 209 17 is_stmt 0 view .LVU41
+ 217 0002 0C4B     		ldr	r3, .L25
+ 218 0004 1A68     		ldr	r2, [r3]
+ 209:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("zero_mem is written");
+ 219              		.loc 1 209 7 view .LVU42
+ 220 0006 0C4B     		ldr	r3, .L25+4
+ 221 0008 9A42     		cmp	r2, r3
+ 222 000a 01D0     		beq	.L23
+ 211:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 223              		.loc 1 211 16 view .LVU43
+ 224 000c 0020     		movs	r0, #0
+ 225              	.L18:
+ 227:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 226              		.loc 1 227 1 view .LVU44
+ 227 000e 08BD     		pop	{r3, pc}
+ 228              	.L23:
+ 215:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("failed");
+ 229              		.loc 1 215 5 is_stmt 1 view .LVU45
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 15
+
+
+ 215:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("failed");
+ 230              		.loc 1 215 8 is_stmt 0 view .LVU46
+ 231 0010 0A4B     		ldr	r3, .L25+8
+ 232 0012 1868     		ldr	r0, [r3]
+ 233 0014 FFF7FEFF 		bl	lv_tlsf_check
+ 234              	.LVL10:
+ 215:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("failed");
+ 235              		.loc 1 215 7 view .LVU47
+ 236 0018 08B1     		cbz	r0, .L24
+ 217:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 237              		.loc 1 217 16 view .LVU48
+ 238 001a 0020     		movs	r0, #0
+ 239 001c F7E7     		b	.L18
+ 240              	.L24:
+ 220:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("pool failed");
+ 241              		.loc 1 220 5 is_stmt 1 view .LVU49
+ 220:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("pool failed");
+ 242              		.loc 1 220 8 is_stmt 0 view .LVU50
+ 243 001e 074B     		ldr	r3, .L25+8
+ 244 0020 1868     		ldr	r0, [r3]
+ 245 0022 FFF7FEFF 		bl	lv_tlsf_get_pool
+ 246              	.LVL11:
+ 247 0026 FFF7FEFF 		bl	lv_tlsf_check_pool
+ 248              	.LVL12:
+ 220:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_WARN("pool failed");
+ 249              		.loc 1 220 7 view .LVU51
+ 250 002a 08B9     		cbnz	r0, .L21
+ 226:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** }
+ 251              		.loc 1 226 12 view .LVU52
+ 252 002c 0120     		movs	r0, #1
+ 253 002e EEE7     		b	.L18
+ 254              	.L21:
+ 222:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 255              		.loc 1 222 16 view .LVU53
+ 256 0030 0020     		movs	r0, #0
+ 257 0032 ECE7     		b	.L18
+ 258              	.L26:
+ 259              		.align	2
+ 260              	.L25:
+ 261 0034 00000000 		.word	.LANCHOR1
+ 262 0038 D4C3B2A1 		.word	-1582119980
+ 263 003c 00000000 		.word	.LANCHOR0
+ 264              		.cfi_endproc
+ 265              	.LFE28:
+ 267              		.section	.text.lv_mem_buf_release,"ax",%progbits
+ 268              		.align	1
+ 269              		.global	lv_mem_buf_release
+ 270              		.syntax unified
+ 271              		.thumb
+ 272              		.thumb_func
+ 274              	lv_mem_buf_release:
+ 275              	.LVL13:
+ 276              	.LFB31:
+ 319:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("begin (address: %p)", p);
+ 277              		.loc 1 319 1 is_stmt 1 view -0
+ 278              		.cfi_startproc
+ 279              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 16
+
+
+ 280              		@ frame_needed = 0, uses_anonymous_args = 0
+ 281              		@ link register save eliminated.
+ 320:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 282              		.loc 1 320 40 view .LVU55
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 283              		.loc 1 322 5 view .LVU56
+ 284              	.LBB2:
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 285              		.loc 1 322 9 view .LVU57
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 286              		.loc 1 322 17 is_stmt 0 view .LVU58
+ 287 0000 0023     		movs	r3, #0
+ 288              	.LVL14:
+ 289              	.L28:
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 290              		.loc 1 322 24 is_stmt 1 discriminator 1 view .LVU59
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 291              		.loc 1 322 5 is_stmt 0 discriminator 1 view .LVU60
+ 292 0002 0F2B     		cmp	r3, #15
+ 293 0004 10D8     		bhi	.L32
+ 323:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 294              		.loc 1 323 9 is_stmt 1 view .LVU61
+ 323:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 295              		.loc 1 323 37 is_stmt 0 view .LVU62
+ 296 0006 1946     		mov	r1, r3
+ 297 0008 084A     		ldr	r2, .L34
+ 298 000a 52F83320 		ldr	r2, [r2, r3, lsl #3]
+ 323:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 299              		.loc 1 323 11 view .LVU63
+ 300 000e 8242     		cmp	r2, r0
+ 301 0010 02D0     		beq	.L33
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 302              		.loc 1 322 48 is_stmt 1 discriminator 2 view .LVU64
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 303              		.loc 1 322 49 is_stmt 0 discriminator 2 view .LVU65
+ 304 0012 0133     		adds	r3, r3, #1
+ 305              	.LVL15:
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 306              		.loc 1 322 49 discriminator 2 view .LVU66
+ 307 0014 DBB2     		uxtb	r3, r3
+ 308              	.LVL16:
+ 322:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p == p) {
+ 309              		.loc 1 322 49 discriminator 2 view .LVU67
+ 310 0016 F4E7     		b	.L28
+ 311              	.L33:
+ 324:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             return;
+ 312              		.loc 1 324 13 is_stmt 1 view .LVU68
+ 324:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             return;
+ 313              		.loc 1 324 44 is_stmt 0 view .LVU69
+ 314 0018 044B     		ldr	r3, .L34
+ 315              	.LVL17:
+ 324:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             return;
+ 316              		.loc 1 324 44 view .LVU70
+ 317 001a 03EBC101 		add	r1, r3, r1, lsl #3
+ 318 001e 8B79     		ldrb	r3, [r1, #6]	@ zero_extendqisi2
+ 319 0020 6FF30003 		bfc	r3, #0, #1
+ 320 0024 8B71     		strb	r3, [r1, #6]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 17
+
+
+ 325:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 321              		.loc 1 325 13 is_stmt 1 view .LVU71
+ 322 0026 7047     		bx	lr
+ 323              	.LVL18:
+ 324              	.L32:
+ 325:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 325              		.loc 1 325 13 is_stmt 0 view .LVU72
+ 326              	.LBE2:
+ 330:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 327              		.loc 1 330 1 view .LVU73
+ 328 0028 7047     		bx	lr
+ 329              	.L35:
+ 330 002a 00BF     		.align	2
+ 331              	.L34:
+ 332 002c 00000000 		.word	lv_mem_buf
+ 333              		.cfi_endproc
+ 334              	.LFE31:
+ 336              		.section	.text.lv_mem_buf_free_all,"ax",%progbits
+ 337              		.align	1
+ 338              		.global	lv_mem_buf_free_all
+ 339              		.syntax unified
+ 340              		.thumb
+ 341              		.thumb_func
+ 343              	lv_mem_buf_free_all:
+ 344              	.LFB32:
+ 336:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 345              		.loc 1 336 1 is_stmt 1 view -0
+ 346              		.cfi_startproc
+ 347              		@ args = 0, pretend = 0, frame = 0
+ 348              		@ frame_needed = 0, uses_anonymous_args = 0
+ 349 0000 10B5     		push	{r4, lr}
+ 350              	.LCFI4:
+ 351              		.cfi_def_cfa_offset 8
+ 352              		.cfi_offset 4, -8
+ 353              		.cfi_offset 14, -4
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 354              		.loc 1 337 5 view .LVU75
+ 355              	.LBB3:
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 356              		.loc 1 337 9 view .LVU76
+ 357              	.LVL19:
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 358              		.loc 1 337 17 is_stmt 0 view .LVU77
+ 359 0002 0024     		movs	r4, #0
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 360              		.loc 1 337 5 view .LVU78
+ 361 0004 01E0     		b	.L37
+ 362              	.LVL20:
+ 363              	.L38:
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 364              		.loc 1 337 48 is_stmt 1 discriminator 2 view .LVU79
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 365              		.loc 1 337 49 is_stmt 0 discriminator 2 view .LVU80
+ 366 0006 0134     		adds	r4, r4, #1
+ 367              	.LVL21:
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 368              		.loc 1 337 49 discriminator 2 view .LVU81
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 18
+
+
+ 369 0008 E4B2     		uxtb	r4, r4
+ 370              	.LVL22:
+ 371              	.L37:
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 372              		.loc 1 337 24 is_stmt 1 discriminator 1 view .LVU82
+ 337:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).p) {
+ 373              		.loc 1 337 5 is_stmt 0 discriminator 1 view .LVU83
+ 374 000a 0F2C     		cmp	r4, #15
+ 375 000c 12D8     		bhi	.L41
+ 338:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             lv_mem_free(LV_GC_ROOT(lv_mem_buf[i]).p);
+ 376              		.loc 1 338 9 is_stmt 1 view .LVU84
+ 338:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             lv_mem_free(LV_GC_ROOT(lv_mem_buf[i]).p);
+ 377              		.loc 1 338 37 is_stmt 0 view .LVU85
+ 378 000e 0A4B     		ldr	r3, .L42
+ 379 0010 53F83400 		ldr	r0, [r3, r4, lsl #3]
+ 338:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             lv_mem_free(LV_GC_ROOT(lv_mem_buf[i]).p);
+ 380              		.loc 1 338 11 view .LVU86
+ 381 0014 0028     		cmp	r0, #0
+ 382 0016 F6D0     		beq	.L38
+ 339:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).p = NULL;
+ 383              		.loc 1 339 13 is_stmt 1 view .LVU87
+ 384 0018 FFF7FEFF 		bl	lv_mem_free
+ 385              	.LVL23:
+ 340:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 386              		.loc 1 340 13 view .LVU88
+ 340:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).used = 0;
+ 387              		.loc 1 340 41 is_stmt 0 view .LVU89
+ 388 001c 064B     		ldr	r3, .L42
+ 389 001e 0022     		movs	r2, #0
+ 390 0020 43F83420 		str	r2, [r3, r4, lsl #3]
+ 341:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).size = 0;
+ 391              		.loc 1 341 13 is_stmt 1 view .LVU90
+ 341:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).size = 0;
+ 392              		.loc 1 341 44 is_stmt 0 view .LVU91
+ 393 0024 03EBC403 		add	r3, r3, r4, lsl #3
+ 394 0028 9979     		ldrb	r1, [r3, #6]	@ zero_extendqisi2
+ 395 002a 62F30001 		bfi	r1, r2, #0, #1
+ 396 002e 9971     		strb	r1, [r3, #6]
+ 342:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 397              		.loc 1 342 13 is_stmt 1 view .LVU92
+ 342:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 398              		.loc 1 342 44 is_stmt 0 view .LVU93
+ 399 0030 9A80     		strh	r2, [r3, #4]	@ movhi
+ 400 0032 E8E7     		b	.L38
+ 401              	.L41:
+ 402              	.LBE3:
+ 345:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 403              		.loc 1 345 1 view .LVU94
+ 404 0034 10BD     		pop	{r4, pc}
+ 405              	.LVL24:
+ 406              	.L43:
+ 345:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 407              		.loc 1 345 1 view .LVU95
+ 408 0036 00BF     		.align	2
+ 409              	.L42:
+ 410 0038 00000000 		.word	lv_mem_buf
+ 411              		.cfi_endproc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 19
+
+
+ 412              	.LFE32:
+ 414              		.section	.text.lv_memcpy,"ax",%progbits
+ 415              		.align	1
+ 416              		.global	lv_memcpy
+ 417              		.syntax unified
+ 418              		.thumb
+ 419              		.thumb_func
+ 421              	lv_memcpy:
+ 422              	.LVL25:
+ 423              	.LFB33:
+ 355:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = dst;
+ 424              		.loc 1 355 1 is_stmt 1 view -0
+ 425              		.cfi_startproc
+ 426              		@ args = 0, pretend = 0, frame = 0
+ 427              		@ frame_needed = 0, uses_anonymous_args = 0
+ 428              		@ link register save eliminated.
+ 355:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = dst;
+ 429              		.loc 1 355 1 is_stmt 0 view .LVU97
+ 430 0000 10B4     		push	{r4}
+ 431              	.LCFI5:
+ 432              		.cfi_def_cfa_offset 4
+ 433              		.cfi_offset 4, -4
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 434              		.loc 1 356 5 is_stmt 1 view .LVU98
+ 435              	.LVL26:
+ 357:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 436              		.loc 1 357 5 view .LVU99
+ 359:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_uintptr_t s_align = (lv_uintptr_t)s8 & ALIGN_MASK;
+ 437              		.loc 1 359 5 view .LVU100
+ 359:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     lv_uintptr_t s_align = (lv_uintptr_t)s8 & ALIGN_MASK;
+ 438              		.loc 1 359 18 is_stmt 0 view .LVU101
+ 439 0002 00F00304 		and	r4, r0, #3
+ 440              	.LVL27:
+ 360:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 441              		.loc 1 360 5 is_stmt 1 view .LVU102
+ 360:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 442              		.loc 1 360 18 is_stmt 0 view .LVU103
+ 443 0006 01F00303 		and	r3, r1, #3
+ 444              	.LVL28:
+ 363:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(len > 32) {
+ 445              		.loc 1 363 5 is_stmt 1 view .LVU104
+ 363:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(len > 32) {
+ 446              		.loc 1 363 7 is_stmt 0 view .LVU105
+ 447 000a 9C42     		cmp	r4, r3
+ 448 000c 4BD1     		bne	.L60
+ 379:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 449              		.loc 1 379 5 is_stmt 1 view .LVU106
+ 379:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 450              		.loc 1 379 7 is_stmt 0 view .LVU107
+ 451 000e 002C     		cmp	r4, #0
+ 452 0010 75D0     		beq	.L61
+ 380:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 453              		.loc 1 380 9 is_stmt 1 view .LVU108
+ 380:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 454              		.loc 1 380 17 is_stmt 0 view .LVU109
+ 455 0012 C4F10404 		rsb	r4, r4, #4
+ 456              	.LVL29:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 20
+
+
+ 381:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8;
+ 457              		.loc 1 381 9 is_stmt 1 view .LVU110
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 458              		.loc 1 356 15 is_stmt 0 view .LVU111
+ 459 0016 0346     		mov	r3, r0
+ 460              	.LVL30:
+ 381:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8;
+ 461              		.loc 1 381 14 view .LVU112
+ 462 0018 57E0     		b	.L52
+ 463              	.LVL31:
+ 464              	.L47:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 465              		.loc 1 365 13 is_stmt 1 view .LVU113
+ 466 001a 0C78     		ldrb	r4, [r1]	@ zero_extendqisi2
+ 467 001c 1C70     		strb	r4, [r3]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 468              		.loc 1 365 13 view .LVU114
+ 469              	.LVL32:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 470              		.loc 1 365 13 view .LVU115
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 471              		.loc 1 365 13 view .LVU116
+ 472 001e 4C78     		ldrb	r4, [r1, #1]	@ zero_extendqisi2
+ 473 0020 5C70     		strb	r4, [r3, #1]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 474              		.loc 1 365 13 view .LVU117
+ 475              	.LVL33:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 476              		.loc 1 365 13 view .LVU118
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 477              		.loc 1 365 13 view .LVU119
+ 478 0022 8C78     		ldrb	r4, [r1, #2]	@ zero_extendqisi2
+ 479 0024 9C70     		strb	r4, [r3, #2]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 480              		.loc 1 365 13 view .LVU120
+ 481              	.LVL34:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 482              		.loc 1 365 13 view .LVU121
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 483              		.loc 1 365 13 view .LVU122
+ 484 0026 CC78     		ldrb	r4, [r1, #3]	@ zero_extendqisi2
+ 485 0028 DC70     		strb	r4, [r3, #3]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 486              		.loc 1 365 13 view .LVU123
+ 487              	.LVL35:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 488              		.loc 1 365 13 view .LVU124
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 489              		.loc 1 365 13 view .LVU125
+ 490 002a 0C79     		ldrb	r4, [r1, #4]	@ zero_extendqisi2
+ 491 002c 1C71     		strb	r4, [r3, #4]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 492              		.loc 1 365 13 view .LVU126
+ 493              	.LVL36:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 494              		.loc 1 365 13 view .LVU127
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 21
+
+
+ 495              		.loc 1 365 13 view .LVU128
+ 496 002e 4C79     		ldrb	r4, [r1, #5]	@ zero_extendqisi2
+ 497 0030 5C71     		strb	r4, [r3, #5]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 498              		.loc 1 365 13 view .LVU129
+ 499              	.LVL37:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 500              		.loc 1 365 13 view .LVU130
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 501              		.loc 1 365 13 view .LVU131
+ 502 0032 8C79     		ldrb	r4, [r1, #6]	@ zero_extendqisi2
+ 503 0034 9C71     		strb	r4, [r3, #6]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 504              		.loc 1 365 13 view .LVU132
+ 505              	.LVL38:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 506              		.loc 1 365 13 view .LVU133
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 507              		.loc 1 365 13 view .LVU134
+ 508 0036 CC79     		ldrb	r4, [r1, #7]	@ zero_extendqisi2
+ 509 0038 DC71     		strb	r4, [r3, #7]
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 510              		.loc 1 365 13 view .LVU135
+ 511              	.LVL39:
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 512              		.loc 1 365 13 view .LVU136
+ 365:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 513              		.loc 1 365 27 view .LVU137
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 514              		.loc 1 366 13 view .LVU138
+ 515 003a 0C7A     		ldrb	r4, [r1, #8]	@ zero_extendqisi2
+ 516 003c 1C72     		strb	r4, [r3, #8]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 517              		.loc 1 366 13 view .LVU139
+ 518              	.LVL40:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 519              		.loc 1 366 13 view .LVU140
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 520              		.loc 1 366 13 view .LVU141
+ 521 003e 4C7A     		ldrb	r4, [r1, #9]	@ zero_extendqisi2
+ 522 0040 5C72     		strb	r4, [r3, #9]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 523              		.loc 1 366 13 view .LVU142
+ 524              	.LVL41:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 525              		.loc 1 366 13 view .LVU143
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 526              		.loc 1 366 13 view .LVU144
+ 527 0042 8C7A     		ldrb	r4, [r1, #10]	@ zero_extendqisi2
+ 528 0044 9C72     		strb	r4, [r3, #10]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 529              		.loc 1 366 13 view .LVU145
+ 530              	.LVL42:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 531              		.loc 1 366 13 view .LVU146
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 532              		.loc 1 366 13 view .LVU147
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 22
+
+
+ 533 0046 CC7A     		ldrb	r4, [r1, #11]	@ zero_extendqisi2
+ 534 0048 DC72     		strb	r4, [r3, #11]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 535              		.loc 1 366 13 view .LVU148
+ 536              	.LVL43:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 537              		.loc 1 366 13 view .LVU149
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 538              		.loc 1 366 13 view .LVU150
+ 539 004a 0C7B     		ldrb	r4, [r1, #12]	@ zero_extendqisi2
+ 540 004c 1C73     		strb	r4, [r3, #12]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 541              		.loc 1 366 13 view .LVU151
+ 542              	.LVL44:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 543              		.loc 1 366 13 view .LVU152
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 544              		.loc 1 366 13 view .LVU153
+ 545 004e 4C7B     		ldrb	r4, [r1, #13]	@ zero_extendqisi2
+ 546 0050 5C73     		strb	r4, [r3, #13]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 547              		.loc 1 366 13 view .LVU154
+ 548              	.LVL45:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 549              		.loc 1 366 13 view .LVU155
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 550              		.loc 1 366 13 view .LVU156
+ 551 0052 8C7B     		ldrb	r4, [r1, #14]	@ zero_extendqisi2
+ 552 0054 9C73     		strb	r4, [r3, #14]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 553              		.loc 1 366 13 view .LVU157
+ 554              	.LVL46:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 555              		.loc 1 366 13 view .LVU158
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 556              		.loc 1 366 13 view .LVU159
+ 557 0056 CC7B     		ldrb	r4, [r1, #15]	@ zero_extendqisi2
+ 558 0058 DC73     		strb	r4, [r3, #15]
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 559              		.loc 1 366 13 view .LVU160
+ 560              	.LVL47:
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 561              		.loc 1 366 13 view .LVU161
+ 366:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 562              		.loc 1 366 27 view .LVU162
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 563              		.loc 1 367 13 view .LVU163
+ 564 005a 0C7C     		ldrb	r4, [r1, #16]	@ zero_extendqisi2
+ 565 005c 1C74     		strb	r4, [r3, #16]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 566              		.loc 1 367 13 view .LVU164
+ 567              	.LVL48:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 568              		.loc 1 367 13 view .LVU165
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 569              		.loc 1 367 13 view .LVU166
+ 570 005e 4C7C     		ldrb	r4, [r1, #17]	@ zero_extendqisi2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 23
+
+
+ 571 0060 5C74     		strb	r4, [r3, #17]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 572              		.loc 1 367 13 view .LVU167
+ 573              	.LVL49:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 574              		.loc 1 367 13 view .LVU168
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 575              		.loc 1 367 13 view .LVU169
+ 576 0062 8C7C     		ldrb	r4, [r1, #18]	@ zero_extendqisi2
+ 577 0064 9C74     		strb	r4, [r3, #18]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 578              		.loc 1 367 13 view .LVU170
+ 579              	.LVL50:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 580              		.loc 1 367 13 view .LVU171
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 581              		.loc 1 367 13 view .LVU172
+ 582 0066 CC7C     		ldrb	r4, [r1, #19]	@ zero_extendqisi2
+ 583 0068 DC74     		strb	r4, [r3, #19]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 584              		.loc 1 367 13 view .LVU173
+ 585              	.LVL51:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 586              		.loc 1 367 13 view .LVU174
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 587              		.loc 1 367 13 view .LVU175
+ 588 006a 0C7D     		ldrb	r4, [r1, #20]	@ zero_extendqisi2
+ 589 006c 1C75     		strb	r4, [r3, #20]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 590              		.loc 1 367 13 view .LVU176
+ 591              	.LVL52:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 592              		.loc 1 367 13 view .LVU177
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 593              		.loc 1 367 13 view .LVU178
+ 594 006e 4C7D     		ldrb	r4, [r1, #21]	@ zero_extendqisi2
+ 595 0070 5C75     		strb	r4, [r3, #21]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 596              		.loc 1 367 13 view .LVU179
+ 597              	.LVL53:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 598              		.loc 1 367 13 view .LVU180
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 599              		.loc 1 367 13 view .LVU181
+ 600 0072 8C7D     		ldrb	r4, [r1, #22]	@ zero_extendqisi2
+ 601 0074 9C75     		strb	r4, [r3, #22]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 602              		.loc 1 367 13 view .LVU182
+ 603              	.LVL54:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 604              		.loc 1 367 13 view .LVU183
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 605              		.loc 1 367 13 view .LVU184
+ 606 0076 CC7D     		ldrb	r4, [r1, #23]	@ zero_extendqisi2
+ 607 0078 DC75     		strb	r4, [r3, #23]
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 608              		.loc 1 367 13 view .LVU185
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 24
+
+
+ 609              	.LVL55:
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 610              		.loc 1 367 13 view .LVU186
+ 367:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 611              		.loc 1 367 27 view .LVU187
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 612              		.loc 1 368 13 view .LVU188
+ 613 007a 0C7E     		ldrb	r4, [r1, #24]	@ zero_extendqisi2
+ 614 007c 1C76     		strb	r4, [r3, #24]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 615              		.loc 1 368 13 view .LVU189
+ 616              	.LVL56:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 617              		.loc 1 368 13 view .LVU190
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 618              		.loc 1 368 13 view .LVU191
+ 619 007e 4C7E     		ldrb	r4, [r1, #25]	@ zero_extendqisi2
+ 620 0080 5C76     		strb	r4, [r3, #25]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 621              		.loc 1 368 13 view .LVU192
+ 622              	.LVL57:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 623              		.loc 1 368 13 view .LVU193
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 624              		.loc 1 368 13 view .LVU194
+ 625 0082 8C7E     		ldrb	r4, [r1, #26]	@ zero_extendqisi2
+ 626 0084 9C76     		strb	r4, [r3, #26]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 627              		.loc 1 368 13 view .LVU195
+ 628              	.LVL58:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 629              		.loc 1 368 13 view .LVU196
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 630              		.loc 1 368 13 view .LVU197
+ 631 0086 CC7E     		ldrb	r4, [r1, #27]	@ zero_extendqisi2
+ 632 0088 DC76     		strb	r4, [r3, #27]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 633              		.loc 1 368 13 view .LVU198
+ 634              	.LVL59:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 635              		.loc 1 368 13 view .LVU199
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 636              		.loc 1 368 13 view .LVU200
+ 637 008a 0C7F     		ldrb	r4, [r1, #28]	@ zero_extendqisi2
+ 638 008c 1C77     		strb	r4, [r3, #28]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 639              		.loc 1 368 13 view .LVU201
+ 640              	.LVL60:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 641              		.loc 1 368 13 view .LVU202
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 642              		.loc 1 368 13 view .LVU203
+ 643 008e 4C7F     		ldrb	r4, [r1, #29]	@ zero_extendqisi2
+ 644 0090 5C77     		strb	r4, [r3, #29]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 645              		.loc 1 368 13 view .LVU204
+ 646              	.LVL61:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 25
+
+
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 647              		.loc 1 368 13 view .LVU205
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 648              		.loc 1 368 13 view .LVU206
+ 649 0092 8C7F     		ldrb	r4, [r1, #30]	@ zero_extendqisi2
+ 650 0094 9C77     		strb	r4, [r3, #30]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 651              		.loc 1 368 13 view .LVU207
+ 652              	.LVL62:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 653              		.loc 1 368 13 view .LVU208
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 654              		.loc 1 368 13 view .LVU209
+ 655 0096 CC7F     		ldrb	r4, [r1, #31]	@ zero_extendqisi2
+ 656 0098 DC77     		strb	r4, [r3, #31]
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 657              		.loc 1 368 13 view .LVU210
+ 658 009a 2033     		adds	r3, r3, #32
+ 659              	.LVL63:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 660              		.loc 1 368 13 view .LVU211
+ 661 009c 2031     		adds	r1, r1, #32
+ 662              	.LVL64:
+ 368:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len -= 32;
+ 663              		.loc 1 368 27 view .LVU212
+ 369:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 664              		.loc 1 369 13 view .LVU213
+ 369:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 665              		.loc 1 369 17 is_stmt 0 view .LVU214
+ 666 009e 203A     		subs	r2, r2, #32
+ 667              	.LVL65:
+ 668              	.L45:
+ 364:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 669              		.loc 1 364 14 is_stmt 1 view .LVU215
+ 670 00a0 202A     		cmp	r2, #32
+ 671 00a2 BAD8     		bhi	.L47
+ 364:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             REPEAT8(COPY8);
+ 672              		.loc 1 364 14 is_stmt 0 view .LVU216
+ 673 00a4 06E0     		b	.L48
+ 674              	.LVL66:
+ 675              	.L60:
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 676              		.loc 1 356 15 view .LVU217
+ 677 00a6 0346     		mov	r3, r0
+ 678              	.LVL67:
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 679              		.loc 1 356 15 view .LVU218
+ 680 00a8 FAE7     		b	.L45
+ 681              	.LVL68:
+ 682              	.L49:
+ 372:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 683              		.loc 1 372 13 is_stmt 1 view .LVU219
+ 684 00aa 11F8014B 		ldrb	r4, [r1], #1	@ zero_extendqisi2
+ 685              	.LVL69:
+ 372:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 686              		.loc 1 372 13 is_stmt 0 view .LVU220
+ 687 00ae 03F8014B 		strb	r4, [r3], #1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 26
+
+
+ 688              	.LVL70:
+ 372:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 689              		.loc 1 372 13 is_stmt 1 view .LVU221
+ 372:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 690              		.loc 1 372 13 view .LVU222
+ 373:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 691              		.loc 1 373 13 view .LVU223
+ 373:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 692              		.loc 1 373 16 is_stmt 0 view .LVU224
+ 693 00b2 013A     		subs	r2, r2, #1
+ 694              	.LVL71:
+ 695              	.L48:
+ 371:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8
+ 696              		.loc 1 371 14 is_stmt 1 view .LVU225
+ 697 00b4 002A     		cmp	r2, #0
+ 698 00b6 F8D1     		bne	.L49
+ 699              	.LVL72:
+ 700              	.L50:
+ 408:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 701              		.loc 1 408 1 is_stmt 0 view .LVU226
+ 702 00b8 5DF8044B 		ldr	r4, [sp], #4
+ 703              	.LCFI6:
+ 704              		.cfi_remember_state
+ 705              		.cfi_restore 4
+ 706              		.cfi_def_cfa_offset 0
+ 707 00bc 7047     		bx	lr
+ 708              	.LVL73:
+ 709              	.L53:
+ 710              	.LCFI7:
+ 711              		.cfi_restore_state
+ 382:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 712              		.loc 1 382 13 is_stmt 1 view .LVU227
+ 713 00be 11F801CB 		ldrb	ip, [r1], #1	@ zero_extendqisi2
+ 714              	.LVL74:
+ 382:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 715              		.loc 1 382 13 is_stmt 0 view .LVU228
+ 716 00c2 03F801CB 		strb	ip, [r3], #1
+ 717              	.LVL75:
+ 382:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 718              		.loc 1 382 13 is_stmt 1 view .LVU229
+ 382:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 719              		.loc 1 382 13 view .LVU230
+ 382:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 720              		.loc 1 382 18 view .LVU231
+ 383:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 721              		.loc 1 383 13 view .LVU232
+ 383:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 722              		.loc 1 383 20 is_stmt 0 view .LVU233
+ 723 00c6 013C     		subs	r4, r4, #1
+ 724              	.LVL76:
+ 384:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 725              		.loc 1 384 13 is_stmt 1 view .LVU234
+ 384:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 726              		.loc 1 384 16 is_stmt 0 view .LVU235
+ 727 00c8 013A     		subs	r2, r2, #1
+ 728              	.LVL77:
+ 729              	.L52:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 27
+
+
+ 381:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8;
+ 730              		.loc 1 381 14 is_stmt 1 view .LVU236
+ 731 00ca ACB1     		cbz	r4, .L54
+ 381:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             COPY8;
+ 732              		.loc 1 381 23 is_stmt 0 discriminator 1 view .LVU237
+ 733 00cc 002A     		cmp	r2, #0
+ 734 00ce F6D1     		bne	.L53
+ 735 00d0 12E0     		b	.L54
+ 736              	.LVL78:
+ 737              	.L55:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 738              		.loc 1 391 9 is_stmt 1 view .LVU238
+ 739 00d2 0C68     		ldr	r4, [r1]
+ 740 00d4 1C60     		str	r4, [r3]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 741              		.loc 1 391 9 view .LVU239
+ 742              	.LVL79:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 743              		.loc 1 391 9 view .LVU240
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 744              		.loc 1 391 9 view .LVU241
+ 745 00d6 4C68     		ldr	r4, [r1, #4]
+ 746 00d8 5C60     		str	r4, [r3, #4]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 747              		.loc 1 391 9 view .LVU242
+ 748              	.LVL80:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 749              		.loc 1 391 9 view .LVU243
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 750              		.loc 1 391 9 view .LVU244
+ 751 00da 8C68     		ldr	r4, [r1, #8]
+ 752 00dc 9C60     		str	r4, [r3, #8]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 753              		.loc 1 391 9 view .LVU245
+ 754              	.LVL81:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 755              		.loc 1 391 9 view .LVU246
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 756              		.loc 1 391 9 view .LVU247
+ 757 00de CC68     		ldr	r4, [r1, #12]
+ 758 00e0 DC60     		str	r4, [r3, #12]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 759              		.loc 1 391 9 view .LVU248
+ 760              	.LVL82:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 761              		.loc 1 391 9 view .LVU249
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 762              		.loc 1 391 9 view .LVU250
+ 763 00e2 0C69     		ldr	r4, [r1, #16]
+ 764 00e4 1C61     		str	r4, [r3, #16]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 765              		.loc 1 391 9 view .LVU251
+ 766              	.LVL83:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 767              		.loc 1 391 9 view .LVU252
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 768              		.loc 1 391 9 view .LVU253
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 28
+
+
+ 769 00e6 4C69     		ldr	r4, [r1, #20]
+ 770 00e8 5C61     		str	r4, [r3, #20]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 771              		.loc 1 391 9 view .LVU254
+ 772              	.LVL84:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 773              		.loc 1 391 9 view .LVU255
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 774              		.loc 1 391 9 view .LVU256
+ 775 00ea 8C69     		ldr	r4, [r1, #24]
+ 776 00ec 9C61     		str	r4, [r3, #24]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 777              		.loc 1 391 9 view .LVU257
+ 778              	.LVL85:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 779              		.loc 1 391 9 view .LVU258
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 780              		.loc 1 391 9 view .LVU259
+ 781 00ee CC69     		ldr	r4, [r1, #28]
+ 782 00f0 DC61     		str	r4, [r3, #28]
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 783              		.loc 1 391 9 view .LVU260
+ 784 00f2 2033     		adds	r3, r3, #32
+ 785              	.LVL86:
+ 391:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 786              		.loc 1 391 9 view .LVU261
+ 787 00f4 2031     		adds	r1, r1, #32
+ 788              	.LVL87:
+ 392:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 789              		.loc 1 392 9 view .LVU262
+ 392:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 790              		.loc 1 392 13 is_stmt 0 view .LVU263
+ 791 00f6 203A     		subs	r2, r2, #32
+ 792              	.LVL88:
+ 793              	.L54:
+ 390:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(COPY32)
+ 794              		.loc 1 390 10 is_stmt 1 view .LVU264
+ 795 00f8 202A     		cmp	r2, #32
+ 796 00fa EAD8     		bhi	.L55
+ 390:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(COPY32)
+ 797              		.loc 1 390 10 is_stmt 0 view .LVU265
+ 798 00fc 06E0     		b	.L56
+ 799              	.LVL89:
+ 800              	.L61:
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 801              		.loc 1 356 15 view .LVU266
+ 802 00fe 0346     		mov	r3, r0
+ 803              	.LVL90:
+ 356:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     const uint8_t * s8 = src;
+ 804              		.loc 1 356 15 view .LVU267
+ 805 0100 FAE7     		b	.L54
+ 806              	.LVL91:
+ 807              	.L57:
+ 396:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 808              		.loc 1 396 9 is_stmt 1 view .LVU268
+ 809 0102 51F8044B 		ldr	r4, [r1], #4
+ 810              	.LVL92:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 29
+
+
+ 396:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 811              		.loc 1 396 9 is_stmt 0 view .LVU269
+ 812 0106 43F8044B 		str	r4, [r3], #4
+ 813              	.LVL93:
+ 396:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 814              		.loc 1 396 9 is_stmt 1 view .LVU270
+ 396:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 815              		.loc 1 396 9 view .LVU271
+ 396:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 816              		.loc 1 396 15 view .LVU272
+ 397:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 817              		.loc 1 397 9 view .LVU273
+ 397:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 818              		.loc 1 397 13 is_stmt 0 view .LVU274
+ 819 010a 043A     		subs	r2, r2, #4
+ 820              	.LVL94:
+ 821              	.L56:
+ 395:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         COPY32;
+ 822              		.loc 1 395 10 is_stmt 1 view .LVU275
+ 823 010c 042A     		cmp	r2, #4
+ 824 010e F8D8     		bhi	.L57
+ 825              	.LVL95:
+ 826              	.L58:
+ 402:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         COPY8
+ 827              		.loc 1 402 10 view .LVU276
+ 828 0110 002A     		cmp	r2, #0
+ 829 0112 D1D0     		beq	.L50
+ 403:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 830              		.loc 1 403 9 view .LVU277
+ 831 0114 11F8014B 		ldrb	r4, [r1], #1	@ zero_extendqisi2
+ 832              	.LVL96:
+ 403:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 833              		.loc 1 403 9 is_stmt 0 view .LVU278
+ 834 0118 03F8014B 		strb	r4, [r3], #1
+ 835              	.LVL97:
+ 403:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 836              		.loc 1 403 9 is_stmt 1 view .LVU279
+ 403:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 837              		.loc 1 403 9 view .LVU280
+ 404:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 838              		.loc 1 404 9 view .LVU281
+ 404:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 839              		.loc 1 404 12 is_stmt 0 view .LVU282
+ 840 011c 013A     		subs	r2, r2, #1
+ 841              	.LVL98:
+ 404:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 842              		.loc 1 404 12 view .LVU283
+ 843 011e F7E7     		b	.L58
+ 844              		.cfi_endproc
+ 845              	.LFE33:
+ 847              		.section	.text.lv_memset,"ax",%progbits
+ 848              		.align	1
+ 849              		.global	lv_memset
+ 850              		.syntax unified
+ 851              		.thumb
+ 852              		.thumb_func
+ 854              	lv_memset:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 30
+
+
+ 855              	.LVL99:
+ 856              	.LFB34:
+ 417:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 857              		.loc 1 417 1 is_stmt 1 view -0
+ 858              		.cfi_startproc
+ 859              		@ args = 0, pretend = 0, frame = 0
+ 860              		@ frame_needed = 0, uses_anonymous_args = 0
+ 861              		@ link register save eliminated.
+ 419:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 862              		.loc 1 419 5 view .LVU285
+ 421:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 863              		.loc 1 421 5 view .LVU286
+ 424:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 864              		.loc 1 424 5 view .LVU287
+ 424:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 865              		.loc 1 424 7 is_stmt 0 view .LVU288
+ 866 0000 10F00303 		ands	r3, r0, #3
+ 867              	.LVL100:
+ 424:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 868              		.loc 1 424 7 view .LVU289
+ 869 0004 09D0     		beq	.L65
+ 425:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 870              		.loc 1 425 9 is_stmt 1 view .LVU290
+ 425:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 871              		.loc 1 425 17 is_stmt 0 view .LVU291
+ 872 0006 C3F10403 		rsb	r3, r3, #4
+ 873              	.LVL101:
+ 426:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(v);
+ 874              		.loc 1 426 9 is_stmt 1 view .LVU292
+ 426:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(v);
+ 875              		.loc 1 426 14 is_stmt 0 view .LVU293
+ 876 000a 03E0     		b	.L66
+ 877              	.LVL102:
+ 878              	.L67:
+ 427:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 879              		.loc 1 427 13 is_stmt 1 view .LVU294
+ 880 000c 00F8011B 		strb	r1, [r0], #1
+ 881              	.LVL103:
+ 427:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 882              		.loc 1 427 13 view .LVU295
+ 427:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 883              		.loc 1 427 20 view .LVU296
+ 428:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 884              		.loc 1 428 13 view .LVU297
+ 428:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 885              		.loc 1 428 16 is_stmt 0 view .LVU298
+ 886 0010 013A     		subs	r2, r2, #1
+ 887              	.LVL104:
+ 429:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 888              		.loc 1 429 13 is_stmt 1 view .LVU299
+ 429:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 889              		.loc 1 429 20 is_stmt 0 view .LVU300
+ 890 0012 013B     		subs	r3, r3, #1
+ 891              	.LVL105:
+ 892              	.L66:
+ 426:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(v);
+ 893              		.loc 1 426 14 is_stmt 1 view .LVU301
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 31
+
+
+ 894 0014 0BB1     		cbz	r3, .L65
+ 426:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(v);
+ 895              		.loc 1 426 23 is_stmt 0 discriminator 1 view .LVU302
+ 896 0016 002A     		cmp	r2, #0
+ 897 0018 F8D1     		bne	.L67
+ 898              	.L65:
+ 433:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 899              		.loc 1 433 5 is_stmt 1 view .LVU303
+ 433:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 900              		.loc 1 433 32 is_stmt 0 view .LVU304
+ 901 001a 01EB0123 		add	r3, r1, r1, lsl #8
+ 902              	.LVL106:
+ 433:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 903              		.loc 1 433 53 view .LVU305
+ 904 001e 03EB0143 		add	r3, r3, r1, lsl #16
+ 433:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 905              		.loc 1 433 14 view .LVU306
+ 906 0022 03EB0163 		add	r3, r3, r1, lsl #24
+ 907              	.LVL107:
+ 435:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 908              		.loc 1 435 5 is_stmt 1 view .LVU307
+ 437:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(v32));
+ 909              		.loc 1 437 5 view .LVU308
+ 437:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(v32));
+ 910              		.loc 1 437 10 is_stmt 0 view .LVU309
+ 911 0026 09E0     		b	.L68
+ 912              	.LVL108:
+ 913              	.L69:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 914              		.loc 1 438 9 is_stmt 1 view .LVU310
+ 915 0028 0360     		str	r3, [r0]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 916              		.loc 1 438 9 view .LVU311
+ 917              	.LVL109:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 918              		.loc 1 438 9 view .LVU312
+ 919 002a 4360     		str	r3, [r0, #4]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 920              		.loc 1 438 9 view .LVU313
+ 921              	.LVL110:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 922              		.loc 1 438 9 view .LVU314
+ 923 002c 8360     		str	r3, [r0, #8]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 924              		.loc 1 438 9 view .LVU315
+ 925              	.LVL111:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 926              		.loc 1 438 9 view .LVU316
+ 927 002e C360     		str	r3, [r0, #12]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 928              		.loc 1 438 9 view .LVU317
+ 929              	.LVL112:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 930              		.loc 1 438 9 view .LVU318
+ 931 0030 0361     		str	r3, [r0, #16]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 932              		.loc 1 438 9 view .LVU319
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 32
+
+
+ 933              	.LVL113:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 934              		.loc 1 438 9 view .LVU320
+ 935 0032 4361     		str	r3, [r0, #20]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 936              		.loc 1 438 9 view .LVU321
+ 937              	.LVL114:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 938              		.loc 1 438 9 view .LVU322
+ 939 0034 8361     		str	r3, [r0, #24]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 940              		.loc 1 438 9 view .LVU323
+ 941              	.LVL115:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 942              		.loc 1 438 9 view .LVU324
+ 943 0036 C361     		str	r3, [r0, #28]
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 944              		.loc 1 438 9 view .LVU325
+ 945 0038 2030     		adds	r0, r0, #32
+ 946              	.LVL116:
+ 438:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 947              		.loc 1 438 28 view .LVU326
+ 439:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 948              		.loc 1 439 9 view .LVU327
+ 439:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 949              		.loc 1 439 13 is_stmt 0 view .LVU328
+ 950 003a 203A     		subs	r2, r2, #32
+ 951              	.LVL117:
+ 952              	.L68:
+ 437:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(v32));
+ 953              		.loc 1 437 10 is_stmt 1 view .LVU329
+ 954 003c 202A     		cmp	r2, #32
+ 955 003e F3D8     		bhi	.L69
+ 437:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(v32));
+ 956              		.loc 1 437 10 is_stmt 0 view .LVU330
+ 957 0040 02E0     		b	.L70
+ 958              	.L71:
+ 443:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 959              		.loc 1 443 9 is_stmt 1 view .LVU331
+ 960 0042 40F8043B 		str	r3, [r0], #4
+ 961              	.LVL118:
+ 443:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 962              		.loc 1 443 9 view .LVU332
+ 443:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 963              		.loc 1 443 19 view .LVU333
+ 444:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 964              		.loc 1 444 9 view .LVU334
+ 444:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 965              		.loc 1 444 13 is_stmt 0 view .LVU335
+ 966 0046 043A     		subs	r2, r2, #4
+ 967              	.LVL119:
+ 968              	.L70:
+ 442:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET32(v32);
+ 969              		.loc 1 442 10 is_stmt 1 view .LVU336
+ 970 0048 042A     		cmp	r2, #4
+ 971 004a FAD8     		bhi	.L71
+ 972              	.LVL120:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 33
+
+
+ 973              	.L72:
+ 448:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET8(v);
+ 974              		.loc 1 448 10 view .LVU337
+ 975 004c 1AB1     		cbz	r2, .L74
+ 449:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 976              		.loc 1 449 9 view .LVU338
+ 977 004e 00F8011B 		strb	r1, [r0], #1
+ 978              	.LVL121:
+ 449:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 979              		.loc 1 449 9 view .LVU339
+ 449:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 980              		.loc 1 449 16 view .LVU340
+ 450:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 981              		.loc 1 450 9 view .LVU341
+ 450:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 982              		.loc 1 450 12 is_stmt 0 view .LVU342
+ 983 0052 013A     		subs	r2, r2, #1
+ 984              	.LVL122:
+ 450:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 985              		.loc 1 450 12 view .LVU343
+ 986 0054 FAE7     		b	.L72
+ 987              	.L74:
+ 452:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 988              		.loc 1 452 1 view .LVU344
+ 989 0056 7047     		bx	lr
+ 990              		.cfi_endproc
+ 991              	.LFE34:
+ 993              		.section	.text.lv_mem_monitor,"ax",%progbits
+ 994              		.align	1
+ 995              		.global	lv_mem_monitor
+ 996              		.syntax unified
+ 997              		.thumb
+ 998              		.thumb_func
+ 1000              	lv_mem_monitor:
+ 1001              	.LVL123:
+ 1002              	.LFB29:
+ 235:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Init the data*/
+ 1003              		.loc 1 235 1 is_stmt 1 view -0
+ 1004              		.cfi_startproc
+ 1005              		@ args = 0, pretend = 0, frame = 0
+ 1006              		@ frame_needed = 0, uses_anonymous_args = 0
+ 235:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     /*Init the data*/
+ 1007              		.loc 1 235 1 is_stmt 0 view .LVU346
+ 1008 0000 10B5     		push	{r4, lr}
+ 1009              	.LCFI8:
+ 1010              		.cfi_def_cfa_offset 8
+ 1011              		.cfi_offset 4, -8
+ 1012              		.cfi_offset 14, -4
+ 1013 0002 0446     		mov	r4, r0
+ 237:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #if LV_MEM_CUSTOM == 0
+ 1014              		.loc 1 237 5 is_stmt 1 view .LVU347
+ 1015 0004 1C22     		movs	r2, #28
+ 1016 0006 0021     		movs	r1, #0
+ 1017 0008 FFF7FEFF 		bl	lv_memset
+ 1018              	.LVL124:
+ 239:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1019              		.loc 1 239 23 view .LVU348
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 34
+
+
+ 241:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1020              		.loc 1 241 5 view .LVU349
+ 1021 000c 124B     		ldr	r3, .L79
+ 1022 000e 1868     		ldr	r0, [r3]
+ 1023 0010 FFF7FEFF 		bl	lv_tlsf_get_pool
+ 1024              	.LVL125:
+ 1025 0014 2246     		mov	r2, r4
+ 1026 0016 1149     		ldr	r1, .L79+4
+ 1027 0018 FFF7FEFF 		bl	lv_tlsf_walk_pool
+ 1028              	.LVL126:
+ 243:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     mon_p->used_pct = 100 - (100U * mon_p->free_size) / mon_p->total_size;
+ 1029              		.loc 1 243 5 view .LVU350
+ 243:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     mon_p->used_pct = 100 - (100U * mon_p->free_size) / mon_p->total_size;
+ 1030              		.loc 1 243 23 is_stmt 0 view .LVU351
+ 1031 001c 4FF44043 		mov	r3, #49152
+ 1032 0020 2360     		str	r3, [r4]
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 1033              		.loc 1 244 5 is_stmt 1 view .LVU352
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 1034              		.loc 1 244 42 is_stmt 0 view .LVU353
+ 1035 0022 A168     		ldr	r1, [r4, #8]
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 1036              		.loc 1 244 35 view .LVU354
+ 1037 0024 6423     		movs	r3, #100
+ 1038 0026 01FB03F3 		mul	r3, r1, r3
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 1039              		.loc 1 244 55 view .LVU355
+ 1040 002a 0D4A     		ldr	r2, .L79+8
+ 1041 002c A2FB0323 		umull	r2, r3, r2, r3
+ 1042 0030 DB0B     		lsrs	r3, r3, #15
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 1043              		.loc 1 244 27 view .LVU356
+ 1044 0032 C3F16403 		rsb	r3, r3, #100
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(mon_p->free_size > 0) {
+ 1045              		.loc 1 244 21 view .LVU357
+ 1046 0036 2376     		strb	r3, [r4, #24]
+ 245:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = mon_p->free_biggest_size * 100U / mon_p->free_size;
+ 1047              		.loc 1 245 5 is_stmt 1 view .LVU358
+ 245:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = mon_p->free_biggest_size * 100U / mon_p->free_size;
+ 1048              		.loc 1 245 7 is_stmt 0 view .LVU359
+ 1049 0038 59B1     		cbz	r1, .L76
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 100 - mon_p->frag_pct;
+ 1050              		.loc 1 246 9 is_stmt 1 view .LVU360
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 100 - mon_p->frag_pct;
+ 1051              		.loc 1 246 32 is_stmt 0 view .LVU361
+ 1052 003a E268     		ldr	r2, [r4, #12]
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 100 - mon_p->frag_pct;
+ 1053              		.loc 1 246 52 view .LVU362
+ 1054 003c 6423     		movs	r3, #100
+ 1055 003e 02FB03F3 		mul	r3, r2, r3
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 100 - mon_p->frag_pct;
+ 1056              		.loc 1 246 59 view .LVU363
+ 1057 0042 B3FBF1F3 		udiv	r3, r3, r1
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         mon_p->frag_pct = 100 - mon_p->frag_pct;
+ 1058              		.loc 1 246 25 view .LVU364
+ 1059 0046 DBB2     		uxtb	r3, r3
+ 1060 0048 6376     		strb	r3, [r4, #25]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 35
+
+
+ 247:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1061              		.loc 1 247 9 is_stmt 1 view .LVU365
+ 247:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1062              		.loc 1 247 31 is_stmt 0 view .LVU366
+ 1063 004a C3F16403 		rsb	r3, r3, #100
+ 247:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1064              		.loc 1 247 25 view .LVU367
+ 1065 004e 6376     		strb	r3, [r4, #25]
+ 1066              	.L75:
+ 255:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1067              		.loc 1 255 1 view .LVU368
+ 1068 0050 10BD     		pop	{r4, pc}
+ 1069              	.LVL127:
+ 1070              	.L76:
+ 250:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1071              		.loc 1 250 9 is_stmt 1 view .LVU369
+ 250:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1072              		.loc 1 250 25 is_stmt 0 view .LVU370
+ 1073 0052 0023     		movs	r3, #0
+ 1074 0054 6376     		strb	r3, [r4, #25]
+ 253:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #endif
+ 1075              		.loc 1 253 26 is_stmt 1 view .LVU371
+ 255:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1076              		.loc 1 255 1 is_stmt 0 view .LVU372
+ 1077 0056 FBE7     		b	.L75
+ 1078              	.L80:
+ 1079              		.align	2
+ 1080              	.L79:
+ 1081 0058 00000000 		.word	.LANCHOR0
+ 1082 005c 00000000 		.word	lv_mem_walker
+ 1083 0060 ABAAAAAA 		.word	-1431655765
+ 1084              		.cfi_endproc
+ 1085              	.LFE29:
+ 1087              		.section	.text.lv_mem_alloc,"ax",%progbits
+ 1088              		.align	1
+ 1089              		.global	lv_mem_alloc
+ 1090              		.syntax unified
+ 1091              		.thumb
+ 1092              		.thumb_func
+ 1094              	lv_mem_alloc:
+ 1095              	.LVL128:
+ 1096              	.LFB25:
+ 124:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("allocating %lu bytes", (unsigned long)size);
+ 1097              		.loc 1 124 1 is_stmt 1 view -0
+ 1098              		.cfi_startproc
+ 1099              		@ args = 0, pretend = 0, frame = 32
+ 1100              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("allocating %lu bytes", (unsigned long)size);
+ 1101              		.loc 1 124 1 is_stmt 0 view .LVU374
+ 1102 0000 10B5     		push	{r4, lr}
+ 1103              	.LCFI9:
+ 1104              		.cfi_def_cfa_offset 8
+ 1105              		.cfi_offset 4, -8
+ 1106              		.cfi_offset 14, -4
+ 1107 0002 88B0     		sub	sp, sp, #32
+ 1108              	.LCFI10:
+ 1109              		.cfi_def_cfa_offset 40
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 36
+
+
+ 125:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(size == 0) {
+ 1110              		.loc 1 125 59 is_stmt 1 view .LVU375
+ 126:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("using zero_mem");
+ 1111              		.loc 1 126 5 view .LVU376
+ 126:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("using zero_mem");
+ 1112              		.loc 1 126 7 is_stmt 0 view .LVU377
+ 1113 0004 18B9     		cbnz	r0, .L85
+ 128:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1114              		.loc 1 128 16 view .LVU378
+ 1115 0006 084C     		ldr	r4, .L86
+ 1116              	.LVL129:
+ 1117              	.L81:
+ 153:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1118              		.loc 1 153 1 view .LVU379
+ 1119 0008 2046     		mov	r0, r4
+ 1120 000a 08B0     		add	sp, sp, #32
+ 1121              	.LCFI11:
+ 1122              		.cfi_remember_state
+ 1123              		.cfi_def_cfa_offset 8
+ 1124              		@ sp needed
+ 1125 000c 10BD     		pop	{r4, pc}
+ 1126              	.LVL130:
+ 1127              	.L85:
+ 1128              	.LCFI12:
+ 1129              		.cfi_restore_state
+ 153:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1130              		.loc 1 153 1 view .LVU380
+ 1131 000e 0146     		mov	r1, r0
+ 132:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1132              		.loc 1 132 5 is_stmt 1 view .LVU381
+ 132:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1133              		.loc 1 132 20 is_stmt 0 view .LVU382
+ 1134 0010 064B     		ldr	r3, .L86+4
+ 1135 0012 1868     		ldr	r0, [r3]
+ 1136              	.LVL131:
+ 132:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1137              		.loc 1 132 20 view .LVU383
+ 1138 0014 FFF7FEFF 		bl	lv_tlsf_malloc
+ 1139              	.LVL132:
+ 137:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+ 1140              		.loc 1 137 5 is_stmt 1 view .LVU384
+ 137:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("couldn't allocate memory (%lu bytes)", (unsigned long)size);
+ 1141              		.loc 1 137 7 is_stmt 0 view .LVU385
+ 1142 0018 0446     		mov	r4, r0
+ 1143 001a 0028     		cmp	r0, #0
+ 1144 001c F4D1     		bne	.L81
+ 1145              	.LBB4:
+ 138:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_monitor_t mon;
+ 1146              		.loc 1 138 9 is_stmt 1 view .LVU386
+ 138:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_monitor_t mon;
+ 1147              		.loc 1 138 9 view .LVU387
+ 138:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_monitor_t mon;
+ 1148              		.loc 1 138 9 view .LVU388
+ 139:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_monitor(&mon);
+ 1149              		.loc 1 139 9 view .LVU389
+ 140:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("used: %6d (%3d %%), frag: %3d %%, biggest free: %6d",
+ 1150              		.loc 1 140 9 view .LVU390
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 37
+
+
+ 1151 001e 01A8     		add	r0, sp, #4
+ 1152              	.LVL133:
+ 140:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("used: %6d (%3d %%), frag: %3d %%, biggest free: %6d",
+ 1153              		.loc 1 140 9 is_stmt 0 view .LVU391
+ 1154 0020 FFF7FEFF 		bl	lv_mem_monitor
+ 1155              	.LVL134:
+ 141:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                      (int)(mon.total_size - mon.free_size), mon.used_pct, mon.frag_pct,
+ 1156              		.loc 1 141 9 is_stmt 1 view .LVU392
+ 141:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                      (int)(mon.total_size - mon.free_size), mon.used_pct, mon.frag_pct,
+ 1157              		.loc 1 141 9 view .LVU393
+ 141:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                      (int)(mon.total_size - mon.free_size), mon.used_pct, mon.frag_pct,
+ 1158              		.loc 1 141 9 view .LVU394
+ 1159 0024 F0E7     		b	.L81
+ 1160              	.L87:
+ 1161 0026 00BF     		.align	2
+ 1162              	.L86:
+ 1163 0028 00000000 		.word	.LANCHOR1
+ 1164 002c 00000000 		.word	.LANCHOR0
+ 1165              	.LBE4:
+ 1166              		.cfi_endproc
+ 1167              	.LFE25:
+ 1169              		.section	.text.lv_mem_realloc,"ax",%progbits
+ 1170              		.align	1
+ 1171              		.global	lv_mem_realloc
+ 1172              		.syntax unified
+ 1173              		.thumb
+ 1174              		.thumb_func
+ 1176              	lv_mem_realloc:
+ 1177              	.LVL135:
+ 1178              	.LFB27:
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("reallocating %p with %lu size", data_p, (unsigned long)new_size);
+ 1179              		.loc 1 183 1 view -0
+ 1180              		.cfi_startproc
+ 1181              		@ args = 0, pretend = 0, frame = 0
+ 1182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     MEM_TRACE("reallocating %p with %lu size", data_p, (unsigned long)new_size);
+ 1183              		.loc 1 183 1 is_stmt 0 view .LVU396
+ 1184 0000 08B5     		push	{r3, lr}
+ 1185              	.LCFI13:
+ 1186              		.cfi_def_cfa_offset 8
+ 1187              		.cfi_offset 3, -8
+ 1188              		.cfi_offset 14, -4
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(new_size == 0) {
+ 1189              		.loc 1 184 80 is_stmt 1 view .LVU397
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("using zero_mem");
+ 1190              		.loc 1 185 5 view .LVU398
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("using zero_mem");
+ 1191              		.loc 1 185 7 is_stmt 0 view .LVU399
+ 1192 0002 49B1     		cbz	r1, .L93
+ 1193 0004 0A46     		mov	r2, r1
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1194              		.loc 1 191 5 is_stmt 1 view .LVU400
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1195              		.loc 1 191 7 is_stmt 0 view .LVU401
+ 1196 0006 084B     		ldr	r3, .L95
+ 1197 0008 9842     		cmp	r0, r3
+ 1198 000a 09D0     		beq	.L94
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 38
+
+
+ 194:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1199              		.loc 1 194 5 is_stmt 1 view .LVU402
+ 194:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1200              		.loc 1 194 20 is_stmt 0 view .LVU403
+ 1201 000c 0146     		mov	r1, r0
+ 1202              	.LVL136:
+ 194:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1203              		.loc 1 194 20 view .LVU404
+ 1204 000e 074B     		ldr	r3, .L95+4
+ 1205 0010 1868     		ldr	r0, [r3]
+ 1206              	.LVL137:
+ 194:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** #else
+ 1207              		.loc 1 194 20 view .LVU405
+ 1208 0012 FFF7FEFF 		bl	lv_tlsf_realloc
+ 1209              	.LVL138:
+ 198:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_LOG_ERROR("couldn't allocate memory");
+ 1210              		.loc 1 198 5 is_stmt 1 view .LVU406
+ 1211              	.L88:
+ 205:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1212              		.loc 1 205 1 is_stmt 0 view .LVU407
+ 1213 0016 08BD     		pop	{r3, pc}
+ 1214              	.LVL139:
+ 1215              	.L93:
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         lv_mem_free(data_p);
+ 1216              		.loc 1 186 36 is_stmt 1 view .LVU408
+ 187:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return &zero_mem;
+ 1217              		.loc 1 187 9 view .LVU409
+ 1218 0018 FFF7FEFF 		bl	lv_mem_free
+ 1219              	.LVL140:
+ 188:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1220              		.loc 1 188 9 view .LVU410
+ 188:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1221              		.loc 1 188 16 is_stmt 0 view .LVU411
+ 1222 001c 0248     		ldr	r0, .L95
+ 1223 001e FAE7     		b	.L88
+ 1224              	.LVL141:
+ 1225              	.L94:
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1226              		.loc 1 191 29 is_stmt 1 discriminator 1 view .LVU412
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1227              		.loc 1 191 36 is_stmt 0 discriminator 1 view .LVU413
+ 1228 0020 0846     		mov	r0, r1
+ 1229              	.LVL142:
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1230              		.loc 1 191 36 discriminator 1 view .LVU414
+ 1231 0022 FFF7FEFF 		bl	lv_mem_alloc
+ 1232              	.LVL143:
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1233              		.loc 1 191 36 discriminator 1 view .LVU415
+ 1234 0026 F6E7     		b	.L88
+ 1235              	.L96:
+ 1236              		.align	2
+ 1237              	.L95:
+ 1238 0028 00000000 		.word	.LANCHOR1
+ 1239 002c 00000000 		.word	.LANCHOR0
+ 1240              		.cfi_endproc
+ 1241              	.LFE27:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 39
+
+
+ 1243              		.section	.text.lv_mem_buf_get,"ax",%progbits
+ 1244              		.align	1
+ 1245              		.global	lv_mem_buf_get
+ 1246              		.syntax unified
+ 1247              		.thumb
+ 1248              		.thumb_func
+ 1250              	lv_mem_buf_get:
+ 1251              	.LVL144:
+ 1252              	.LFB30:
+ 263:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(size == 0) return NULL;
+ 1253              		.loc 1 263 1 is_stmt 1 view -0
+ 1254              		.cfi_startproc
+ 1255              		@ args = 0, pretend = 0, frame = 0
+ 1256              		@ frame_needed = 0, uses_anonymous_args = 0
+ 264:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1257              		.loc 1 264 5 view .LVU417
+ 264:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1258              		.loc 1 264 7 is_stmt 0 view .LVU418
+ 1259 0000 0028     		cmp	r0, #0
+ 1260 0002 5BD0     		beq	.L110
+ 263:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     if(size == 0) return NULL;
+ 1261              		.loc 1 263 1 view .LVU419
+ 1262 0004 38B5     		push	{r3, r4, r5, lr}
+ 1263              	.LCFI14:
+ 1264              		.cfi_def_cfa_offset 16
+ 1265              		.cfi_offset 3, -16
+ 1266              		.cfi_offset 4, -12
+ 1267              		.cfi_offset 5, -8
+ 1268              		.cfi_offset 14, -4
+ 1269 0006 0446     		mov	r4, r0
+ 1270              	.LBB5:
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 1271              		.loc 1 270 17 view .LVU420
+ 1272 0008 0023     		movs	r3, #0
+ 1273              	.LBE5:
+ 269:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 1274              		.loc 1 269 12 view .LVU421
+ 1275 000a 4FF0FF30 		mov	r0, #-1
+ 1276              	.LVL145:
+ 269:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     for(uint8_t i = 0; i < LV_MEM_BUF_MAX_NUM; i++) {
+ 1277              		.loc 1 269 12 view .LVU422
+ 1278 000e 0CE0     		b	.L99
+ 1279              	.LVL146:
+ 1280              	.L117:
+ 1281              	.LBB6:
+ 273:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 return LV_GC_ROOT(lv_mem_buf[i]).p;
+ 1282              		.loc 1 273 17 is_stmt 1 view .LVU423
+ 273:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 return LV_GC_ROOT(lv_mem_buf[i]).p;
+ 1283              		.loc 1 273 48 is_stmt 0 view .LVU424
+ 1284 0010 2B4A     		ldr	r2, .L121
+ 1285 0012 02EBC300 		add	r0, r2, r3, lsl #3
+ 1286              	.LVL147:
+ 273:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 return LV_GC_ROOT(lv_mem_buf[i]).p;
+ 1287              		.loc 1 273 48 view .LVU425
+ 1288 0016 8379     		ldrb	r3, [r0, #6]	@ zero_extendqisi2
+ 1289              	.LVL148:
+ 273:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 return LV_GC_ROOT(lv_mem_buf[i]).p;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 40
+
+
+ 1290              		.loc 1 273 48 view .LVU426
+ 1291 0018 43F00103 		orr	r3, r3, #1
+ 1292 001c 8371     		strb	r3, [r0, #6]
+ 274:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1293              		.loc 1 274 17 is_stmt 1 view .LVU427
+ 274:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1294              		.loc 1 274 49 is_stmt 0 view .LVU428
+ 1295 001e 52F83100 		ldr	r0, [r2, r1, lsl #3]
+ 1296 0022 36E0     		b	.L97
+ 1297              	.LVL149:
+ 1298              	.L118:
+ 277:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1299              		.loc 1 277 17 is_stmt 1 view .LVU429
+ 277:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1300              		.loc 1 277 25 is_stmt 0 view .LVU430
+ 1301 0024 58B2     		sxtb	r0, r3
+ 1302              	.LVL150:
+ 1303              	.L100:
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 1304              		.loc 1 270 48 is_stmt 1 discriminator 2 view .LVU431
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 1305              		.loc 1 270 49 is_stmt 0 discriminator 2 view .LVU432
+ 1306 0026 0133     		adds	r3, r3, #1
+ 1307              	.LVL151:
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 1308              		.loc 1 270 49 discriminator 2 view .LVU433
+ 1309 0028 DBB2     		uxtb	r3, r3
+ 1310              	.LVL152:
+ 1311              	.L99:
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 1312              		.loc 1 270 24 is_stmt 1 discriminator 1 view .LVU434
+ 270:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0 && LV_GC_ROOT(lv_mem_buf[i]).size >= size) {
+ 1313              		.loc 1 270 5 is_stmt 0 discriminator 1 view .LVU435
+ 1314 002a 0F2B     		cmp	r3, #15
+ 1315 002c 18D8     		bhi	.L116
+ 271:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(LV_GC_ROOT(lv_mem_buf[i]).size == size) {
+ 1316              		.loc 1 271 9 is_stmt 1 view .LVU436
+ 271:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(LV_GC_ROOT(lv_mem_buf[i]).size == size) {
+ 1317              		.loc 1 271 37 is_stmt 0 view .LVU437
+ 1318 002e 1946     		mov	r1, r3
+ 1319 0030 234A     		ldr	r2, .L121
+ 1320 0032 02EBC302 		add	r2, r2, r3, lsl #3
+ 1321 0036 9279     		ldrb	r2, [r2, #6]	@ zero_extendqisi2
+ 271:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(LV_GC_ROOT(lv_mem_buf[i]).size == size) {
+ 1322              		.loc 1 271 11 view .LVU438
+ 1323 0038 12F0010F 		tst	r2, #1
+ 1324 003c F3D1     		bne	.L100
+ 271:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(LV_GC_ROOT(lv_mem_buf[i]).size == size) {
+ 1325              		.loc 1 271 76 discriminator 1 view .LVU439
+ 1326 003e 204A     		ldr	r2, .L121
+ 1327 0040 02EBC302 		add	r2, r2, r3, lsl #3
+ 1328 0044 9288     		ldrh	r2, [r2, #4]
+ 271:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(LV_GC_ROOT(lv_mem_buf[i]).size == size) {
+ 1329              		.loc 1 271 48 discriminator 1 view .LVU440
+ 1330 0046 A242     		cmp	r2, r4
+ 1331 0048 EDD3     		bcc	.L100
+ 272:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 LV_GC_ROOT(lv_mem_buf[i]).used = 1;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 41
+
+
+ 1332              		.loc 1 272 13 is_stmt 1 view .LVU441
+ 272:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 LV_GC_ROOT(lv_mem_buf[i]).used = 1;
+ 1333              		.loc 1 272 15 is_stmt 0 view .LVU442
+ 1334 004a E1D0     		beq	.L117
+ 276:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 1335              		.loc 1 276 18 is_stmt 1 view .LVU443
+ 276:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 1336              		.loc 1 276 20 is_stmt 0 view .LVU444
+ 1337 004c 0028     		cmp	r0, #0
+ 1338 004e E9DB     		blt	.L118
+ 280:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 1339              		.loc 1 280 18 is_stmt 1 view .LVU445
+ 280:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 1340              		.loc 1 280 85 is_stmt 0 view .LVU446
+ 1341 0050 1B49     		ldr	r1, .L121
+ 1342 0052 01EBC001 		add	r1, r1, r0, lsl #3
+ 1343 0056 8988     		ldrh	r1, [r1, #4]
+ 280:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****                 i_guess = i;
+ 1344              		.loc 1 280 20 view .LVU447
+ 1345 0058 8A42     		cmp	r2, r1
+ 1346 005a E4D2     		bcs	.L100
+ 281:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1347              		.loc 1 281 17 is_stmt 1 view .LVU448
+ 281:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1348              		.loc 1 281 25 is_stmt 0 view .LVU449
+ 1349 005c 58B2     		sxtb	r0, r3
+ 1350              	.LVL153:
+ 281:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1351              		.loc 1 281 25 view .LVU450
+ 1352 005e E2E7     		b	.L100
+ 1353              	.L116:
+ 281:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             }
+ 1354              		.loc 1 281 25 view .LVU451
+ 1355              	.LBE6:
+ 286:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_GC_ROOT(lv_mem_buf[i_guess]).used = 1;
+ 1356              		.loc 1 286 5 is_stmt 1 view .LVU452
+ 286:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         LV_GC_ROOT(lv_mem_buf[i_guess]).used = 1;
+ 1357              		.loc 1 286 7 is_stmt 0 view .LVU453
+ 1358 0060 0028     		cmp	r0, #0
+ 1359 0062 0DDA     		bge	.L119
+ 1360              	.LBB7:
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1361              		.loc 1 294 17 view .LVU454
+ 1362 0064 0023     		movs	r3, #0
+ 1363              	.LVL154:
+ 1364              	.L104:
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1365              		.loc 1 294 24 is_stmt 1 discriminator 1 view .LVU455
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1366              		.loc 1 294 5 is_stmt 0 discriminator 1 view .LVU456
+ 1367 0066 0F2B     		cmp	r3, #15
+ 1368 0068 27D8     		bhi	.L109
+ 295:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             /*if this fails you probably need to increase your LV_MEM_SIZE/heap size*/
+ 1369              		.loc 1 295 9 is_stmt 1 view .LVU457
+ 295:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             /*if this fails you probably need to increase your LV_MEM_SIZE/heap size*/
+ 1370              		.loc 1 295 37 is_stmt 0 view .LVU458
+ 1371 006a 1D46     		mov	r5, r3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 42
+
+
+ 1372 006c 144A     		ldr	r2, .L121
+ 1373 006e 02EBC302 		add	r2, r2, r3, lsl #3
+ 1374 0072 9279     		ldrb	r2, [r2, #6]	@ zero_extendqisi2
+ 295:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             /*if this fails you probably need to increase your LV_MEM_SIZE/heap size*/
+ 1375              		.loc 1 295 11 view .LVU459
+ 1376 0074 12F0010F 		tst	r2, #1
+ 1377 0078 0CD0     		beq	.L120
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1378              		.loc 1 294 48 is_stmt 1 discriminator 2 view .LVU460
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1379              		.loc 1 294 49 is_stmt 0 discriminator 2 view .LVU461
+ 1380 007a 0133     		adds	r3, r3, #1
+ 1381              	.LVL155:
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1382              		.loc 1 294 49 discriminator 2 view .LVU462
+ 1383 007c DBB2     		uxtb	r3, r3
+ 1384              	.LVL156:
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1385              		.loc 1 294 49 discriminator 2 view .LVU463
+ 1386 007e F2E7     		b	.L104
+ 1387              	.LVL157:
+ 1388              	.L119:
+ 294:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         if(LV_GC_ROOT(lv_mem_buf[i]).used == 0) {
+ 1389              		.loc 1 294 49 discriminator 2 view .LVU464
+ 1390              	.LBE7:
+ 287:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("returning already allocated buffer (buffer id: %d, address: %p)", i_guess,
+ 1391              		.loc 1 287 9 is_stmt 1 view .LVU465
+ 287:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("returning already allocated buffer (buffer id: %d, address: %p)", i_guess,
+ 1392              		.loc 1 287 46 is_stmt 0 view .LVU466
+ 1393 0080 0F4A     		ldr	r2, .L121
+ 1394 0082 02EBC001 		add	r1, r2, r0, lsl #3
+ 1395 0086 8B79     		ldrb	r3, [r1, #6]	@ zero_extendqisi2
+ 1396              	.LVL158:
+ 287:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         MEM_TRACE("returning already allocated buffer (buffer id: %d, address: %p)", i_guess,
+ 1397              		.loc 1 287 46 view .LVU467
+ 1398 0088 43F00103 		orr	r3, r3, #1
+ 1399 008c 8B71     		strb	r3, [r1, #6]
+ 289:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         return LV_GC_ROOT(lv_mem_buf[i_guess]).p;
+ 1400              		.loc 1 289 53 is_stmt 1 view .LVU468
+ 290:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1401              		.loc 1 290 9 view .LVU469
+ 290:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1402              		.loc 1 290 47 is_stmt 0 view .LVU470
+ 1403 008e 52F83000 		ldr	r0, [r2, r0, lsl #3]
+ 1404              	.LVL159:
+ 1405              	.L97:
+ 312:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1406              		.loc 1 312 1 view .LVU471
+ 1407 0092 38BD     		pop	{r3, r4, r5, pc}
+ 1408              	.LVL160:
+ 1409              	.L120:
+ 1410              	.LBB9:
+ 1411              	.LBB8:
+ 297:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_ASSERT_MSG(buf != NULL, "Out of memory, can't allocate a new buffer (increase your L
+ 1412              		.loc 1 297 13 is_stmt 1 view .LVU472
+ 297:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_ASSERT_MSG(buf != NULL, "Out of memory, can't allocate a new buffer (increase your L
+ 1413              		.loc 1 297 26 is_stmt 0 view .LVU473
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 43
+
+
+ 1414 0094 2146     		mov	r1, r4
+ 1415 0096 0A4B     		ldr	r3, .L121
+ 1416              	.LVL161:
+ 297:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_ASSERT_MSG(buf != NULL, "Out of memory, can't allocate a new buffer (increase your L
+ 1417              		.loc 1 297 26 view .LVU474
+ 1418 0098 53F83500 		ldr	r0, [r3, r5, lsl #3]
+ 1419              	.LVL162:
+ 297:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_ASSERT_MSG(buf != NULL, "Out of memory, can't allocate a new buffer (increase your L
+ 1420              		.loc 1 297 26 view .LVU475
+ 1421 009c FFF7FEFF 		bl	lv_mem_realloc
+ 1422              	.LVL163:
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1423              		.loc 1 298 13 is_stmt 1 view .LVU476
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1424              		.loc 1 298 13 view .LVU477
+ 1425 00a0 50B1     		cbz	r0, .L107
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1426              		.loc 1 298 13 view .LVU478
+ 299:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1427              		.loc 1 299 13 view .LVU479
+ 301:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).size = size;
+ 1428              		.loc 1 301 13 view .LVU480
+ 301:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).size = size;
+ 1429              		.loc 1 301 44 is_stmt 0 view .LVU481
+ 1430 00a2 0749     		ldr	r1, .L121
+ 1431 00a4 01EBC503 		add	r3, r1, r5, lsl #3
+ 1432 00a8 9A79     		ldrb	r2, [r3, #6]	@ zero_extendqisi2
+ 1433 00aa 42F00102 		orr	r2, r2, #1
+ 1434 00ae 9A71     		strb	r2, [r3, #6]
+ 302:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).p    = buf;
+ 1435              		.loc 1 302 13 is_stmt 1 view .LVU482
+ 302:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             LV_GC_ROOT(lv_mem_buf[i]).p    = buf;
+ 1436              		.loc 1 302 44 is_stmt 0 view .LVU483
+ 1437 00b0 9C80     		strh	r4, [r3, #4]	@ movhi
+ 303:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             MEM_TRACE("allocated (buffer id: %d, address: %p)", i, LV_GC_ROOT(lv_mem_buf[i]).p);
+ 1438              		.loc 1 303 13 is_stmt 1 view .LVU484
+ 303:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             MEM_TRACE("allocated (buffer id: %d, address: %p)", i, LV_GC_ROOT(lv_mem_buf[i]).p);
+ 1439              		.loc 1 303 44 is_stmt 0 view .LVU485
+ 1440 00b2 41F83500 		str	r0, [r1, r5, lsl #3]
+ 304:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             return LV_GC_ROOT(lv_mem_buf[i]).p;
+ 1441              		.loc 1 304 96 is_stmt 1 view .LVU486
+ 305:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 1442              		.loc 1 305 13 view .LVU487
+ 305:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 1443              		.loc 1 305 45 is_stmt 0 view .LVU488
+ 1444 00b6 ECE7     		b	.L97
+ 1445              	.L107:
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1446              		.loc 1 298 13 is_stmt 1 discriminator 1 view .LVU489
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1447              		.loc 1 298 13 discriminator 1 view .LVU490
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1448              		.loc 1 298 13 discriminator 1 view .LVU491
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1449              		.loc 1 298 13 discriminator 1 view .LVU492
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1450              		.loc 1 298 13 discriminator 1 view .LVU493
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 44
+
+
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1451              		.loc 1 298 13 discriminator 1 view .LVU494
+ 1452 00b8 FEE7     		b	.L107
+ 1453              	.LVL164:
+ 1454              	.L109:
+ 298:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             if(buf == NULL) return NULL;
+ 1455              		.loc 1 298 13 is_stmt 0 discriminator 1 view .LVU495
+ 1456              	.LBE8:
+ 1457              	.LBE9:
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 1458              		.loc 1 310 5 is_stmt 1 discriminator 2 view .LVU496
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 1459              		.loc 1 310 5 discriminator 2 view .LVU497
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 1460              		.loc 1 310 5 discriminator 2 view .LVU498
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 1461              		.loc 1 310 5 discriminator 2 view .LVU499
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 1462              		.loc 1 310 5 discriminator 2 view .LVU500
+ 310:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     return NULL;
+ 1463              		.loc 1 310 5 discriminator 2 view .LVU501
+ 1464 00ba FEE7     		b	.L109
+ 1465              	.LVL165:
+ 1466              	.L110:
+ 1467              	.LCFI15:
+ 1468              		.cfi_def_cfa_offset 0
+ 1469              		.cfi_restore 3
+ 1470              		.cfi_restore 4
+ 1471              		.cfi_restore 5
+ 1472              		.cfi_restore 14
+ 264:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1473              		.loc 1 264 26 is_stmt 0 view .LVU502
+ 1474 00bc 0020     		movs	r0, #0
+ 1475              	.LVL166:
+ 312:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1476              		.loc 1 312 1 view .LVU503
+ 1477 00be 7047     		bx	lr
+ 1478              	.L122:
+ 1479              		.align	2
+ 1480              	.L121:
+ 1481 00c0 00000000 		.word	lv_mem_buf
+ 1482              		.cfi_endproc
+ 1483              	.LFE30:
+ 1485              		.section	.text.lv_memset_00,"ax",%progbits
+ 1486              		.align	1
+ 1487              		.global	lv_memset_00
+ 1488              		.syntax unified
+ 1489              		.thumb
+ 1490              		.thumb_func
+ 1492              	lv_memset_00:
+ 1493              	.LVL167:
+ 1494              	.LFB35:
+ 460:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = (uint8_t *)dst;
+ 1495              		.loc 1 460 1 is_stmt 1 view -0
+ 1496              		.cfi_startproc
+ 1497              		@ args = 0, pretend = 0, frame = 0
+ 1498              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 45
+
+
+ 1499              		@ link register save eliminated.
+ 461:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uintptr_t d_align = (lv_uintptr_t) d8 & ALIGN_MASK;
+ 1500              		.loc 1 461 5 view .LVU505
+ 462:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1501              		.loc 1 462 5 view .LVU506
+ 465:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 1502              		.loc 1 465 5 view .LVU507
+ 465:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 1503              		.loc 1 465 7 is_stmt 0 view .LVU508
+ 1504 0000 10F00303 		ands	r3, r0, #3
+ 1505              	.LVL168:
+ 465:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 1506              		.loc 1 465 7 view .LVU509
+ 1507 0004 16D0     		beq	.L127
+ 466:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 1508              		.loc 1 466 9 is_stmt 1 view .LVU510
+ 466:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 1509              		.loc 1 466 17 is_stmt 0 view .LVU511
+ 1510 0006 C3F10403 		rsb	r3, r3, #4
+ 1511              	.LVL169:
+ 467:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0);
+ 1512              		.loc 1 467 9 is_stmt 1 view .LVU512
+ 467:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0);
+ 1513              		.loc 1 467 14 is_stmt 0 view .LVU513
+ 1514 000a 04E0     		b	.L125
+ 1515              	.LVL170:
+ 1516              	.L126:
+ 468:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 1517              		.loc 1 468 13 is_stmt 1 view .LVU514
+ 1518 000c 0022     		movs	r2, #0
+ 1519 000e 00F8012B 		strb	r2, [r0], #1
+ 1520              	.LVL171:
+ 468:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 1521              		.loc 1 468 13 view .LVU515
+ 468:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 1522              		.loc 1 468 20 view .LVU516
+ 469:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 1523              		.loc 1 469 13 view .LVU517
+ 469:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 1524              		.loc 1 469 16 is_stmt 0 view .LVU518
+ 1525 0012 0139     		subs	r1, r1, #1
+ 1526              	.LVL172:
+ 470:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 1527              		.loc 1 470 13 is_stmt 1 view .LVU519
+ 470:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 1528              		.loc 1 470 20 is_stmt 0 view .LVU520
+ 1529 0014 013B     		subs	r3, r3, #1
+ 1530              	.LVL173:
+ 1531              	.L125:
+ 467:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0);
+ 1532              		.loc 1 467 14 is_stmt 1 view .LVU521
+ 1533 0016 6BB1     		cbz	r3, .L127
+ 467:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0);
+ 1534              		.loc 1 467 23 is_stmt 0 discriminator 1 view .LVU522
+ 1535 0018 0029     		cmp	r1, #0
+ 1536 001a F7D1     		bne	.L126
+ 1537 001c 0AE0     		b	.L127
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 46
+
+
+ 1538              	.LVL174:
+ 1539              	.L128:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1540              		.loc 1 476 9 is_stmt 1 view .LVU523
+ 1541 001e 0023     		movs	r3, #0
+ 1542 0020 0360     		str	r3, [r0]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1543              		.loc 1 476 9 view .LVU524
+ 1544              	.LVL175:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1545              		.loc 1 476 9 view .LVU525
+ 1546 0022 4360     		str	r3, [r0, #4]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1547              		.loc 1 476 9 view .LVU526
+ 1548              	.LVL176:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1549              		.loc 1 476 9 view .LVU527
+ 1550 0024 8360     		str	r3, [r0, #8]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1551              		.loc 1 476 9 view .LVU528
+ 1552              	.LVL177:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1553              		.loc 1 476 9 view .LVU529
+ 1554 0026 C360     		str	r3, [r0, #12]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1555              		.loc 1 476 9 view .LVU530
+ 1556              	.LVL178:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1557              		.loc 1 476 9 view .LVU531
+ 1558 0028 0361     		str	r3, [r0, #16]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1559              		.loc 1 476 9 view .LVU532
+ 1560              	.LVL179:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1561              		.loc 1 476 9 view .LVU533
+ 1562 002a 4361     		str	r3, [r0, #20]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1563              		.loc 1 476 9 view .LVU534
+ 1564              	.LVL180:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1565              		.loc 1 476 9 view .LVU535
+ 1566 002c 8361     		str	r3, [r0, #24]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1567              		.loc 1 476 9 view .LVU536
+ 1568              	.LVL181:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1569              		.loc 1 476 9 view .LVU537
+ 1570 002e C361     		str	r3, [r0, #28]
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1571              		.loc 1 476 9 view .LVU538
+ 1572 0030 2030     		adds	r0, r0, #32
+ 1573              	.LVL182:
+ 476:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1574              		.loc 1 476 26 view .LVU539
+ 477:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1575              		.loc 1 477 9 view .LVU540
+ 477:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 47
+
+
+ 1576              		.loc 1 477 13 is_stmt 0 view .LVU541
+ 1577 0032 2039     		subs	r1, r1, #32
+ 1578              	.LVL183:
+ 1579              	.L127:
+ 475:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(0));
+ 1580              		.loc 1 475 10 is_stmt 1 view .LVU542
+ 1581 0034 2029     		cmp	r1, #32
+ 1582 0036 F2D8     		bhi	.L128
+ 475:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(0));
+ 1583              		.loc 1 475 10 is_stmt 0 view .LVU543
+ 1584 0038 03E0     		b	.L129
+ 1585              	.L130:
+ 481:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 1586              		.loc 1 481 9 is_stmt 1 view .LVU544
+ 1587 003a 0023     		movs	r3, #0
+ 1588 003c 40F8043B 		str	r3, [r0], #4
+ 1589              	.LVL184:
+ 481:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 1590              		.loc 1 481 9 view .LVU545
+ 481:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 1591              		.loc 1 481 17 view .LVU546
+ 482:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1592              		.loc 1 482 9 view .LVU547
+ 482:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1593              		.loc 1 482 13 is_stmt 0 view .LVU548
+ 1594 0040 0439     		subs	r1, r1, #4
+ 1595              	.LVL185:
+ 1596              	.L129:
+ 480:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET32(0);
+ 1597              		.loc 1 480 10 is_stmt 1 view .LVU549
+ 1598 0042 0429     		cmp	r1, #4
+ 1599 0044 F9D8     		bhi	.L130
+ 1600              	.LVL186:
+ 1601              	.L131:
+ 486:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET8(0);
+ 1602              		.loc 1 486 10 view .LVU550
+ 1603 0046 21B1     		cbz	r1, .L133
+ 487:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 1604              		.loc 1 487 9 view .LVU551
+ 1605 0048 0023     		movs	r3, #0
+ 1606 004a 00F8013B 		strb	r3, [r0], #1
+ 1607              	.LVL187:
+ 487:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 1608              		.loc 1 487 9 view .LVU552
+ 487:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 1609              		.loc 1 487 16 view .LVU553
+ 488:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1610              		.loc 1 488 9 view .LVU554
+ 488:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1611              		.loc 1 488 12 is_stmt 0 view .LVU555
+ 1612 004e 0139     		subs	r1, r1, #1
+ 1613              	.LVL188:
+ 488:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1614              		.loc 1 488 12 view .LVU556
+ 1615 0050 F9E7     		b	.L131
+ 1616              	.L133:
+ 490:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 48
+
+
+ 1617              		.loc 1 490 1 view .LVU557
+ 1618 0052 7047     		bx	lr
+ 1619              		.cfi_endproc
+ 1620              	.LFE35:
+ 1622              		.section	.text.lv_memset_ff,"ax",%progbits
+ 1623              		.align	1
+ 1624              		.global	lv_memset_ff
+ 1625              		.syntax unified
+ 1626              		.thumb
+ 1627              		.thumb_func
+ 1629              	lv_memset_ff:
+ 1630              	.LVL189:
+ 1631              	.LFB36:
+ 498:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uint8_t * d8 = (uint8_t *)dst;
+ 1632              		.loc 1 498 1 is_stmt 1 view -0
+ 1633              		.cfi_startproc
+ 1634              		@ args = 0, pretend = 0, frame = 0
+ 1635              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1636              		@ link register save eliminated.
+ 499:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     uintptr_t d_align = (lv_uintptr_t) d8 & ALIGN_MASK;
+ 1637              		.loc 1 499 5 view .LVU559
+ 500:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1638              		.loc 1 500 5 view .LVU560
+ 503:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 1639              		.loc 1 503 5 view .LVU561
+ 503:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 1640              		.loc 1 503 7 is_stmt 0 view .LVU562
+ 1641 0000 10F00303 		ands	r3, r0, #3
+ 1642              	.LVL190:
+ 503:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         d_align = ALIGN_MASK + 1 - d_align;
+ 1643              		.loc 1 503 7 view .LVU563
+ 1644 0004 17D0     		beq	.L138
+ 504:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 1645              		.loc 1 504 9 is_stmt 1 view .LVU564
+ 504:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         while(d_align && len) {
+ 1646              		.loc 1 504 17 is_stmt 0 view .LVU565
+ 1647 0006 C3F10403 		rsb	r3, r3, #4
+ 1648              	.LVL191:
+ 505:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0xFF);
+ 1649              		.loc 1 505 9 is_stmt 1 view .LVU566
+ 505:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0xFF);
+ 1650              		.loc 1 505 14 is_stmt 0 view .LVU567
+ 1651 000a 04E0     		b	.L136
+ 1652              	.LVL192:
+ 1653              	.L137:
+ 506:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 1654              		.loc 1 506 13 is_stmt 1 view .LVU568
+ 1655 000c FF22     		movs	r2, #255
+ 1656 000e 00F8012B 		strb	r2, [r0], #1
+ 1657              	.LVL193:
+ 506:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 1658              		.loc 1 506 13 view .LVU569
+ 506:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             len--;
+ 1659              		.loc 1 506 23 view .LVU570
+ 507:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ 1660              		.loc 1 507 13 view .LVU571
+ 507:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             d_align--;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 49
+
+
+ 1661              		.loc 1 507 16 is_stmt 0 view .LVU572
+ 1662 0012 0139     		subs	r1, r1, #1
+ 1663              	.LVL194:
+ 508:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 1664              		.loc 1 508 13 is_stmt 1 view .LVU573
+ 508:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         }
+ 1665              		.loc 1 508 20 is_stmt 0 view .LVU574
+ 1666 0014 013B     		subs	r3, r3, #1
+ 1667              	.LVL195:
+ 1668              	.L136:
+ 505:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0xFF);
+ 1669              		.loc 1 505 14 is_stmt 1 view .LVU575
+ 1670 0016 73B1     		cbz	r3, .L138
+ 505:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****             SET8(0xFF);
+ 1671              		.loc 1 505 23 is_stmt 0 discriminator 1 view .LVU576
+ 1672 0018 0029     		cmp	r1, #0
+ 1673 001a F7D1     		bne	.L137
+ 1674 001c 0BE0     		b	.L138
+ 1675              	.LVL196:
+ 1676              	.L139:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1677              		.loc 1 514 9 is_stmt 1 view .LVU577
+ 1678 001e 4FF0FF33 		mov	r3, #-1
+ 1679 0022 0360     		str	r3, [r0]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1680              		.loc 1 514 9 view .LVU578
+ 1681              	.LVL197:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1682              		.loc 1 514 9 view .LVU579
+ 1683 0024 4360     		str	r3, [r0, #4]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1684              		.loc 1 514 9 view .LVU580
+ 1685              	.LVL198:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1686              		.loc 1 514 9 view .LVU581
+ 1687 0026 8360     		str	r3, [r0, #8]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1688              		.loc 1 514 9 view .LVU582
+ 1689              	.LVL199:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1690              		.loc 1 514 9 view .LVU583
+ 1691 0028 C360     		str	r3, [r0, #12]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1692              		.loc 1 514 9 view .LVU584
+ 1693              	.LVL200:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1694              		.loc 1 514 9 view .LVU585
+ 1695 002a 0361     		str	r3, [r0, #16]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1696              		.loc 1 514 9 view .LVU586
+ 1697              	.LVL201:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1698              		.loc 1 514 9 view .LVU587
+ 1699 002c 4361     		str	r3, [r0, #20]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1700              		.loc 1 514 9 view .LVU588
+ 1701              	.LVL202:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 50
+
+
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1702              		.loc 1 514 9 view .LVU589
+ 1703 002e 8361     		str	r3, [r0, #24]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1704              		.loc 1 514 9 view .LVU590
+ 1705              	.LVL203:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1706              		.loc 1 514 9 view .LVU591
+ 1707 0030 C361     		str	r3, [r0, #28]
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1708              		.loc 1 514 9 view .LVU592
+ 1709 0032 2030     		adds	r0, r0, #32
+ 1710              	.LVL204:
+ 514:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 32;
+ 1711              		.loc 1 514 35 view .LVU593
+ 515:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1712              		.loc 1 515 9 view .LVU594
+ 515:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1713              		.loc 1 515 13 is_stmt 0 view .LVU595
+ 1714 0034 2039     		subs	r1, r1, #32
+ 1715              	.LVL205:
+ 1716              	.L138:
+ 513:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(0xFFFFFFFF));
+ 1717              		.loc 1 513 10 is_stmt 1 view .LVU596
+ 1718 0036 2029     		cmp	r1, #32
+ 1719 0038 F1D8     		bhi	.L139
+ 513:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         REPEAT8(SET32(0xFFFFFFFF));
+ 1720              		.loc 1 513 10 is_stmt 0 view .LVU597
+ 1721 003a 04E0     		b	.L140
+ 1722              	.L141:
+ 519:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 1723              		.loc 1 519 9 is_stmt 1 view .LVU598
+ 1724 003c 4FF0FF33 		mov	r3, #-1
+ 1725 0040 40F8043B 		str	r3, [r0], #4
+ 1726              	.LVL206:
+ 519:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 1727              		.loc 1 519 9 view .LVU599
+ 519:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len -= 4;
+ 1728              		.loc 1 519 26 view .LVU600
+ 520:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1729              		.loc 1 520 9 view .LVU601
+ 520:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1730              		.loc 1 520 13 is_stmt 0 view .LVU602
+ 1731 0044 0439     		subs	r1, r1, #4
+ 1732              	.LVL207:
+ 1733              	.L140:
+ 518:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET32(0xFFFFFFFF);
+ 1734              		.loc 1 518 10 is_stmt 1 view .LVU603
+ 1735 0046 0429     		cmp	r1, #4
+ 1736 0048 F8D8     		bhi	.L141
+ 1737              	.LVL208:
+ 1738              	.L142:
+ 524:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         SET8(0xFF);
+ 1739              		.loc 1 524 10 view .LVU604
+ 1740 004a 21B1     		cbz	r1, .L144
+ 525:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 1741              		.loc 1 525 9 view .LVU605
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 51
+
+
+ 1742 004c FF23     		movs	r3, #255
+ 1743 004e 00F8013B 		strb	r3, [r0], #1
+ 1744              	.LVL209:
+ 525:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 1745              		.loc 1 525 9 view .LVU606
+ 525:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****         len--;
+ 1746              		.loc 1 525 19 view .LVU607
+ 526:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1747              		.loc 1 526 9 view .LVU608
+ 526:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1748              		.loc 1 526 12 is_stmt 0 view .LVU609
+ 1749 0052 0139     		subs	r1, r1, #1
+ 1750              	.LVL210:
+ 526:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c ****     }
+ 1751              		.loc 1 526 12 view .LVU610
+ 1752 0054 F9E7     		b	.L142
+ 1753              	.L144:
+ 528:Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.c **** 
+ 1754              		.loc 1 528 1 view .LVU611
+ 1755 0056 7047     		bx	lr
+ 1756              		.cfi_endproc
+ 1757              	.LFE36:
+ 1759              		.section	.bss.tlsf,"aw",%nobits
+ 1760              		.align	2
+ 1761              		.set	.LANCHOR0,. + 0
+ 1764              	tlsf:
+ 1765 0000 00000000 		.space	4
+ 1766              		.section	.bss.work_mem_int.0,"aw",%nobits
+ 1767              		.align	2
+ 1770              	work_mem_int.0:
+ 1771 0000 00000000 		.space	49152
+ 1771      00000000 
+ 1771      00000000 
+ 1771      00000000 
+ 1771      00000000 
+ 1772              		.section	.data.zero_mem,"aw"
+ 1773              		.align	2
+ 1774              		.set	.LANCHOR1,. + 0
+ 1777              	zero_mem:
+ 1778 0000 D4C3B2A1 		.word	-1582119980
+ 1779              		.text
+ 1780              	.Letext0:
+ 1781              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 1782              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1783              		.file 4 "c:\\gnu arm embedded toolchain\\10 2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\std
+ 1784              		.file 5 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_types.h"
+ 1785              		.file 6 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_mem.h"
+ 1786              		.file 7 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_tlsf.h"
+ 1787              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_gc.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 52
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_mem.c
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:20     .text.lv_mem_walker:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:25     .text.lv_mem_walker:00000000 lv_mem_walker
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:77     .text.lv_mem_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:83     .text.lv_mem_init:00000000 lv_mem_init
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:109    .text.lv_mem_init:00000014 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1770   .bss.work_mem_int.0:00000000 work_mem_int.0
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:115    .text.lv_mem_deinit:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:121    .text.lv_mem_deinit:00000000 lv_mem_deinit
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:145    .text.lv_mem_deinit:00000010 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:150    .text.lv_mem_free:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:156    .text.lv_mem_free:00000000 lv_mem_free
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:192    .text.lv_mem_free:00000018 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:198    .text.lv_mem_test:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:204    .text.lv_mem_test:00000000 lv_mem_test
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:261    .text.lv_mem_test:00000034 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:268    .text.lv_mem_buf_release:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:274    .text.lv_mem_buf_release:00000000 lv_mem_buf_release
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:332    .text.lv_mem_buf_release:0000002c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:337    .text.lv_mem_buf_free_all:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:343    .text.lv_mem_buf_free_all:00000000 lv_mem_buf_free_all
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:410    .text.lv_mem_buf_free_all:00000038 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:415    .text.lv_memcpy:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:421    .text.lv_memcpy:00000000 lv_memcpy
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:848    .text.lv_memset:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:854    .text.lv_memset:00000000 lv_memset
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:994    .text.lv_mem_monitor:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1000   .text.lv_mem_monitor:00000000 lv_mem_monitor
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1081   .text.lv_mem_monitor:00000058 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1088   .text.lv_mem_alloc:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1094   .text.lv_mem_alloc:00000000 lv_mem_alloc
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1163   .text.lv_mem_alloc:00000028 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1170   .text.lv_mem_realloc:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1176   .text.lv_mem_realloc:00000000 lv_mem_realloc
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1238   .text.lv_mem_realloc:00000028 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1244   .text.lv_mem_buf_get:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1250   .text.lv_mem_buf_get:00000000 lv_mem_buf_get
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1481   .text.lv_mem_buf_get:000000c0 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1486   .text.lv_memset_00:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1492   .text.lv_memset_00:00000000 lv_memset_00
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1623   .text.lv_memset_ff:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1629   .text.lv_memset_ff:00000000 lv_memset_ff
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1760   .bss.tlsf:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1764   .bss.tlsf:00000000 tlsf
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1767   .bss.work_mem_int.0:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1773   .data.zero_mem:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s:1777   .data.zero_mem:00000000 zero_mem
+
+UNDEFINED SYMBOLS
+lv_tlsf_create_with_pool
+lv_tlsf_destroy
+lv_tlsf_free
+lv_tlsf_check
+lv_tlsf_get_pool
+lv_tlsf_check_pool
+lv_mem_buf
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cco8Liri.s 			page 53
+
+
+lv_tlsf_walk_pool
+lv_tlsf_malloc
+lv_tlsf_realloc

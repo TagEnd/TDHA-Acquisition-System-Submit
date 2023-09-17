@@ -1,0 +1,1309 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_math.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_trigo_sin,"ax",%progbits
+  20              		.align	1
+  21              		.global	lv_trigo_sin
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lv_trigo_sin:
+  27              	.LVL0:
+  28              	.LFB1:
+  29              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @file lv_math.c
+   3:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** #include "lv_math.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  11:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /*********************
+  12:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *      DEFINES
+  13:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *********************/
+  14:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  15:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**********************
+  16:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *      TYPEDEFS
+  17:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  **********************/
+  18:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  19:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**********************
+  20:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *  STATIC PROTOTYPES
+  21:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  **********************/
+  22:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  23:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**********************
+  24:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *  STATIC VARIABLES
+  25:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  **********************/
+  26:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** static const int16_t sin0_90_table[] = {
+  27:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     0,     572,   1144,  1715,  2286,  2856,  3425,  3993,  4560,  5126,  5690,  6252,  6813,  7371
+  28:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     9032,  9580,  10126, 10668, 11207, 11743, 12275, 12803, 13328, 13848, 14364, 14876, 15383, 1588
+  29:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     17364, 17846, 18323, 18794, 19260, 19720, 20173, 20621, 21062, 21497, 21925, 22347, 22762, 2317
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 2
+
+
+  30:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     24351, 24730, 25101, 25465, 25821, 26169, 26509, 26841, 27165, 27481, 27788, 28087, 28377, 2865
+  31:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     29451, 29697, 29934, 30162, 30381, 30591, 30791, 30982, 31163, 31335, 31498, 31650, 31794, 3192
+  32:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     32269, 32364, 32448, 32523, 32587, 32642, 32687, 32722, 32747, 32762, 32767
+  33:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** };
+  34:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  35:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**********************
+  36:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *      MACROS
+  37:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  **********************/
+  38:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  39:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**********************
+  40:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  *   GLOBAL FUNCTIONS
+  41:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  **********************/
+  42:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  43:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+  44:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Return with sinus of an angle
+  45:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param angle
+  46:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @return sinus of 'angle'. sin(-90) = -32767, sin(90) = 32767
+  47:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+  48:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** LV_ATTRIBUTE_FAST_MEM int16_t lv_trigo_sin(int16_t angle)
+  49:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+  30              		.loc 1 49 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  50:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int16_t ret = 0;
+  35              		.loc 1 50 5 view .LVU1
+  51:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     angle       = angle % 360;
+  36              		.loc 1 51 5 view .LVU2
+  37              		.loc 1 51 17 is_stmt 0 view .LVU3
+  38 0000 1C4B     		ldr	r3, .L8
+  39 0002 83FB0023 		smull	r2, r3, r3, r0
+  40 0006 0344     		add	r3, r3, r0
+  41 0008 C217     		asrs	r2, r0, #31
+  42 000a C2EB2323 		rsb	r3, r2, r3, asr #8
+  43 000e 4FF4B472 		mov	r2, #360
+  44 0012 02FB1300 		mls	r0, r2, r3, r0
+  45              	.LVL1:
+  46              		.loc 1 51 17 view .LVU4
+  47 0016 00B2     		sxth	r0, r0
+  48              	.LVL2:
+  52:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(angle < 0) angle = 360 + angle;
+  49              		.loc 1 53 5 is_stmt 1 view .LVU5
+  50              		.loc 1 53 7 is_stmt 0 view .LVU6
+  51 0018 0028     		cmp	r0, #0
+  52 001a 05DB     		blt	.L7
+  53              	.L2:
+  54:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  55:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(angle < 90) {
+  54              		.loc 1 55 5 is_stmt 1 view .LVU7
+  55              		.loc 1 55 7 is_stmt 0 view .LVU8
+  56 001c 5928     		cmp	r0, #89
+  57 001e 06DC     		bgt	.L3
+  56:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         ret = sin0_90_table[angle];
+  58              		.loc 1 56 9 is_stmt 1 view .LVU9
+  59              		.loc 1 56 13 is_stmt 0 view .LVU10
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 3
+
+
+  60 0020 154B     		ldr	r3, .L8+4
+  61 0022 33F91000 		ldrsh	r0, [r3, r0, lsl #1]
+  62              	.LVL3:
+  63              		.loc 1 56 13 view .LVU11
+  64 0026 7047     		bx	lr
+  65              	.LVL4:
+  66              	.L7:
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  67              		.loc 1 53 19 is_stmt 1 discriminator 1 view .LVU12
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  68              		.loc 1 53 31 is_stmt 0 discriminator 1 view .LVU13
+  69 0028 1044     		add	r0, r0, r2
+  70              	.LVL5:
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  71              		.loc 1 53 25 discriminator 1 view .LVU14
+  72 002a 00B2     		sxth	r0, r0
+  73              	.LVL6:
+  53:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  74              		.loc 1 53 25 discriminator 1 view .LVU15
+  75 002c F6E7     		b	.L2
+  76              	.L3:
+  57:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+  58:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     else if(angle >= 90 && angle < 180) {
+  77              		.loc 1 58 10 is_stmt 1 view .LVU16
+  78              		.loc 1 58 25 is_stmt 0 view .LVU17
+  79 002e 80B2     		uxth	r0, r0
+  80              		.loc 1 58 25 view .LVU18
+  81 0030 A0F15A03 		sub	r3, r0, #90
+  82 0034 9BB2     		uxth	r3, r3
+  83              		.loc 1 58 12 view .LVU19
+  84 0036 592B     		cmp	r3, #89
+  85 0038 06D8     		bhi	.L5
+  59:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         angle = 180 - angle;
+  86              		.loc 1 59 9 is_stmt 1 view .LVU20
+  87              		.loc 1 59 21 is_stmt 0 view .LVU21
+  88 003a C0F1B400 		rsb	r0, r0, #180
+  89              	.LVL7:
+  90              		.loc 1 59 15 view .LVU22
+  91 003e 00B2     		sxth	r0, r0
+  92              	.LVL8:
+  60:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         ret   = sin0_90_table[angle];
+  93              		.loc 1 60 9 is_stmt 1 view .LVU23
+  94              		.loc 1 60 15 is_stmt 0 view .LVU24
+  95 0040 0D4B     		ldr	r3, .L8+4
+  96 0042 33F91000 		ldrsh	r0, [r3, r0, lsl #1]
+  97              	.LVL9:
+  98              		.loc 1 60 15 view .LVU25
+  99 0046 7047     		bx	lr
+ 100              	.LVL10:
+ 101              	.L5:
+  61:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+  62:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     else if(angle >= 180 && angle < 270) {
+ 102              		.loc 1 62 10 is_stmt 1 view .LVU26
+ 103              		.loc 1 62 26 is_stmt 0 view .LVU27
+ 104 0048 A0F1B403 		sub	r3, r0, #180
+ 105 004c 9BB2     		uxth	r3, r3
+ 106              		.loc 1 62 12 view .LVU28
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 4
+
+
+ 107 004e 592B     		cmp	r3, #89
+ 108 0050 06D8     		bhi	.L6
+  63:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         angle = angle - 180;
+ 109              		.loc 1 63 9 is_stmt 1 view .LVU29
+ 110              		.loc 1 63 15 is_stmt 0 view .LVU30
+ 111 0052 1BB2     		sxth	r3, r3
+ 112              	.LVL11:
+  64:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         ret   = -sin0_90_table[angle];
+ 113              		.loc 1 64 9 is_stmt 1 view .LVU31
+ 114              		.loc 1 64 31 is_stmt 0 view .LVU32
+ 115 0054 084A     		ldr	r2, .L8+4
+ 116 0056 32F81300 		ldrh	r0, [r2, r3, lsl #1]
+ 117              		.loc 1 64 15 view .LVU33
+ 118 005a 4042     		rsbs	r0, r0, #0
+ 119 005c 00B2     		sxth	r0, r0
+ 120              	.LVL12:
+ 121              		.loc 1 64 15 view .LVU34
+ 122 005e 7047     		bx	lr
+ 123              	.LVL13:
+ 124              	.L6:
+  65:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+  66:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     else {   /*angle >=270*/
+  67:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         angle = 360 - angle;
+ 125              		.loc 1 67 9 is_stmt 1 view .LVU35
+ 126              		.loc 1 67 21 is_stmt 0 view .LVU36
+ 127 0060 C0F5B470 		rsb	r0, r0, #360
+ 128              	.LVL14:
+ 129              		.loc 1 67 15 view .LVU37
+ 130 0064 00B2     		sxth	r0, r0
+ 131              	.LVL15:
+  68:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         ret   = -sin0_90_table[angle];
+ 132              		.loc 1 68 9 is_stmt 1 view .LVU38
+ 133              		.loc 1 68 31 is_stmt 0 view .LVU39
+ 134 0066 044B     		ldr	r3, .L8+4
+ 135 0068 33F81000 		ldrh	r0, [r3, r0, lsl #1]
+ 136              	.LVL16:
+ 137              		.loc 1 68 15 view .LVU40
+ 138 006c 4042     		rsbs	r0, r0, #0
+ 139 006e 00B2     		sxth	r0, r0
+ 140              	.LVL17:
+  69:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+  70:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  71:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     return ret;
+ 141              		.loc 1 71 5 is_stmt 1 view .LVU41
+  72:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 142              		.loc 1 72 1 is_stmt 0 view .LVU42
+ 143 0070 7047     		bx	lr
+ 144              	.L9:
+ 145 0072 00BF     		.align	2
+ 146              	.L8:
+ 147 0074 B7600BB6 		.word	-1240768329
+ 148 0078 00000000 		.word	.LANCHOR0
+ 149              		.cfi_endproc
+ 150              	.LFE1:
+ 152              		.section	.text.lv_bezier3,"ax",%progbits
+ 153              		.align	1
+ 154              		.global	lv_bezier3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 5
+
+
+ 155              		.syntax unified
+ 156              		.thumb
+ 157              		.thumb_func
+ 159              	lv_bezier3:
+ 160              	.LVL18:
+ 161              	.LFB2:
+  73:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  74:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+  75:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Calculate a value of a Cubic Bezier function.
+  76:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param t time in range of [0..LV_BEZIER_VAL_MAX]
+  77:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param u0 start values in range of [0..LV_BEZIER_VAL_MAX]
+  78:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param u1 control value 1 values in range of [0..LV_BEZIER_VAL_MAX]
+  79:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param u2 control value 2 in range of [0..LV_BEZIER_VAL_MAX]
+  80:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param u3 end values in range of [0..LV_BEZIER_VAL_MAX]
+  81:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @return the value calculated from the given parameters in range of [0..LV_BEZIER_VAL_MAX]
+  82:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+  83:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** uint32_t lv_bezier3(uint32_t t, uint32_t u0, uint32_t u1, uint32_t u2, uint32_t u3)
+  84:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+ 162              		.loc 1 84 1 is_stmt 1 view -0
+ 163              		.cfi_startproc
+ 164              		@ args = 4, pretend = 0, frame = 0
+ 165              		@ frame_needed = 0, uses_anonymous_args = 0
+ 166              		.loc 1 84 1 is_stmt 0 view .LVU44
+ 167 0000 70B5     		push	{r4, r5, r6, lr}
+ 168              	.LCFI0:
+ 169              		.cfi_def_cfa_offset 16
+ 170              		.cfi_offset 4, -16
+ 171              		.cfi_offset 5, -12
+ 172              		.cfi_offset 6, -8
+ 173              		.cfi_offset 14, -4
+  85:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t t_rem  = 1024 - t;
+ 174              		.loc 1 85 5 is_stmt 1 view .LVU45
+ 175              		.loc 1 85 14 is_stmt 0 view .LVU46
+ 176 0002 C0F5806C 		rsb	ip, r0, #1024
+ 177              	.LVL19:
+  86:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t t_rem2 = (t_rem * t_rem) >> 10;
+ 178              		.loc 1 86 5 is_stmt 1 view .LVU47
+ 179              		.loc 1 86 30 is_stmt 0 view .LVU48
+ 180 0006 0CFB0CF4 		mul	r4, ip, ip
+ 181              		.loc 1 86 14 view .LVU49
+ 182 000a A40A     		lsrs	r4, r4, #10
+ 183              	.LVL20:
+  87:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t t_rem3 = (t_rem2 * t_rem) >> 10;
+ 184              		.loc 1 87 5 is_stmt 1 view .LVU50
+ 185              		.loc 1 87 31 is_stmt 0 view .LVU51
+ 186 000c 04FB0CF6 		mul	r6, r4, ip
+ 187              		.loc 1 87 14 view .LVU52
+ 188 0010 B60A     		lsrs	r6, r6, #10
+ 189              	.LVL21:
+  88:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t t2     = (t * t) >> 10;
+ 190              		.loc 1 88 5 is_stmt 1 view .LVU53
+ 191              		.loc 1 88 26 is_stmt 0 view .LVU54
+ 192 0012 00FB00FE 		mul	lr, r0, r0
+ 193              		.loc 1 88 14 view .LVU55
+ 194 0016 4FEA9E2E 		lsr	lr, lr, #10
+ 195              	.LVL22:
+  89:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t t3     = (t2 * t) >> 10;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 6
+
+
+ 196              		.loc 1 89 5 is_stmt 1 view .LVU56
+ 197              		.loc 1 89 27 is_stmt 0 view .LVU57
+ 198 001a 0EFB00F5 		mul	r5, lr, r0
+ 199              		.loc 1 89 14 view .LVU58
+ 200 001e AD0A     		lsrs	r5, r5, #10
+ 201              	.LVL23:
+  90:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  91:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t v1 = (t_rem3 * u0) >> 10;
+ 202              		.loc 1 91 5 is_stmt 1 view .LVU59
+ 203              		.loc 1 91 27 is_stmt 0 view .LVU60
+ 204 0020 01FB06F6 		mul	r6, r1, r6
+ 205              	.LVL24:
+  92:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t v2 = (3 * t_rem2 * t * u1) >> 20;
+ 206              		.loc 1 92 5 is_stmt 1 view .LVU61
+ 207              		.loc 1 92 31 is_stmt 0 view .LVU62
+ 208 0024 04FB00F0 		mul	r0, r4, r0
+ 209              	.LVL25:
+ 210              		.loc 1 92 35 view .LVU63
+ 211 0028 00FB02F2 		mul	r2, r0, r2
+ 212              	.LVL26:
+ 213              		.loc 1 92 35 view .LVU64
+ 214 002c 02EB4202 		add	r2, r2, r2, lsl #1
+ 215              		.loc 1 92 14 view .LVU65
+ 216 0030 120D     		lsrs	r2, r2, #20
+ 217              	.LVL27:
+  93:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t v3 = (3 * t_rem * t2 * u2) >> 20;
+ 218              		.loc 1 93 5 is_stmt 1 view .LVU66
+ 219              		.loc 1 93 30 is_stmt 0 view .LVU67
+ 220 0032 0EFB0CFC 		mul	ip, lr, ip
+ 221              	.LVL28:
+ 222              		.loc 1 93 35 view .LVU68
+ 223 0036 03FB0CF3 		mul	r3, r3, ip
+ 224              	.LVL29:
+ 225              		.loc 1 93 35 view .LVU69
+ 226 003a 03EB4303 		add	r3, r3, r3, lsl #1
+ 227              	.LVL30:
+  94:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t v4 = (t3 * u3) >> 10;
+ 228              		.loc 1 94 5 is_stmt 1 view .LVU70
+ 229              		.loc 1 94 23 is_stmt 0 view .LVU71
+ 230 003e 0498     		ldr	r0, [sp, #16]
+ 231 0040 05FB00F0 		mul	r0, r5, r0
+ 232              	.LVL31:
+  95:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  96:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     return v1 + v2 + v3 + v4;
+ 233              		.loc 1 96 5 is_stmt 1 view .LVU72
+ 234              		.loc 1 96 15 is_stmt 0 view .LVU73
+ 235 0044 02EB9622 		add	r2, r2, r6, lsr #10
+ 236              	.LVL32:
+ 237              		.loc 1 96 20 view .LVU74
+ 238 0048 02EB1352 		add	r2, r2, r3, lsr #20
+  97:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 239              		.loc 1 97 1 view .LVU75
+ 240 004c 02EB9020 		add	r0, r2, r0, lsr #10
+ 241              	.LVL33:
+ 242              		.loc 1 97 1 view .LVU76
+ 243 0050 70BD     		pop	{r4, r5, r6, pc}
+ 244              		.loc 1 97 1 view .LVU77
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 7
+
+
+ 245              		.cfi_endproc
+ 246              	.LFE2:
+ 248              		.section	.text.lv_sqrt,"ax",%progbits
+ 249              		.align	1
+ 250              		.global	lv_sqrt
+ 251              		.syntax unified
+ 252              		.thumb
+ 253              		.thumb_func
+ 255              	lv_sqrt:
+ 256              	.LVL34:
+ 257              	.LFB3:
+  98:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+  99:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+ 100:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Get the square root of a number
+ 101:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param x integer which square root should be calculated
+ 102:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param q store the result here. q->i: integer part, q->f: fractional part in 1/256 unit
+ 103:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param mask optional to skip some iterations if the magnitude of the root is known.
+ 104:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Set to 0x8000 by default.
+ 105:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * If root < 16: mask = 0x80
+ 106:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * If root < 256: mask = 0x800
+ 107:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Else: mask = 0x8000
+ 108:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+ 109:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** LV_ATTRIBUTE_FAST_MEM void lv_sqrt(uint32_t x, lv_sqrt_res_t * q, uint32_t mask)
+ 110:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+ 258              		.loc 1 110 1 is_stmt 1 view -0
+ 259              		.cfi_startproc
+ 260              		@ args = 0, pretend = 0, frame = 0
+ 261              		@ frame_needed = 0, uses_anonymous_args = 0
+ 262              		.loc 1 110 1 is_stmt 0 view .LVU79
+ 263 0000 00B5     		push	{lr}
+ 264              	.LCFI1:
+ 265              		.cfi_def_cfa_offset 4
+ 266              		.cfi_offset 14, -4
+ 111:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     x = x << 8; /*To get 4 bit precision. (sqrt(256) = 16 = 4 bit)*/
+ 267              		.loc 1 111 5 is_stmt 1 view .LVU80
+ 268              		.loc 1 111 7 is_stmt 0 view .LVU81
+ 269 0002 0002     		lsls	r0, r0, #8
+ 270              	.LVL35:
+ 112:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 113:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t root = 0;
+ 271              		.loc 1 113 5 is_stmt 1 view .LVU82
+ 272              		.loc 1 113 14 is_stmt 0 view .LVU83
+ 273 0004 4FF0000C 		mov	ip, #0
+ 274 0008 01E0     		b	.L14
+ 275              	.LVL36:
+ 276              	.L13:
+ 114:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t trial;
+ 115:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // http://ww1.microchip.com/...en/AppNotes/91040a.pdf
+ 116:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     do {
+ 117:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         trial = root + mask;
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(trial * trial <= x) root = trial;
+ 119:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         mask = mask >> 1;
+ 277              		.loc 1 119 9 is_stmt 1 view .LVU84
+ 120:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     } while(mask);
+ 278              		.loc 1 120 12 view .LVU85
+ 279              		.loc 1 120 5 is_stmt 0 view .LVU86
+ 280 000a 5208     		lsrs	r2, r2, #1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 8
+
+
+ 281              	.LVL37:
+ 282              		.loc 1 120 5 view .LVU87
+ 283 000c 07D0     		beq	.L17
+ 284              	.LVL38:
+ 285              	.L14:
+ 114:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t trial;
+ 286              		.loc 1 114 5 is_stmt 1 view .LVU88
+ 116:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         trial = root + mask;
+ 287              		.loc 1 116 5 view .LVU89
+ 117:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(trial * trial <= x) root = trial;
+ 288              		.loc 1 117 9 view .LVU90
+ 117:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(trial * trial <= x) root = trial;
+ 289              		.loc 1 117 15 is_stmt 0 view .LVU91
+ 290 000e 02EB0C03 		add	r3, r2, ip
+ 291              	.LVL39:
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         mask = mask >> 1;
+ 292              		.loc 1 118 9 is_stmt 1 view .LVU92
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         mask = mask >> 1;
+ 293              		.loc 1 118 18 is_stmt 0 view .LVU93
+ 294 0012 03FB03FE 		mul	lr, r3, r3
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         mask = mask >> 1;
+ 295              		.loc 1 118 11 view .LVU94
+ 296 0016 8645     		cmp	lr, r0
+ 297 0018 F7D8     		bhi	.L13
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         mask = mask >> 1;
+ 298              		.loc 1 118 37 view .LVU95
+ 299 001a 9C46     		mov	ip, r3
+ 300              	.LVL40:
+ 118:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         mask = mask >> 1;
+ 301              		.loc 1 118 37 view .LVU96
+ 302 001c F5E7     		b	.L13
+ 303              	.LVL41:
+ 304              	.L17:
+ 121:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 122:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     q->i = root >> 4;
+ 305              		.loc 1 122 5 is_stmt 1 view .LVU97
+ 306              		.loc 1 122 17 is_stmt 0 view .LVU98
+ 307 001e 4FEA1C13 		lsr	r3, ip, #4
+ 308              	.LVL42:
+ 309              		.loc 1 122 10 view .LVU99
+ 310 0022 0B80     		strh	r3, [r1]	@ movhi
+ 123:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     q->f = (root & 0xf) << 4;
+ 311              		.loc 1 123 5 is_stmt 1 view .LVU100
+ 312              		.loc 1 123 25 is_stmt 0 view .LVU101
+ 313 0024 4FEA0C1C 		lsl	ip, ip, #4
+ 314              	.LVL43:
+ 315              		.loc 1 123 25 view .LVU102
+ 316 0028 0CF0F00C 		and	ip, ip, #240
+ 317              		.loc 1 123 10 view .LVU103
+ 318 002c A1F802C0 		strh	ip, [r1, #2]	@ movhi
+ 124:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 319              		.loc 1 124 1 view .LVU104
+ 320 0030 5DF804FB 		ldr	pc, [sp], #4
+ 321              		.cfi_endproc
+ 322              	.LFE3:
+ 324              		.section	.text.lv_atan2,"ax",%progbits
+ 325              		.align	1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 9
+
+
+ 326              		.global	lv_atan2
+ 327              		.syntax unified
+ 328              		.thumb
+ 329              		.thumb_func
+ 331              	lv_atan2:
+ 332              	.LVL44:
+ 333              	.LFB4:
+ 125:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 126:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+ 127:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Calculate the atan2 of a vector.
+ 128:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param x
+ 129:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param y
+ 130:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @return the angle in degree calculated from the given parameters in range of [0..360]
+ 131:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+ 132:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** uint16_t lv_atan2(int x, int y)
+ 133:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+ 334              		.loc 1 133 1 is_stmt 1 view -0
+ 335              		.cfi_startproc
+ 336              		@ args = 0, pretend = 0, frame = 0
+ 337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338              		@ link register save eliminated.
+ 134:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // Fast XY vector to integer degree algorithm - Jan 2011 www.RomanBlack.com
+ 135:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // Converts any XY values including 0 to a degree value that should be
+ 136:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // within +/- 1 degree of the accurate value without needing
+ 137:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // large slow trig functions like ArcTan() or ArcCos().
+ 138:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // NOTE! at least one of the X or Y values must be non-zero!
+ 139:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // This is the full version, for all 4 quadrants and will generate
+ 140:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // the angle in integer degrees from 0-360.
+ 141:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // Any values of X and Y are usable including negative values provided
+ 142:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // they are between -1456 and 1456 so the 16bit multiply does not overflow.
+ 143:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 144:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     unsigned char negflag;
+ 339              		.loc 1 144 5 view .LVU106
+ 145:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     unsigned char tempdegree;
+ 340              		.loc 1 145 5 view .LVU107
+ 146:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     unsigned char comp;
+ 341              		.loc 1 146 5 view .LVU108
+ 147:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     unsigned int degree;     // this will hold the result
+ 342              		.loc 1 147 5 view .LVU109
+ 148:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     unsigned int ux;
+ 343              		.loc 1 148 5 view .LVU110
+ 149:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     unsigned int uy;
+ 344              		.loc 1 149 5 view .LVU111
+ 150:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 151:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // Save the sign flags then remove signs and get XY as unsigned ints
+ 152:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     negflag = 0;
+ 345              		.loc 1 152 5 view .LVU112
+ 153:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(x < 0) {
+ 346              		.loc 1 153 5 view .LVU113
+ 347              		.loc 1 153 7 is_stmt 0 view .LVU114
+ 348 0000 0028     		cmp	r0, #0
+ 349              		.loc 1 153 7 view .LVU115
+ 350 0002 2DDB     		blt	.L38
+ 152:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(x < 0) {
+ 351              		.loc 1 152 13 view .LVU116
+ 352 0004 0022     		movs	r2, #0
+ 353              	.LVL45:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 10
+
+
+ 354              	.L19:
+ 154:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         negflag += 0x01;    // x flag bit
+ 155:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         x = (0 - x);        // is now +
+ 156:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 157:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     ux = x;                // copy to unsigned var before multiply
+ 355              		.loc 1 157 5 is_stmt 1 view .LVU117
+ 158:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(y < 0) {
+ 356              		.loc 1 158 5 view .LVU118
+ 357              		.loc 1 158 7 is_stmt 0 view .LVU119
+ 358 0006 0029     		cmp	r1, #0
+ 359 0008 2DDB     		blt	.L39
+ 360              	.L20:
+ 159:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         negflag += 0x02;    // y flag bit
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         y = (0 - y);        // is now +
+ 161:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 162:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uy = y;                // copy to unsigned var before multiply
+ 361              		.loc 1 162 5 is_stmt 1 view .LVU120
+ 362              	.LVL46:
+ 163:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 164:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // 1. Calc the scaled "degrees"
+ 165:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(ux > uy) {
+ 363              		.loc 1 165 5 view .LVU121
+ 364              		.loc 1 165 7 is_stmt 0 view .LVU122
+ 365 000a 8842     		cmp	r0, r1
+ 366 000c 2FD9     		bls	.L21
+ 166:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         degree = (uy * 45) / ux;   // degree result will be 0-45 range
+ 367              		.loc 1 166 9 is_stmt 1 view .LVU123
+ 368              		.loc 1 166 22 is_stmt 0 view .LVU124
+ 369 000e 01EB4101 		add	r1, r1, r1, lsl #1
+ 370              	.LVL47:
+ 371              		.loc 1 166 22 view .LVU125
+ 372 0012 C1EB0111 		rsb	r1, r1, r1, lsl #4
+ 373              		.loc 1 166 16 view .LVU126
+ 374 0016 B1FBF0F0 		udiv	r0, r1, r0
+ 375              	.LVL48:
+ 167:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         negflag += 0x10;    // octant flag bit
+ 376              		.loc 1 167 9 is_stmt 1 view .LVU127
+ 377              		.loc 1 167 17 is_stmt 0 view .LVU128
+ 378 001a 1032     		adds	r2, r2, #16
+ 379              	.LVL49:
+ 380              		.loc 1 167 17 view .LVU129
+ 381 001c D2B2     		uxtb	r2, r2
+ 382              	.LVL50:
+ 383              	.L22:
+ 168:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 169:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     else {
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         degree = (ux * 45) / uy;   // degree result will be 0-45 range
+ 171:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 172:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 173:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // 2. Compensate for the 4 degree error curve
+ 174:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     comp = 0;
+ 384              		.loc 1 174 5 is_stmt 1 view .LVU130
+ 175:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     tempdegree = degree;    // use an unsigned char for speed!
+ 385              		.loc 1 175 5 view .LVU131
+ 386              		.loc 1 175 16 is_stmt 0 view .LVU132
+ 387 001e C1B2     		uxtb	r1, r0
+ 388              	.LVL51:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 11
+
+
+ 176:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(tempdegree > 22) {    // if top half of range
+ 389              		.loc 1 176 5 is_stmt 1 view .LVU133
+ 390              		.loc 1 176 7 is_stmt 0 view .LVU134
+ 391 0020 1629     		cmp	r1, #22
+ 392 0022 2DD9     		bls	.L23
+ 177:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree <= 44) comp++;
+ 393              		.loc 1 177 9 is_stmt 1 view .LVU135
+ 394              		.loc 1 177 11 is_stmt 0 view .LVU136
+ 395 0024 2C29     		cmp	r1, #44
+ 396 0026 29D9     		bls	.L36
+ 174:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     tempdegree = degree;    // use an unsigned char for speed!
+ 397              		.loc 1 174 10 view .LVU137
+ 398 0028 0023     		movs	r3, #0
+ 399              	.L24:
+ 400              	.LVL52:
+ 178:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree <= 41) comp++;
+ 401              		.loc 1 178 9 is_stmt 1 view .LVU138
+ 402              		.loc 1 178 11 is_stmt 0 view .LVU139
+ 403 002a 2929     		cmp	r1, #41
+ 404 002c 01D8     		bhi	.L25
+ 405              		.loc 1 178 30 is_stmt 1 discriminator 1 view .LVU140
+ 406              		.loc 1 178 34 is_stmt 0 discriminator 1 view .LVU141
+ 407 002e 0133     		adds	r3, r3, #1
+ 408              	.LVL53:
+ 409              		.loc 1 178 34 discriminator 1 view .LVU142
+ 410 0030 DBB2     		uxtb	r3, r3
+ 411              	.LVL54:
+ 412              	.L25:
+ 179:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree <= 37) comp++;
+ 413              		.loc 1 179 9 is_stmt 1 view .LVU143
+ 414              		.loc 1 179 11 is_stmt 0 view .LVU144
+ 415 0032 2529     		cmp	r1, #37
+ 416 0034 01D8     		bhi	.L26
+ 417              		.loc 1 179 30 is_stmt 1 discriminator 1 view .LVU145
+ 418              		.loc 1 179 34 is_stmt 0 discriminator 1 view .LVU146
+ 419 0036 0133     		adds	r3, r3, #1
+ 420              	.LVL55:
+ 421              		.loc 1 179 34 discriminator 1 view .LVU147
+ 422 0038 DBB2     		uxtb	r3, r3
+ 423              	.LVL56:
+ 424              	.L26:
+ 180:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree <= 32) comp++;  // max is 4 degrees compensated
+ 425              		.loc 1 180 9 is_stmt 1 view .LVU148
+ 426              		.loc 1 180 11 is_stmt 0 view .LVU149
+ 427 003a 2029     		cmp	r1, #32
+ 428 003c 01D8     		bhi	.L27
+ 429              		.loc 1 180 30 is_stmt 1 discriminator 1 view .LVU150
+ 430              		.loc 1 180 34 is_stmt 0 discriminator 1 view .LVU151
+ 431 003e 0133     		adds	r3, r3, #1
+ 432              	.LVL57:
+ 433              		.loc 1 180 34 discriminator 1 view .LVU152
+ 434 0040 DBB2     		uxtb	r3, r3
+ 435              	.LVL58:
+ 436              	.L27:
+ 181:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 182:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     else {   // else is lower half of range
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 2) comp++;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 12
+
+
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 6) comp++;
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 10) comp++;
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 15) comp++;  // max is 4 degrees compensated
+ 187:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 188:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     degree += comp;   // degree is now accurate to +/- 1 degree!
+ 437              		.loc 1 188 5 is_stmt 1 view .LVU153
+ 438              		.loc 1 188 12 is_stmt 0 view .LVU154
+ 439 0042 1844     		add	r0, r0, r3
+ 440              	.LVL59:
+ 189:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 190:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // Invert degree if it was X>Y octant, makes 0-45 into 90-45
+ 191:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(negflag & 0x10) degree = (90 - degree);
+ 441              		.loc 1 191 5 is_stmt 1 view .LVU155
+ 442              		.loc 1 191 7 is_stmt 0 view .LVU156
+ 443 0044 12F0100F 		tst	r2, #16
+ 444 0048 01D0     		beq	.L31
+ 445              		.loc 1 191 24 is_stmt 1 discriminator 1 view .LVU157
+ 446              		.loc 1 191 31 is_stmt 0 discriminator 1 view .LVU158
+ 447 004a C0F15A00 		rsb	r0, r0, #90
+ 448              	.LVL60:
+ 449              	.L31:
+ 192:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 193:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // 3. Degree is now 0-90 range for this quadrant,
+ 194:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     // need to invert it for whichever quadrant it was in
+ 195:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(negflag & 0x02) { // if -Y
+ 450              		.loc 1 195 5 is_stmt 1 view .LVU159
+ 451              		.loc 1 195 7 is_stmt 0 view .LVU160
+ 452 004e 12F0020F 		tst	r2, #2
+ 453 0052 2AD0     		beq	.L32
+ 196:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(negflag & 0x01)   // if -Y -X
+ 454              		.loc 1 196 9 is_stmt 1 view .LVU161
+ 455              		.loc 1 196 11 is_stmt 0 view .LVU162
+ 456 0054 12F0010F 		tst	r2, #1
+ 457 0058 24D0     		beq	.L33
+ 197:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****             degree = (180 + degree);
+ 458              		.loc 1 197 13 is_stmt 1 view .LVU163
+ 459              		.loc 1 197 20 is_stmt 0 view .LVU164
+ 460 005a B430     		adds	r0, r0, #180
+ 461              	.LVL61:
+ 462              	.L34:
+ 198:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         else        // else is -Y +X
+ 199:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****             degree = (180 - degree);
+ 200:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 201:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     else {   // else is +Y
+ 202:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(negflag & 0x01)   // if +Y -X
+ 203:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****             degree = (360 - degree);
+ 204:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 205:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     return degree;
+ 463              		.loc 1 205 5 is_stmt 1 view .LVU165
+ 206:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 464              		.loc 1 206 1 is_stmt 0 view .LVU166
+ 465 005c 80B2     		uxth	r0, r0
+ 466              	.LVL62:
+ 467              		.loc 1 206 1 view .LVU167
+ 468 005e 7047     		bx	lr
+ 469              	.LVL63:
+ 470              	.L38:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 13
+
+
+ 154:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         x = (0 - x);        // is now +
+ 471              		.loc 1 154 9 is_stmt 1 view .LVU168
+ 155:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 472              		.loc 1 155 9 view .LVU169
+ 155:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 473              		.loc 1 155 11 is_stmt 0 view .LVU170
+ 474 0060 4042     		rsbs	r0, r0, #0
+ 475              	.LVL64:
+ 154:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         x = (0 - x);        // is now +
+ 476              		.loc 1 154 17 view .LVU171
+ 477 0062 0122     		movs	r2, #1
+ 478 0064 CFE7     		b	.L19
+ 479              	.LVL65:
+ 480              	.L39:
+ 159:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         y = (0 - y);        // is now +
+ 481              		.loc 1 159 9 is_stmt 1 view .LVU172
+ 159:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         y = (0 - y);        // is now +
+ 482              		.loc 1 159 17 is_stmt 0 view .LVU173
+ 483 0066 0232     		adds	r2, r2, #2
+ 484              	.LVL66:
+ 159:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         y = (0 - y);        // is now +
+ 485              		.loc 1 159 17 view .LVU174
+ 486 0068 D2B2     		uxtb	r2, r2
+ 487              	.LVL67:
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 488              		.loc 1 160 9 is_stmt 1 view .LVU175
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 489              		.loc 1 160 11 is_stmt 0 view .LVU176
+ 490 006a 4942     		rsbs	r1, r1, #0
+ 491              	.LVL68:
+ 160:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 492              		.loc 1 160 11 view .LVU177
+ 493 006c CDE7     		b	.L20
+ 494              	.LVL69:
+ 495              	.L21:
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 496              		.loc 1 170 9 is_stmt 1 view .LVU178
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 497              		.loc 1 170 22 is_stmt 0 view .LVU179
+ 498 006e 00EB4000 		add	r0, r0, r0, lsl #1
+ 499              	.LVL70:
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 500              		.loc 1 170 22 view .LVU180
+ 501 0072 C0EB0010 		rsb	r0, r0, r0, lsl #4
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 502              		.loc 1 170 16 view .LVU181
+ 503 0076 B0FBF1F0 		udiv	r0, r0, r1
+ 504              	.LVL71:
+ 170:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 505              		.loc 1 170 16 view .LVU182
+ 506 007a D0E7     		b	.L22
+ 507              	.LVL72:
+ 508              	.L36:
+ 177:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree <= 41) comp++;
+ 509              		.loc 1 177 34 view .LVU183
+ 510 007c 0123     		movs	r3, #1
+ 511 007e D4E7     		b	.L24
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 14
+
+
+ 512              	.L23:
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 6) comp++;
+ 513              		.loc 1 183 9 is_stmt 1 view .LVU184
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 6) comp++;
+ 514              		.loc 1 183 11 is_stmt 0 view .LVU185
+ 515 0080 0129     		cmp	r1, #1
+ 516 0082 0DD9     		bls	.L40
+ 183:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 6) comp++;
+ 517              		.loc 1 183 33 view .LVU186
+ 518 0084 0123     		movs	r3, #1
+ 519              	.L28:
+ 520              	.LVL73:
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 10) comp++;
+ 521              		.loc 1 184 9 is_stmt 1 view .LVU187
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 10) comp++;
+ 522              		.loc 1 184 11 is_stmt 0 view .LVU188
+ 523 0086 0529     		cmp	r1, #5
+ 524 0088 01D9     		bls	.L29
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 10) comp++;
+ 525              		.loc 1 184 29 is_stmt 1 discriminator 1 view .LVU189
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 10) comp++;
+ 526              		.loc 1 184 33 is_stmt 0 discriminator 1 view .LVU190
+ 527 008a 0133     		adds	r3, r3, #1
+ 528              	.LVL74:
+ 184:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 10) comp++;
+ 529              		.loc 1 184 33 discriminator 1 view .LVU191
+ 530 008c DBB2     		uxtb	r3, r3
+ 531              	.LVL75:
+ 532              	.L29:
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 15) comp++;  // max is 4 degrees compensated
+ 533              		.loc 1 185 9 is_stmt 1 view .LVU192
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 15) comp++;  // max is 4 degrees compensated
+ 534              		.loc 1 185 11 is_stmt 0 view .LVU193
+ 535 008e 0929     		cmp	r1, #9
+ 536 0090 01D9     		bls	.L30
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 15) comp++;  // max is 4 degrees compensated
+ 537              		.loc 1 185 30 is_stmt 1 discriminator 1 view .LVU194
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 15) comp++;  // max is 4 degrees compensated
+ 538              		.loc 1 185 34 is_stmt 0 discriminator 1 view .LVU195
+ 539 0092 0133     		adds	r3, r3, #1
+ 540              	.LVL76:
+ 185:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(tempdegree >= 15) comp++;  // max is 4 degrees compensated
+ 541              		.loc 1 185 34 discriminator 1 view .LVU196
+ 542 0094 DBB2     		uxtb	r3, r3
+ 543              	.LVL77:
+ 544              	.L30:
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 545              		.loc 1 186 9 is_stmt 1 view .LVU197
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 546              		.loc 1 186 11 is_stmt 0 view .LVU198
+ 547 0096 0E29     		cmp	r1, #14
+ 548 0098 D3D9     		bls	.L27
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 549              		.loc 1 186 30 is_stmt 1 discriminator 1 view .LVU199
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 550              		.loc 1 186 34 is_stmt 0 discriminator 1 view .LVU200
+ 551 009a 0133     		adds	r3, r3, #1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 15
+
+
+ 552              	.LVL78:
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 553              		.loc 1 186 34 discriminator 1 view .LVU201
+ 554 009c DBB2     		uxtb	r3, r3
+ 555              	.LVL79:
+ 186:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 556              		.loc 1 186 34 discriminator 1 view .LVU202
+ 557 009e D0E7     		b	.L27
+ 558              	.LVL80:
+ 559              	.L40:
+ 174:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     tempdegree = degree;    // use an unsigned char for speed!
+ 560              		.loc 1 174 10 view .LVU203
+ 561 00a0 0023     		movs	r3, #0
+ 562 00a2 F0E7     		b	.L28
+ 563              	.LVL81:
+ 564              	.L33:
+ 199:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 565              		.loc 1 199 13 is_stmt 1 view .LVU204
+ 199:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 566              		.loc 1 199 20 is_stmt 0 view .LVU205
+ 567 00a4 C0F1B400 		rsb	r0, r0, #180
+ 568              	.LVL82:
+ 199:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 569              		.loc 1 199 20 view .LVU206
+ 570 00a8 D8E7     		b	.L34
+ 571              	.L32:
+ 202:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****             degree = (360 - degree);
+ 572              		.loc 1 202 9 is_stmt 1 view .LVU207
+ 202:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****             degree = (360 - degree);
+ 573              		.loc 1 202 11 is_stmt 0 view .LVU208
+ 574 00aa 12F0010F 		tst	r2, #1
+ 575 00ae D5D0     		beq	.L34
+ 203:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 576              		.loc 1 203 13 is_stmt 1 view .LVU209
+ 203:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 577              		.loc 1 203 20 is_stmt 0 view .LVU210
+ 578 00b0 C0F5B470 		rsb	r0, r0, #360
+ 579              	.LVL83:
+ 203:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 580              		.loc 1 203 20 view .LVU211
+ 581 00b4 D2E7     		b	.L34
+ 582              		.cfi_endproc
+ 583              	.LFE4:
+ 585              		.section	.text.lv_pow,"ax",%progbits
+ 586              		.align	1
+ 587              		.global	lv_pow
+ 588              		.syntax unified
+ 589              		.thumb
+ 590              		.thumb_func
+ 592              	lv_pow:
+ 593              	.LVL84:
+ 594              	.LFB5:
+ 207:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 208:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+ 209:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Calculate the integer exponents.
+ 210:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param base
+ 211:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param power
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 16
+
+
+ 212:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @return base raised to the power exponent
+ 213:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+ 214:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** int64_t lv_pow(int64_t base, int8_t exp)
+ 215:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+ 595              		.loc 1 215 1 is_stmt 1 view -0
+ 596              		.cfi_startproc
+ 597              		@ args = 0, pretend = 0, frame = 0
+ 598              		@ frame_needed = 0, uses_anonymous_args = 0
+ 599              		.loc 1 215 1 is_stmt 0 view .LVU213
+ 600 0000 0346     		mov	r3, r0
+ 601 0002 8C46     		mov	ip, r1
+ 216:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int64_t result = 1;
+ 602              		.loc 1 216 5 is_stmt 1 view .LVU214
+ 603              	.LVL85:
+ 217:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     while(exp) {
+ 604              		.loc 1 217 5 view .LVU215
+ 216:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int64_t result = 1;
+ 605              		.loc 1 216 13 is_stmt 0 view .LVU216
+ 606 0004 0120     		movs	r0, #1
+ 607              	.LVL86:
+ 216:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int64_t result = 1;
+ 608              		.loc 1 216 13 view .LVU217
+ 609 0006 0021     		movs	r1, #0
+ 610              	.LVL87:
+ 611              		.loc 1 217 10 is_stmt 1 view .LVU218
+ 612 0008 B2B1     		cbz	r2, .L49
+ 215:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int64_t result = 1;
+ 613              		.loc 1 215 1 is_stmt 0 view .LVU219
+ 614 000a 00B5     		push	{lr}
+ 615              	.LCFI2:
+ 616              		.cfi_def_cfa_offset 4
+ 617              		.cfi_offset 14, -4
+ 618 000c 07E0     		b	.L44
+ 619              	.LVL88:
+ 620              	.L43:
+ 218:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(exp & 1)
+ 219:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****             result *= base;
+ 220:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         exp >>= 1;
+ 621              		.loc 1 220 9 is_stmt 1 view .LVU220
+ 622              		.loc 1 220 13 is_stmt 0 view .LVU221
+ 623 000e 5210     		asrs	r2, r2, #1
+ 624              	.LVL89:
+ 221:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         base *= base;
+ 625              		.loc 1 221 9 is_stmt 1 view .LVU222
+ 626              		.loc 1 221 14 is_stmt 0 view .LVU223
+ 627 0010 03FB0CFE 		mul	lr, r3, ip
+ 628 0014 A3FB033C 		umull	r3, ip, r3, r3
+ 629 0018 0CEB4E0C 		add	ip, ip, lr, lsl #1
+ 630              	.LVL90:
+ 217:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(exp & 1)
+ 631              		.loc 1 217 10 is_stmt 1 view .LVU224
+ 632 001c 52B1     		cbz	r2, .L50
+ 633              	.LVL91:
+ 634              	.L44:
+ 218:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(exp & 1)
+ 635              		.loc 1 218 9 view .LVU225
+ 218:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         if(exp & 1)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 17
+
+
+ 636              		.loc 1 218 11 is_stmt 0 view .LVU226
+ 637 001e 12F0010F 		tst	r2, #1
+ 638 0022 F4D0     		beq	.L43
+ 219:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         exp >>= 1;
+ 639              		.loc 1 219 13 is_stmt 1 view .LVU227
+ 219:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         exp >>= 1;
+ 640              		.loc 1 219 20 is_stmt 0 view .LVU228
+ 641 0024 00FB0CFE 		mul	lr, r0, ip
+ 642 0028 03FB01EE 		mla	lr, r3, r1, lr
+ 643 002c A0FB0301 		umull	r0, r1, r0, r3
+ 644 0030 7144     		add	r1, r1, lr
+ 645              	.LVL92:
+ 219:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****         exp >>= 1;
+ 646              		.loc 1 219 20 view .LVU229
+ 647 0032 ECE7     		b	.L43
+ 648              	.LVL93:
+ 649              	.L50:
+ 222:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     }
+ 223:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 224:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     return result;
+ 650              		.loc 1 224 5 is_stmt 1 view .LVU230
+ 225:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 651              		.loc 1 225 1 is_stmt 0 view .LVU231
+ 652 0034 5DF804FB 		ldr	pc, [sp], #4
+ 653              	.L49:
+ 654              	.LCFI3:
+ 655              		.cfi_def_cfa_offset 0
+ 656              		.cfi_restore 14
+ 657              		.loc 1 225 1 view .LVU232
+ 658 0038 7047     		bx	lr
+ 659              		.cfi_endproc
+ 660              	.LFE5:
+ 662              		.section	.text.lv_map,"ax",%progbits
+ 663              		.align	1
+ 664              		.global	lv_map
+ 665              		.syntax unified
+ 666              		.thumb
+ 667              		.thumb_func
+ 669              	lv_map:
+ 670              	.LVL94:
+ 671              	.LFB6:
+ 226:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 227:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** /**
+ 228:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * Get the mapped of a number given an input and output range
+ 229:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param x integer which mapped value should be calculated
+ 230:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param min_in min input range
+ 231:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param max_in max input range
+ 232:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param min_out max output range
+ 233:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @param max_out max output range
+ 234:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  * @return the mapped number
+ 235:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****  */
+ 236:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** int32_t lv_map(int32_t x, int32_t min_in, int32_t max_in, int32_t min_out, int32_t max_out)
+ 237:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+ 672              		.loc 1 237 1 is_stmt 1 view -0
+ 673              		.cfi_startproc
+ 674              		@ args = 4, pretend = 0, frame = 0
+ 675              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 18
+
+
+ 676              		.loc 1 237 1 is_stmt 0 view .LVU234
+ 677 0000 00B5     		push	{lr}
+ 678              	.LCFI4:
+ 679              		.cfi_def_cfa_offset 4
+ 680              		.cfi_offset 14, -4
+ 238:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(x >= max_in) return max_out;
+ 681              		.loc 1 238 5 is_stmt 1 view .LVU235
+ 682              		.loc 1 238 7 is_stmt 0 view .LVU236
+ 683 0002 9042     		cmp	r0, r2
+ 684 0004 0EDA     		bge	.L53
+ 239:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(x <= min_in) return min_out;
+ 685              		.loc 1 239 5 is_stmt 1 view .LVU237
+ 686              		.loc 1 239 7 is_stmt 0 view .LVU238
+ 687 0006 8842     		cmp	r0, r1
+ 688 0008 0EDD     		ble	.L54
+ 240:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 241:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     /**
+ 242:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****      * The equation should be:
+ 243:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****      *   ((x - min_in) * delta_out) / delta in) + min_out
+ 244:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****      * To avoid rounding error reorder the operations:
+ 245:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****      *   (x - min_in) * (delta_out / delta_min) + min_out
+ 246:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****      */
+ 247:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 248:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int32_t delta_in = max_in - min_in;
+ 689              		.loc 1 248 5 is_stmt 1 view .LVU239
+ 690              		.loc 1 248 13 is_stmt 0 view .LVU240
+ 691 000a A2EB010C 		sub	ip, r2, r1
+ 692              	.LVL95:
+ 249:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     int32_t delta_out = max_out - min_out;
+ 693              		.loc 1 249 5 is_stmt 1 view .LVU241
+ 694              		.loc 1 249 13 is_stmt 0 view .LVU242
+ 695 000e 019A     		ldr	r2, [sp, #4]
+ 696              	.LVL96:
+ 697              		.loc 1 249 13 view .LVU243
+ 698 0010 A2EB030E 		sub	lr, r2, r3
+ 699              	.LVL97:
+ 250:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 251:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     return ((x - min_in) * delta_out) / delta_in + min_out;
+ 700              		.loc 1 251 5 is_stmt 1 view .LVU244
+ 701              		.loc 1 251 16 is_stmt 0 view .LVU245
+ 702 0014 421A     		subs	r2, r0, r1
+ 703              		.loc 1 251 26 view .LVU246
+ 704 0016 0EFB02F2 		mul	r2, lr, r2
+ 705              		.loc 1 251 39 view .LVU247
+ 706 001a 92FBFCF2 		sdiv	r2, r2, ip
+ 707              		.loc 1 251 50 view .LVU248
+ 708 001e D018     		adds	r0, r2, r3
+ 709              	.LVL98:
+ 710              	.L51:
+ 252:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 711              		.loc 1 252 1 view .LVU249
+ 712 0020 5DF804FB 		ldr	pc, [sp], #4
+ 713              	.LVL99:
+ 714              	.L53:
+ 238:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(x <= min_in) return min_out;
+ 715              		.loc 1 238 28 view .LVU250
+ 716 0024 0198     		ldr	r0, [sp, #4]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 19
+
+
+ 717              	.LVL100:
+ 238:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     if(x <= min_in) return min_out;
+ 718              		.loc 1 238 28 view .LVU251
+ 719 0026 FBE7     		b	.L51
+ 720              	.LVL101:
+ 721              	.L54:
+ 239:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 722              		.loc 1 239 28 view .LVU252
+ 723 0028 1846     		mov	r0, r3
+ 724              	.LVL102:
+ 239:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 725              		.loc 1 239 28 view .LVU253
+ 726 002a F9E7     		b	.L51
+ 727              		.cfi_endproc
+ 728              	.LFE6:
+ 730              		.section	.text.lv_rand,"ax",%progbits
+ 731              		.align	1
+ 732              		.global	lv_rand
+ 733              		.syntax unified
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	lv_rand:
+ 738              	.LVL103:
+ 739              	.LFB7:
+ 253:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 254:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** uint32_t lv_rand(uint32_t min, uint32_t max)
+ 255:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** {
+ 740              		.loc 1 255 1 is_stmt 1 view -0
+ 741              		.cfi_startproc
+ 742              		@ args = 0, pretend = 0, frame = 0
+ 743              		@ frame_needed = 0, uses_anonymous_args = 0
+ 744              		@ link register save eliminated.
+ 256:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     static uint32_t a = 0x1234ABCD; /*Seed*/
+ 745              		.loc 1 256 5 view .LVU255
+ 257:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 258:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     /*Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs"*/
+ 259:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     uint32_t x = a;
+ 746              		.loc 1 259 5 view .LVU256
+ 747              		.loc 1 259 14 is_stmt 0 view .LVU257
+ 748 0000 084A     		ldr	r2, .L57
+ 749 0002 1368     		ldr	r3, [r2]
+ 750              	.LVL104:
+ 260:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     x ^= x << 13;
+ 751              		.loc 1 260 5 is_stmt 1 view .LVU258
+ 752              		.loc 1 260 7 is_stmt 0 view .LVU259
+ 753 0004 83EA4333 		eor	r3, r3, r3, lsl #13
+ 754              	.LVL105:
+ 261:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     x ^= x >> 17;
+ 755              		.loc 1 261 5 is_stmt 1 view .LVU260
+ 756              		.loc 1 261 7 is_stmt 0 view .LVU261
+ 757 0008 83EA5343 		eor	r3, r3, r3, lsr #17
+ 758              	.LVL106:
+ 262:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     x ^= x << 5;
+ 759              		.loc 1 262 5 is_stmt 1 view .LVU262
+ 760              		.loc 1 262 7 is_stmt 0 view .LVU263
+ 761 000c 83EA4313 		eor	r3, r3, r3, lsl #5
+ 762              	.LVL107:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 20
+
+
+ 263:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     a = x;
+ 763              		.loc 1 263 5 is_stmt 1 view .LVU264
+ 764              		.loc 1 263 7 is_stmt 0 view .LVU265
+ 765 0010 1360     		str	r3, [r2]
+ 264:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** 
+ 265:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c ****     return (a % (max - min + 1)) + min;
+ 766              		.loc 1 265 5 is_stmt 1 view .LVU266
+ 767              		.loc 1 265 22 is_stmt 0 view .LVU267
+ 768 0012 091A     		subs	r1, r1, r0
+ 769              	.LVL108:
+ 770              		.loc 1 265 28 view .LVU268
+ 771 0014 0131     		adds	r1, r1, #1
+ 772              		.loc 1 265 15 view .LVU269
+ 773 0016 B3FBF1F2 		udiv	r2, r3, r1
+ 774 001a 01FB1233 		mls	r3, r1, r2, r3
+ 775              	.LVL109:
+ 266:Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.c **** }
+ 776              		.loc 1 266 1 view .LVU270
+ 777 001e 1844     		add	r0, r0, r3
+ 778              	.LVL110:
+ 779              		.loc 1 266 1 view .LVU271
+ 780 0020 7047     		bx	lr
+ 781              	.L58:
+ 782 0022 00BF     		.align	2
+ 783              	.L57:
+ 784 0024 00000000 		.word	.LANCHOR1
+ 785              		.cfi_endproc
+ 786              	.LFE7:
+ 788              		.section	.data.a.0,"aw"
+ 789              		.align	2
+ 790              		.set	.LANCHOR1,. + 0
+ 793              	a.0:
+ 794 0000 CDAB3412 		.word	305441741
+ 795              		.section	.rodata.sin0_90_table,"a"
+ 796              		.align	2
+ 797              		.set	.LANCHOR0,. + 0
+ 800              	sin0_90_table:
+ 801 0000 0000     		.short	0
+ 802 0002 3C02     		.short	572
+ 803 0004 7804     		.short	1144
+ 804 0006 B306     		.short	1715
+ 805 0008 EE08     		.short	2286
+ 806 000a 280B     		.short	2856
+ 807 000c 610D     		.short	3425
+ 808 000e 990F     		.short	3993
+ 809 0010 D011     		.short	4560
+ 810 0012 0614     		.short	5126
+ 811 0014 3A16     		.short	5690
+ 812 0016 6C18     		.short	6252
+ 813 0018 9D1A     		.short	6813
+ 814 001a CB1C     		.short	7371
+ 815 001c F71E     		.short	7927
+ 816 001e 2121     		.short	8481
+ 817 0020 4823     		.short	9032
+ 818 0022 6C25     		.short	9580
+ 819 0024 8E27     		.short	10126
+ 820 0026 AC29     		.short	10668
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 21
+
+
+ 821 0028 C72B     		.short	11207
+ 822 002a DF2D     		.short	11743
+ 823 002c F32F     		.short	12275
+ 824 002e 0332     		.short	12803
+ 825 0030 1034     		.short	13328
+ 826 0032 1836     		.short	13848
+ 827 0034 1C38     		.short	14364
+ 828 0036 1C3A     		.short	14876
+ 829 0038 173C     		.short	15383
+ 830 003a 0E3E     		.short	15886
+ 831 003c FF3F     		.short	16383
+ 832 003e EC41     		.short	16876
+ 833 0040 D443     		.short	17364
+ 834 0042 B645     		.short	17846
+ 835 0044 9347     		.short	18323
+ 836 0046 6A49     		.short	18794
+ 837 0048 3C4B     		.short	19260
+ 838 004a 084D     		.short	19720
+ 839 004c CD4E     		.short	20173
+ 840 004e 8D50     		.short	20621
+ 841 0050 4652     		.short	21062
+ 842 0052 F953     		.short	21497
+ 843 0054 A555     		.short	21925
+ 844 0056 4B57     		.short	22347
+ 845 0058 EA58     		.short	22762
+ 846 005a 825A     		.short	23170
+ 847 005c 135C     		.short	23571
+ 848 005e 9C5D     		.short	23964
+ 849 0060 1F5F     		.short	24351
+ 850 0062 9A60     		.short	24730
+ 851 0064 0D62     		.short	25101
+ 852 0066 7963     		.short	25465
+ 853 0068 DD64     		.short	25821
+ 854 006a 3966     		.short	26169
+ 855 006c 8D67     		.short	26509
+ 856 006e D968     		.short	26841
+ 857 0070 1D6A     		.short	27165
+ 858 0072 596B     		.short	27481
+ 859 0074 8C6C     		.short	27788
+ 860 0076 B76D     		.short	28087
+ 861 0078 D96E     		.short	28377
+ 862 007a F36F     		.short	28659
+ 863 007c 0471     		.short	28932
+ 864 007e 0C72     		.short	29196
+ 865 0080 0B73     		.short	29451
+ 866 0082 0174     		.short	29697
+ 867 0084 EE74     		.short	29934
+ 868 0086 D275     		.short	30162
+ 869 0088 AD76     		.short	30381
+ 870 008a 7F77     		.short	30591
+ 871 008c 4778     		.short	30791
+ 872 008e 0679     		.short	30982
+ 873 0090 BB79     		.short	31163
+ 874 0092 677A     		.short	31335
+ 875 0094 0A7B     		.short	31498
+ 876 0096 A27B     		.short	31650
+ 877 0098 327C     		.short	31794
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 22
+
+
+ 878 009a B77C     		.short	31927
+ 879 009c 337D     		.short	32051
+ 880 009e A57D     		.short	32165
+ 881 00a0 0D7E     		.short	32269
+ 882 00a2 6C7E     		.short	32364
+ 883 00a4 C07E     		.short	32448
+ 884 00a6 0B7F     		.short	32523
+ 885 00a8 4B7F     		.short	32587
+ 886 00aa 827F     		.short	32642
+ 887 00ac AF7F     		.short	32687
+ 888 00ae D27F     		.short	32722
+ 889 00b0 EB7F     		.short	32747
+ 890 00b2 FA7F     		.short	32762
+ 891 00b4 FF7F     		.short	32767
+ 892              		.text
+ 893              	.Letext0:
+ 894              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 895              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 896              		.file 4 "Middlewares/LVGL/GUI/lvgl/src/misc/lv_math.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s 			page 23
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_math.c
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:20     .text.lv_trigo_sin:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:26     .text.lv_trigo_sin:00000000 lv_trigo_sin
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:147    .text.lv_trigo_sin:00000074 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:153    .text.lv_bezier3:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:159    .text.lv_bezier3:00000000 lv_bezier3
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:249    .text.lv_sqrt:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:255    .text.lv_sqrt:00000000 lv_sqrt
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:325    .text.lv_atan2:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:331    .text.lv_atan2:00000000 lv_atan2
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:586    .text.lv_pow:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:592    .text.lv_pow:00000000 lv_pow
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:663    .text.lv_map:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:669    .text.lv_map:00000000 lv_map
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:731    .text.lv_rand:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:737    .text.lv_rand:00000000 lv_rand
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:784    .text.lv_rand:00000024 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:789    .data.a.0:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:793    .data.a.0:00000000 a.0
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:796    .rodata.sin0_90_table:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc4Xr07d.s:800    .rodata.sin0_90_table:00000000 sin0_90_table
+
+NO UNDEFINED SYMBOLS

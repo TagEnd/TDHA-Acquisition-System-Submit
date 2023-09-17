@@ -1,0 +1,2843 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_draw_img.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.draw_cleanup,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	draw_cleanup:
+  26              	.LVL0:
+  27              	.LFB162:
+  28              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @file lv_draw_img.c
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "lv_draw_img.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "lv_img_cache.h"
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "../hal/lv_hal_disp.h"
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "../misc/lv_log.h"
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "../core/lv_refr.h"
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "../misc/lv_mem.h"
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #include "../misc/lv_math.h"
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /*********************
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *      DEFINES
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *********************/
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**********************
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *      TYPEDEFS
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  **********************/
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**********************
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *  STATIC PROTOTYPES
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  **********************/
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** LV_ATTRIBUTE_FAST_MEM static lv_res_t decode_and_draw(lv_draw_ctx_t * draw_ctx, const lv_draw_img_d
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                                       const lv_area_t * coords, const void * src);
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 2
+
+
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** static void show_error(lv_draw_ctx_t * draw_ctx, const lv_area_t * coords, const char * msg);
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** static void draw_cleanup(_lv_img_cache_entry_t * cache);
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**********************
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *  STATIC VARIABLES
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  **********************/
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**********************
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *      MACROS
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  **********************/
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**********************
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *   GLOBAL FUNCTIONS
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  **********************/
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** void lv_draw_img_dsc_init(lv_draw_img_dsc_t * dsc)
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_memset_00(dsc, sizeof(lv_draw_img_dsc_t));
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->recolor = lv_color_black();
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->opa = LV_OPA_COVER;
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->zoom = LV_IMG_ZOOM_NONE;
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->antialias = LV_COLOR_DEPTH > 8 ? 1 : 0;
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+  54:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  55:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**
+  56:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * Draw an image
+  57:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param coords the coordinates of the image
+  58:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param mask the image will be drawn only in this area
+  59:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param src pointer to a lv_color_t array which contains the pixels of the image
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param dsc pointer to an initialized `lv_draw_img_dsc_t` variable
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  */
+  62:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** void lv_draw_img(lv_draw_ctx_t * draw_ctx, const lv_draw_img_dsc_t * dsc, const lv_area_t * coords,
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(src == NULL) {
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw: src is NULL");
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+  68:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+  69:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(dsc->opa <= LV_OPA_MIN) return;
+  71:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  72:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_res_t res;
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_ctx->draw_img) {
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         res = draw_ctx->draw_img(draw_ctx, dsc, coords, src);
+  75:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+  76:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else {
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         res = decode_and_draw(draw_ctx, dsc, coords, src);
+  78:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+  79:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(res == LV_RES_INV) {
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+  83:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+  84:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+  85:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+  86:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  87:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 3
+
+
+  88:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * Get the pixel size of a color format in bits
+  89:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param cf a color format (`LV_IMG_CF_...`)
+  90:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @return the pixel size in bits
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  */
+  92:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** uint8_t lv_img_cf_get_px_size(lv_img_cf_t cf)
+  93:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+  94:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     uint8_t px_size = 0;
+  95:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     switch(cf) {
+  97:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_UNKNOWN:
+  98:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_RAW:
+  99:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = 0;
+ 100:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 101:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR:
+ 102:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 103:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = LV_COLOR_SIZE;
+ 104:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 105:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_ALPHA:
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = LV_IMG_PX_SIZE_ALPHA_BYTE << 3;
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 108:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_1BIT:
+ 109:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_1BIT:
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = 1;
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_2BIT:
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_2BIT:
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = 2;
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 116:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_4BIT:
+ 117:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_4BIT:
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = 4;
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_8BIT:
+ 121:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_8BIT:
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = 8;
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 124:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         default:
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             px_size = 0;
+ 126:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 127:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 128:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 129:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     return px_size;
+ 130:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 131:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 132:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**
+ 133:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * Check if a color format is chroma keyed or not
+ 134:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param cf a color format (`LV_IMG_CF_...`)
+ 135:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @return true: chroma keyed; false: not chroma keyed
+ 136:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  */
+ 137:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** bool lv_img_cf_is_chroma_keyed(lv_img_cf_t cf)
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+ 139:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     bool is_chroma_keyed = false;
+ 140:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     switch(cf) {
+ 142:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 143:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_RAW_CHROMA_KEYED:
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             is_chroma_keyed = true;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 4
+
+
+ 145:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 146:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         default:
+ 148:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             is_chroma_keyed = false;
+ 149:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 150:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 151:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 152:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     return is_chroma_keyed;
+ 153:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 155:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**
+ 156:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * Check if a color format has alpha channel or not
+ 157:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param cf a color format (`LV_IMG_CF_...`)
+ 158:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @return true: has alpha channel; false: doesn't have alpha channel
+ 159:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  */
+ 160:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** bool lv_img_cf_has_alpha(lv_img_cf_t cf)
+ 161:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+ 162:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     bool has_alpha = false;
+ 163:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     switch(cf) {
+ 165:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_ALPHA:
+ 166:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_RAW_ALPHA:
+ 167:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_1BIT:
+ 168:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_2BIT:
+ 169:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_4BIT:
+ 170:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_8BIT:
+ 171:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_1BIT:
+ 172:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_2BIT:
+ 173:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_4BIT:
+ 174:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_ALPHA_8BIT:
+ 175:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             has_alpha = true;
+ 176:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 177:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         default:
+ 178:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             has_alpha = false;
+ 179:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 181:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 182:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     return has_alpha;
+ 183:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 184:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 185:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**
+ 186:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * Get the type of an image source
+ 187:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @param src pointer to an image source:
+ 188:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *  - pointer to an 'lv_img_t' variable (image stored internally and compiled into the code)
+ 189:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *  - a path to a file (e.g. "S:/folder/image.bin")
+ 190:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *  - or a symbol (e.g. LV_SYMBOL_CLOSE)
+ 191:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  * @return type of the image source LV_IMG_SRC_VARIABLE/FILE/SYMBOL/UNKNOWN
+ 192:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  */
+ 193:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** lv_img_src_t lv_img_src_get_type(const void * src)
+ 194:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+ 195:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_img_src_t img_src_type = LV_IMG_SRC_UNKNOWN;
+ 196:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(src == NULL) return img_src_type;
+ 198:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     const uint8_t * u8_p = src;
+ 199:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 200:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     /*The first byte shows the type of the image source*/
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(u8_p[0] >= 0x20 && u8_p[0] <= 0x7F) {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 5
+
+
+ 202:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_FILE; /*If it's an ASCII character then it's file name*/
+ 203:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 204:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(u8_p[0] >= 0x80) {
+ 205:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_SYMBOL; /*Symbols begins after 0x7F*/
+ 206:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 207:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else {
+ 208:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_VARIABLE; /*`lv_img_dsc_t` is draw to the first byte < 0x20*/
+ 209:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 210:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 211:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(LV_IMG_SRC_UNKNOWN == img_src_type) {
+ 212:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("lv_img_src_get_type: unknown image type");
+ 213:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 214:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 215:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     return img_src_type;
+ 216:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 217:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 218:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** void lv_draw_img_decoded(lv_draw_ctx_t * draw_ctx, const lv_draw_img_dsc_t * dsc,
+ 219:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                          const lv_area_t * coords, const uint8_t * map_p, lv_img_cf_t color_format)
+ 220:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+ 221:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_ctx->draw_img_decoded == NULL) return;
+ 222:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 223:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     draw_ctx->draw_img_decoded(draw_ctx, dsc, coords, map_p, color_format);
+ 224:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 225:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 226:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** /**********************
+ 227:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  *   STATIC FUNCTIONS
+ 228:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****  **********************/
+ 229:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 230:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** LV_ATTRIBUTE_FAST_MEM static lv_res_t decode_and_draw(lv_draw_ctx_t * draw_ctx, const lv_draw_img_d
+ 231:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                                       const lv_area_t * coords, const void * src)
+ 232:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_dsc->opa <= LV_OPA_MIN) return LV_RES_OK;
+ 234:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     _lv_img_cache_entry_t * cdsc = _lv_img_cache_open(src, draw_dsc->recolor, draw_dsc->frame_id);
+ 236:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(cdsc == NULL) return LV_RES_INV;
+ 238:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 239:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 240:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_img_cf_t cf;
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(lv_img_cf_is_chroma_keyed(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED;
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 243:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else cf = LV_IMG_CF_TRUE_COLOR;
+ 244:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 245:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(cdsc->dec_dsc.error_msg != NULL) {
+ 246:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+ 247:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 248:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, cdsc->dec_dsc.error_msg);
+ 249:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 250:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     /*The decoder could open the image and gave the entire uncompressed image.
+ 251:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****      *Just draw it!*/
+ 252:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(cdsc->dec_dsc.img_data) {
+ 253:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t map_area_rot;
+ 254:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_copy(&map_area_rot, coords);
+ 255:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         if(draw_dsc->angle || draw_dsc->zoom != LV_IMG_ZOOM_NONE) {
+ 256:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             int32_t w = lv_area_get_width(coords);
+ 257:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             int32_t h = lv_area_get_height(coords);
+ 258:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 6
+
+
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             _lv_img_buf_get_transformed_area(&map_area_rot, w, h, draw_dsc->angle, draw_dsc->zoom, 
+ 260:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 261:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.x1 += coords->x1;
+ 262:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y1 += coords->y1;
+ 263:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.x2 += coords->x1;
+ 264:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y2 += coords->y1;
+ 265:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 266:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 267:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t clip_com; /*Common area of mask and coords*/
+ 268:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         bool union_ok;
+ 269:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         union_ok = _lv_area_intersect(&clip_com, draw_ctx->clip_area, &map_area_rot);
+ 270:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
+ 271:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         if(union_ok == false) {
+ 272:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_cleanup(cdsc);
+ 273:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             return LV_RES_OK;
+ 274:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 275:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 276:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         const lv_area_t * clip_area_ori = draw_ctx->clip_area;
+ 277:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = &clip_com;
+ 278:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_draw_img_decoded(draw_ctx, draw_dsc, coords, cdsc->dec_dsc.img_data, cf);
+ 279:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = clip_area_ori;
+ 280:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 281:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     /*The whole uncompressed image is not available. Try to read it line-by-line*/
+ 282:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else {
+ 283:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t mask_com; /*Common area of mask and coords*/
+ 284:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         bool union_ok;
+ 285:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         union_ok = _lv_area_intersect(&mask_com, draw_ctx->clip_area, coords);
+ 286:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
+ 287:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         if(union_ok == false) {
+ 288:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_cleanup(cdsc);
+ 289:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             return LV_RES_OK;
+ 290:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 291:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 292:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t width = lv_area_get_width(&mask_com);
+ 293:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         uint8_t  * buf = lv_mem_buf_get(lv_area_get_width(&mask_com) *
+ 295:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                         LV_IMG_PX_SIZE_ALPHA_BYTE);  /*+1 because of the possible a
+ 296:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 297:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         const lv_area_t * clip_area_ori = draw_ctx->clip_area;
+ 298:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t line;
+ 299:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_copy(&line, &mask_com);
+ 300:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_set_height(&line, 1);
+ 301:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t x = mask_com.x1 - coords->x1;
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t y = mask_com.y1 - coords->y1;
+ 303:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t row;
+ 304:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_res_t read_res;
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         for(row = mask_com.y1; row <= mask_com.y2; row++) {
+ 306:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 307:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             union_ok = _lv_area_intersect(&mask_line, clip_area_ori, &line);
+ 308:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(union_ok == false) continue;
+ 309:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 310:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             read_res = lv_img_decoder_read_line(&cdsc->dec_dsc, x, y, width, buf);
+ 311:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(read_res != LV_RES_OK) {
+ 312:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_img_decoder_close(&cdsc->dec_dsc);
+ 313:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 LV_LOG_WARN("Image draw can't read the line");
+ 314:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_mem_buf_release(buf);
+ 315:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 draw_cleanup(cdsc);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 7
+
+
+ 316:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 draw_ctx->clip_area = clip_area_ori;
+ 317:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 return LV_RES_INV;
+ 318:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             }
+ 319:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 320:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_ctx->clip_area = &mask_line;
+ 321:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_draw_img_decoded(draw_ctx, draw_dsc, &line, buf, cf);
+ 322:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y1++;
+ 323:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y2++;
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             y++;
+ 325:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 326:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = clip_area_ori;
+ 327:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_mem_buf_release(buf);
+ 328:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 329:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 330:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     draw_cleanup(cdsc);
+ 331:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     return LV_RES_OK;
+ 332:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 333:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 334:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 335:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** static void show_error(lv_draw_ctx_t * draw_ctx, const lv_area_t * coords, const char * msg)
+ 336:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+ 337:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect_dsc_t rect_dsc;
+ 338:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect_dsc_init(&rect_dsc);
+ 339:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     rect_dsc.bg_color = lv_color_white();
+ 340:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect(draw_ctx, &rect_dsc, coords);
+ 341:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 342:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_label_dsc_t label_dsc;
+ 343:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_label_dsc_init(&label_dsc);
+ 344:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_label(draw_ctx, &label_dsc, coords, msg, NULL);
+ 345:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 346:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 347:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** static void draw_cleanup(_lv_img_cache_entry_t * cache)
+ 348:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** {
+  29              		.loc 1 348 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 348 1 is_stmt 0 view .LVU1
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+ 349:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     /*Automatically close images with no caching*/
+ 350:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #if LV_IMG_CACHE_DEF_SIZE == 0
+ 351:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_img_decoder_close(&cache->dec_dsc);
+  39              		.loc 1 351 5 is_stmt 1 view .LVU2
+  40 0002 FFF7FEFF 		bl	lv_img_decoder_close
+  41              	.LVL1:
+ 352:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #else
+ 353:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     LV_UNUSED(cache);
+ 354:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** #endif
+ 355:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+  42              		.loc 1 355 1 is_stmt 0 view .LVU3
+  43 0006 08BD     		pop	{r3, pc}
+  44              		.cfi_endproc
+  45              	.LFE162:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 8
+
+
+  47              		.section	.text.show_error,"ax",%progbits
+  48              		.align	1
+  49              		.syntax unified
+  50              		.thumb
+  51              		.thumb_func
+  53              	show_error:
+  54              	.LVL2:
+  55              	.LFB161:
+ 336:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect_dsc_t rect_dsc;
+  56              		.loc 1 336 1 is_stmt 1 view -0
+  57              		.cfi_startproc
+  58              		@ args = 0, pretend = 0, frame = 120
+  59              		@ frame_needed = 0, uses_anonymous_args = 0
+ 336:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect_dsc_t rect_dsc;
+  60              		.loc 1 336 1 is_stmt 0 view .LVU5
+  61 0000 70B5     		push	{r4, r5, r6, lr}
+  62              	.LCFI1:
+  63              		.cfi_def_cfa_offset 16
+  64              		.cfi_offset 4, -16
+  65              		.cfi_offset 5, -12
+  66              		.cfi_offset 6, -8
+  67              		.cfi_offset 14, -4
+  68 0002 A0B0     		sub	sp, sp, #128
+  69              	.LCFI2:
+  70              		.cfi_def_cfa_offset 144
+  71 0004 0446     		mov	r4, r0
+  72 0006 0D46     		mov	r5, r1
+  73 0008 1646     		mov	r6, r2
+ 337:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect_dsc_init(&rect_dsc);
+  74              		.loc 1 337 5 is_stmt 1 view .LVU6
+ 338:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     rect_dsc.bg_color = lv_color_white();
+  75              		.loc 1 338 5 view .LVU7
+  76 000a 0EA8     		add	r0, sp, #56
+  77              	.LVL3:
+ 338:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     rect_dsc.bg_color = lv_color_white();
+  78              		.loc 1 338 5 is_stmt 0 view .LVU8
+  79 000c FFF7FEFF 		bl	lv_draw_rect_dsc_init
+  80              	.LVL4:
+ 339:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect(draw_ctx, &rect_dsc, coords);
+  81              		.loc 1 339 5 is_stmt 1 view .LVU9
+  82              	.LBB30:
+  83              	.LBI30:
+  84              		.file 2 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @file lv_color.h
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #ifndef LV_COLOR_H
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_H
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #ifdef __cplusplus
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** extern "C" {
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *      INCLUDES
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 9
+
+
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #include "../lv_conf_internal.h"
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #include "lv_assert.h"
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #include "lv_math.h"
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #include "lv_types.h"
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*Error checking*/
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 24
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #error "LV_COLOR_DEPTH 24 is deprecated. Use LV_COLOR_DEPTH 32 instead (lv_conf.h)"
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 32 && LV_COLOR_SCREEN_TRANSP != 0
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #error "LV_COLOR_SCREEN_TRANSP requires LV_COLOR_DEPTH == 32. Set it in lv_conf.h"
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 16 && LV_COLOR_16_SWAP != 0
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #error "LV_COLOR_16_SWAP requires LV_COLOR_DEPTH == 16. Set it in lv_conf.h"
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #include <stdint.h>
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*********************
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *      DEFINES
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *********************/
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_EXPORT_CONST_INT(LV_COLOR_DEPTH);
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_EXPORT_CONST_INT(LV_COLOR_16_SWAP);
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Opacity percentages.
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** enum {
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_TRANSP = 0,
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_0      = 0,
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_10     = 25,
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_20     = 51,
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_30     = 76,
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_40     = 102,
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_50     = 127,
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_60     = 153,
+  54:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_70     = 178,
+  55:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_80     = 204,
+  56:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_90     = 229,
+  57:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_100    = 255,
+  58:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_OPA_COVER  = 255,
+  59:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** };
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_OPA_MIN 2    /*Opacities below this will be transparent*/
+  62:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_OPA_MAX 253  /*Opacities above this will fully cover*/
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SIZE 8
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SIZE 8
+  68:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+  69:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SIZE 16
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+  71:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SIZE 32
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 10
+
+
+  72:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #error "Invalid LV_COLOR_DEPTH in lv_conf.h! Set it to 1, 8, 16 or 32!"
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  75:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  76:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if defined(__cplusplus) && !defined(_LV_COLOR_HAS_MODERN_CPP)
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+  78:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** * MSVC compiler's definition of the __cplusplus indicating 199711L regardless to C++ standard versi
+  79:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** * see https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-cplusplus
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** * so we use _MSC_VER macro instead of __cplusplus
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** */
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #ifdef _MSC_VER
+  83:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if _MSC_VER >= 1900 /*Visual Studio 2015*/
+  84:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 1
+  85:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  86:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+  87:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if __cplusplus >= 201103L
+  88:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 1
+  89:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  90:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif /*__cplusplus*/
+  92:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  93:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #ifndef _LV_COLOR_HAS_MODERN_CPP
+  94:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 0
+  95:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+  97:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if _LV_COLOR_HAS_MODERN_CPP
+  98:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*Fix msvc compiler error C4576 inside C++ code*/
+  99:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define _LV_COLOR_MAKE_TYPE_HELPER lv_color_t
+ 100:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 101:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define _LV_COLOR_MAKE_TYPE_HELPER (lv_color_t)
+ 102:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 103:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 104:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*---------------------------------------
+ 105:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Macros for all existing color depths
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * to set/get values of the color channels
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *------------------------------------------*/
+ 108:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_R1(c, v) (c).ch.red = (uint8_t)((v) & 0x1)
+ 109:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_G1(c, v) (c).ch.green = (uint8_t)((v) & 0x1)
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_B1(c, v) (c).ch.blue = (uint8_t)((v) & 0x1)
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_A1(c, v) do {} while(0)
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_R1(c) (c).ch.red
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_G1(c) (c).ch.green
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_B1(c) (c).ch.blue
+ 116:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_A1(c) 0xFF
+ 117:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER1 {0x00}
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_MAKE1(r8, g8, b8)  {(uint8_t)((b8 >> 7) | (g8 >> 7) | (r8 >> 7))}
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 121:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_R8(c, v) (c).ch.red = (uint8_t)((v) & 0x7U)
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_G8(c, v) (c).ch.green = (uint8_t)((v) & 0x7U)
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_B8(c, v) (c).ch.blue = (uint8_t)((v) & 0x3U)
+ 124:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_A8(c, v) do {} while(0)
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 126:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_R8(c) (c).ch.red
+ 127:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_G8(c) (c).ch.green
+ 128:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_B8(c) (c).ch.blue
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 11
+
+
+ 129:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_A8(c) 0xFF
+ 130:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 131:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER8 {{0x00, 0x00, 0x00}}
+ 132:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_MAKE8(r8, g8, b8) {{(uint8_t)((b8 >> 6) & 0x3U), (uint8_t)((g8 >> 5) & 0x7U), (ui
+ 133:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 134:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_R16(c, v) (c).ch.red = (uint8_t)((v) & 0x1FU)
+ 135:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 136:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_G16(c, v) (c).ch.green = (uint8_t)((v) & 0x3FU)
+ 137:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_G16(c, v) {(c).ch.green_h = (uint8_t)(((v) >> 3) & 0x7); (c).ch.green_l = (ui
+ 139:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 140:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_B16(c, v) (c).ch.blue = (uint8_t)((v) & 0x1FU)
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_A16(c, v) do {} while(0)
+ 142:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 143:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_R16(c) (c).ch.red
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 145:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_G16(c) (c).ch.green
+ 146:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_G16(c) (((c).ch.green_h << 3) + (c).ch.green_l)
+ 148:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 149:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_B16(c) (c).ch.blue
+ 150:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_A16(c) 0xFF
+ 151:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 152:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 153:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER16  {{0x00, 0x00, 0x00}}
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_MAKE16(r8, g8, b8) {{(uint8_t)((b8 >> 3) & 0x1FU), (uint8_t)((g8 >> 2) & 0x3FU), 
+ 155:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 156:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER16 {{0x00, 0x00, 0x00, 0x00}}
+ 157:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_MAKE16(r8, g8, b8) {{(uint8_t)((g8 >> 5) & 0x7U), (uint8_t)((r8 >> 3) & 0x1FU), (
+ 158:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 159:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 160:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_R32(c, v) (c).ch.red = (uint8_t)((v) & 0xFF)
+ 161:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_G32(c, v) (c).ch.green = (uint8_t)((v) & 0xFF)
+ 162:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_B32(c, v) (c).ch.blue = (uint8_t)((v) & 0xFF)
+ 163:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_SET_A32(c, v) (c).ch.alpha = (uint8_t)((v) & 0xFF)
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 165:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_R32(c) (c).ch.red
+ 166:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_G32(c) (c).ch.green
+ 167:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_B32(c) (c).ch.blue
+ 168:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_GET_A32(c) (c).ch.alpha
+ 169:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 170:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER32  {{0x00, 0x00, 0x00, 0x00}}
+ 171:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** # define LV_COLOR_MAKE32(r8, g8, b8) {{b8, g8, r8, 0xff}} /*Fix 0xff alpha*/
+ 172:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 173:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*---------------------------------------
+ 174:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Macros for the current color depth
+ 175:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * to set/get values of the color channels
+ 176:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *------------------------------------------*/
+ 177:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SET_R(c, v) LV_CONCAT(LV_COLOR_SET_R, LV_COLOR_DEPTH)(c, v)
+ 178:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SET_G(c, v) LV_CONCAT(LV_COLOR_SET_G, LV_COLOR_DEPTH)(c, v)
+ 179:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SET_B(c, v) LV_CONCAT(LV_COLOR_SET_B, LV_COLOR_DEPTH)(c, v)
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_SET_A(c, v) LV_CONCAT(LV_COLOR_SET_A, LV_COLOR_DEPTH)(c, v)
+ 181:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 182:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_GET_R(c) LV_CONCAT(LV_COLOR_GET_R, LV_COLOR_DEPTH)(c)
+ 183:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_GET_G(c) LV_CONCAT(LV_COLOR_GET_G, LV_COLOR_DEPTH)(c)
+ 184:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_GET_B(c) LV_CONCAT(LV_COLOR_GET_B, LV_COLOR_DEPTH)(c)
+ 185:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_GET_A(c) LV_CONCAT(LV_COLOR_GET_A, LV_COLOR_DEPTH)(c)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 12
+
+
+ 186:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 187:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define _LV_COLOR_ZERO_INITIALIZER LV_CONCAT(_LV_COLOR_ZERO_INITIALIZER, LV_COLOR_DEPTH)
+ 188:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #define LV_COLOR_MAKE(r8, g8, b8) LV_CONCAT(LV_COLOR_MAKE, LV_COLOR_DEPTH)(r8, g8, b8)
+ 189:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 190:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**********************
+ 191:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *      TYPEDEFS
+ 192:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  **********************/
+ 193:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 194:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef union {
+ 195:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint8_t full; /*must be declared first to set all bits of byte via initializer list*/
+ 196:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     union {
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t blue : 1;
+ 198:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t green : 1;
+ 199:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t red : 1;
+ 200:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     } ch;
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_color1_t;
+ 202:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 203:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef union {
+ 204:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     struct {
+ 205:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t blue : 2;
+ 206:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t green : 3;
+ 207:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t red : 3;
+ 208:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     } ch;
+ 209:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint8_t full;
+ 210:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_color8_t;
+ 211:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 212:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef union {
+ 213:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     struct {
+ 214:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 215:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t blue : 5;
+ 216:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t green : 6;
+ 217:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t red : 5;
+ 218:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 219:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t green_h : 3;
+ 220:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t red : 5;
+ 221:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t blue : 5;
+ 222:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint16_t green_l : 3;
+ 223:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 224:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     } ch;
+ 225:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint16_t full;
+ 226:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_color16_t;
+ 227:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 228:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef union {
+ 229:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     struct {
+ 230:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t blue;
+ 231:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t green;
+ 232:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t red;
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         uint8_t alpha;
+ 234:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     } ch;
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint32_t full;
+ 236:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_color32_t;
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 238:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef LV_CONCAT3(uint, LV_COLOR_SIZE, _t) lv_color_int_t;
+ 239:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef LV_CONCAT3(lv_color, LV_COLOR_DEPTH, _t) lv_color_t;
+ 240:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef struct {
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint16_t h;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 13
+
+
+ 243:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint8_t s;
+ 244:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint8_t v;
+ 245:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_color_hsv_t;
+ 246:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 247:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //! @cond Doxygen_Suppress
+ 248:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*No idea where the guard is required but else throws warnings in the docs*/
+ 249:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef uint8_t lv_opa_t;
+ 250:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //! @endcond
+ 251:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 252:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** struct _lv_color_filter_dsc_t;
+ 253:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 254:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef lv_color_t (*lv_color_filter_cb_t)(const struct _lv_color_filter_dsc_t *, lv_color_t, lv_op
+ 255:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 256:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef struct _lv_color_filter_dsc_t {
+ 257:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color_filter_cb_t filter_cb;
+ 258:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     void * user_data;
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_color_filter_dsc_t;
+ 260:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 261:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 262:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** typedef enum {
+ 263:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_RED,
+ 264:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_PINK,
+ 265:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_PURPLE,
+ 266:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_DEEP_PURPLE,
+ 267:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_INDIGO,
+ 268:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_BLUE,
+ 269:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_LIGHT_BLUE,
+ 270:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_CYAN,
+ 271:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_TEAL,
+ 272:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_GREEN,
+ 273:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_LIGHT_GREEN,
+ 274:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_LIME,
+ 275:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_YELLOW,
+ 276:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_AMBER,
+ 277:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_ORANGE,
+ 278:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_DEEP_ORANGE,
+ 279:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_BROWN,
+ 280:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_BLUE_GREY,
+ 281:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_GREY,
+ 282:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     _LV_PALETTE_LAST,
+ 283:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_PALETTE_NONE = 0xff,
+ 284:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** } lv_palette_t;
+ 285:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 286:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**********************
+ 287:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * GLOBAL PROTOTYPES
+ 288:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  **********************/
+ 289:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 290:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*In color conversations:
+ 291:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * - When converting to bigger color type the LSB weight of 1 LSB is calculated
+ 292:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *   E.g. 16 bit Red has 5 bits
+ 293:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *         8 bit Red has 3 bits
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *        ----------------------
+ 295:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *        8 bit red LSB = (2^5 - 1) / (2^3 - 1) = 31 / 7 = 4
+ 296:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *
+ 297:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * - When calculating to smaller color type simply shift out the LSBs
+ 298:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *   E.g.  8 bit Red has 3 bits
+ 299:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *        16 bit Red has 5 bits
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 14
+
+
+ 300:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *        ----------------------
+ 301:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *         Shift right with 5 - 3 = 2
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 303:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline uint8_t lv_color_to1(lv_color_t color)
+ 304:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 306:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return color.full;
+ 307:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 308:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x4) || (LV_COLOR_GET_G(color) & 0x4) || (LV_COLOR_GET_B(color) & 0
+ 309:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 1;
+ 310:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 311:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else {
+ 312:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0;
+ 313:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 314:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 315:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x10) || (LV_COLOR_GET_G(color) & 0x20) || (LV_COLOR_GET_B(color) &
+ 316:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 1;
+ 317:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 318:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else {
+ 319:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0;
+ 320:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 321:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 322:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x80) || (LV_COLOR_GET_G(color) & 0x80) || (LV_COLOR_GET_B(color) &
+ 323:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 1;
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 325:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else {
+ 326:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0;
+ 327:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 328:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 329:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 330:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 331:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline uint8_t lv_color_to8(lv_color_t color)
+ 332:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 333:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 334:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if(color.full == 0)
+ 335:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0;
+ 336:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else
+ 337:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0xFF;
+ 338:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 339:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return color.full;
+ 340:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 341:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color8_t ret;
+ 342:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R8(ret, LV_COLOR_GET_R(color) >> 2); /*5 - 3  = 2*/
+ 343:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G8(ret, LV_COLOR_GET_G(color) >> 3); /*6 - 3  = 3*/
+ 344:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B8(ret, LV_COLOR_GET_B(color) >> 3); /*5 - 2  = 3*/
+ 345:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret.full;
+ 346:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 347:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color8_t ret;
+ 348:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R8(ret, LV_COLOR_GET_R(color) >> 5); /*8 - 3  = 5*/
+ 349:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G8(ret, LV_COLOR_GET_G(color) >> 5); /*8 - 3  = 5*/
+ 350:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B8(ret, LV_COLOR_GET_B(color) >> 6); /*8 - 2  = 6*/
+ 351:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret.full;
+ 352:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 353:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 354:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 355:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline uint16_t lv_color_to16(lv_color_t color)
+ 356:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 15
+
+
+ 357:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 358:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if(color.full == 0)
+ 359:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0;
+ 360:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else
+ 361:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0xFFFF;
+ 362:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 363:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color16_t ret;
+ 364:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R16(ret, LV_COLOR_GET_R(color) * 4);  /*(2^5 - 1)/(2^3 - 1) = 31/7 = 4*/
+ 365:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G16(ret, LV_COLOR_GET_G(color) * 9);  /*(2^6 - 1)/(2^3 - 1) = 63/7 = 9*/
+ 366:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B16(ret, LV_COLOR_GET_B(color) * 10); /*(2^5 - 1)/(2^2 - 1) = 31/3 = 10*/
+ 367:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret.full;
+ 368:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 369:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return color.full;
+ 370:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 371:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color16_t ret;
+ 372:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R16(ret, LV_COLOR_GET_R(color) >> 3); /*8 - 5  = 3*/
+ 373:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G16(ret, LV_COLOR_GET_G(color) >> 2); /*8 - 6  = 2*/
+ 374:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B16(ret, LV_COLOR_GET_B(color) >> 3); /*8 - 5  = 3*/
+ 375:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret.full;
+ 376:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 377:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 378:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 379:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline uint32_t lv_color_to32(lv_color_t color)
+ 380:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 381:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 382:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if(color.full == 0)
+ 383:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0xFF000000;
+ 384:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else
+ 385:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         return 0xFFFFFFFF;
+ 386:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 387:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color32_t ret;
+ 388:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R32(ret, LV_COLOR_GET_R(color) * 36); /*(2^8 - 1)/(2^3 - 1) = 255/7 = 36*/
+ 389:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G32(ret, LV_COLOR_GET_G(color) * 36); /*(2^8 - 1)/(2^3 - 1) = 255/7 = 36*/
+ 390:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B32(ret, LV_COLOR_GET_B(color) * 85); /*(2^8 - 1)/(2^2 - 1) = 255/3 = 85*/
+ 391:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_A32(ret, 0xFF);
+ 392:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret.full;
+ 393:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 394:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /**
+ 395:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * The floating point math for conversion is:
+ 396:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *  valueto = valuefrom * ( (2^bitsto - 1) / (float)(2^bitsfrom - 1) )
+ 397:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * The faster integer math for conversion is:
+ 398:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *  valueto = ( valuefrom * multiplier + adder ) >> divisor
+ 399:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *   multiplier = FLOOR( ( (2^bitsto - 1) << divisor ) / (float)(2^bitsfrom - 1) )
+ 400:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *
+ 401:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * Find the first divisor where ( adder >> divisor ) <= 0
+ 402:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *
+ 403:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * 5-bit to 8-bit: ( 31 * multiplier + adder ) >> divisor = 255
+ 404:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * divisor  multiplier  adder  min (0)  max (31)
+ 405:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       0           8      7        7       255
+ 406:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       1          16     14        7       255
+ 407:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       2          32     28        7       255
+ 408:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       3          65     25        3       255
+ 409:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       4         131     19        1       255
+ 410:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       5         263      7        0       255
+ 411:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *
+ 412:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * 6-bit to 8-bit: 255 = ( 63 * multiplier + adder ) >> divisor
+ 413:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      * divisor  multiplier  adder  min (0)  max (63)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 16
+
+
+ 414:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       0           4      3        3       255
+ 415:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       1           8      6        3       255
+ 416:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       2          16     12        3       255
+ 417:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       3          32     24        3       255
+ 418:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       4          64     48        3       255
+ 419:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       5         129     33        1       255
+ 420:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      *       6         259      3        0       255
+ 421:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****      */
+ 422:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 423:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color32_t ret;
+ 424:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R32(ret, (LV_COLOR_GET_R(color) * 263 + 7) >> 5);
+ 425:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G32(ret, (LV_COLOR_GET_G(color) * 259 + 3) >> 6);
+ 426:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B32(ret, (LV_COLOR_GET_B(color) * 263 + 7) >> 5);
+ 427:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_A32(ret, 0xFF);
+ 428:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret.full;
+ 429:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 430:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return color.full;
+ 431:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 432:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 433:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 434:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //! @cond Doxygen_Suppress
+ 435:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 436:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 437:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Mix two colors with a given ratio.
+ 438:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param c1 the first color to mix (usually the foreground)
+ 439:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param c2 the second color to mix (usually the background)
+ 440:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param mix The ratio of the colors. 0: full `c2`, 255: full `c1`, 127: half `c1` and half`c2`
+ 441:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return the mixed color
+ 442:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 443:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline lv_color_t lv_color_mix(lv_color_t c1, lv_color_t c2, uint8_t m
+ 444:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 445:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color_t ret;
+ 446:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 447:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 16 && LV_COLOR_16_SWAP == 0
+ 448:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Source: https://stackoverflow.com/a/50012418/1999969*/
+ 449:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     mix = (mix + 4) >> 3;
+ 450:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint32_t bg = (uint32_t)((uint32_t)c2.full | ((uint32_t)c2.full << 16)) &
+ 451:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                   0x7E0F81F; /*0b00000111111000001111100000011111*/
+ 452:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint32_t fg = (uint32_t)((uint32_t)c1.full | ((uint32_t)c1.full << 16)) & 0x7E0F81F;
+ 453:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint32_t result = ((((fg - bg) * mix) >> 5) + bg) & 0x7E0F81F;
+ 454:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     ret.full = (uint16_t)((result >> 16) | result);
+ 455:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH != 1
+ 456:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 8, 16 or 32*/
+ 457:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R(ret, LV_UDIV255((uint16_t)LV_COLOR_GET_R(c1) * mix + LV_COLOR_GET_R(c2) *
+ 458:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                                    (255 - mix) + LV_COLOR_MIX_ROUND_OFS));
+ 459:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G(ret, LV_UDIV255((uint16_t)LV_COLOR_GET_G(c1) * mix + LV_COLOR_GET_G(c2) *
+ 460:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                                    (255 - mix) + LV_COLOR_MIX_ROUND_OFS));
+ 461:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B(ret, LV_UDIV255((uint16_t)LV_COLOR_GET_B(c1) * mix + LV_COLOR_GET_B(c2) *
+ 462:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                                    (255 - mix) + LV_COLOR_MIX_ROUND_OFS));
+ 463:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_A(ret, 0xFF);
+ 464:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 465:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 1*/
+ 466:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     ret.full = mix > LV_OPA_50 ? c1.full : c2.full;
+ 467:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 468:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 469:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret;
+ 470:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 17
+
+
+ 471:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 472:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline void lv_color_premult(lv_color_t c, uint8_t mix, uint16_t * out
+ 473:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 474:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 1
+ 475:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     out[0] = (uint16_t)LV_COLOR_GET_R(c) * mix;
+ 476:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     out[1] = (uint16_t)LV_COLOR_GET_G(c) * mix;
+ 477:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     out[2] = (uint16_t)LV_COLOR_GET_B(c) * mix;
+ 478:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 479:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     (void) mix;
+ 480:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Pre-multiplication can't be used with 1 bpp*/
+ 481:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     out[0] = LV_COLOR_GET_R(c);
+ 482:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     out[1] = LV_COLOR_GET_G(c);
+ 483:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     out[2] = LV_COLOR_GET_B(c);
+ 484:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 485:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 486:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 487:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 488:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 489:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Mix two colors with a given ratio. It runs faster then `lv_color_mix` but requires some pre comp
+ 490:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param premult_c1 The first color. Should be preprocessed with `lv_color_premult(c1)`
+ 491:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param c2 The second color. As it is no pre computation required on it
+ 492:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param mix The ratio of the colors. 0: full `c1`, 255: full `c2`, 127: half `c1` and half `c2`.
+ 493:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *            Should be modified like mix = `255 - mix`
+ 494:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return the mixed color
+ 495:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @note 255 won't give clearly `c1`.
+ 496:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 497:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline lv_color_t lv_color_mix_premult(uint16_t * premult_c1, lv_color
+ 498:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 499:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color_t ret;
+ 500:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 1
+ 501:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 8 or 32*/
+ 502:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R(ret, LV_UDIV255(premult_c1[0] + LV_COLOR_GET_R(c2) * mix + LV_COLOR_MIX_ROUND_OF
+ 503:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G(ret, LV_UDIV255(premult_c1[1] + LV_COLOR_GET_G(c2) * mix + LV_COLOR_MIX_ROUND_OF
+ 504:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B(ret, LV_UDIV255(premult_c1[2] + LV_COLOR_GET_B(c2) * mix + LV_COLOR_MIX_ROUND_OF
+ 505:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_A(ret, 0xFF);
+ 506:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 507:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 1*/
+ 508:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Restore color1*/
+ 509:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color_t c1;
+ 510:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_R(c1, premult_c1[0]);
+ 511:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_G(c1, premult_c1[1]);
+ 512:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     LV_COLOR_SET_B(c1, premult_c1[2]);
+ 513:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     ret.full = mix > LV_OPA_50 ? c2.full : c1.full;
+ 514:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 515:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 516:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return ret;
+ 517:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 518:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 519:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 520:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Mix two colors. Both color can have alpha value.
+ 521:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param bg_color background color
+ 522:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param bg_opa alpha of the background color
+ 523:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param fg_color foreground color
+ 524:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param fg_opa alpha of the foreground color
+ 525:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param res_color the result color
+ 526:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param res_opa the result opacity
+ 527:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 18
+
+
+ 528:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline void lv_color_mix_with_alpha(lv_color_t bg_color, lv_opa_t bg_o
+ 529:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                                                                  lv_color_t fg_color, lv_opa_t fg_o
+ 530:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                                                                  lv_color_t * res_color, lv_opa_t *
+ 531:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 532:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Pick the foreground if it's fully opaque or the Background is fully transparent*/
+ 533:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     if(fg_opa >= LV_OPA_MAX || bg_opa <= LV_OPA_MIN) {
+ 534:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         res_color->full = fg_color.full;
+ 535:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         *res_opa = fg_opa;
+ 536:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 537:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Transparent foreground: use the Background*/
+ 538:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else if(fg_opa <= LV_OPA_MIN) {
+ 539:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         res_color->full = bg_color.full;
+ 540:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         *res_opa = bg_opa;
+ 541:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 542:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Opaque background: use simple mix*/
+ 543:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else if(bg_opa >= LV_OPA_MAX) {
+ 544:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         *res_color = lv_color_mix(fg_color, bg_color, fg_opa);
+ 545:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         *res_opa = LV_OPA_COVER;
+ 546:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 547:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /*Both colors have alpha. Expensive calculation need to be applied*/
+ 548:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     else {
+ 549:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         /*Save the parameters and the result. If they will be asked again don't compute again*/
+ 550:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         static lv_opa_t fg_opa_save     = 0;
+ 551:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         static lv_opa_t bg_opa_save     = 0;
+ 552:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         static lv_color_t fg_color_save = _LV_COLOR_ZERO_INITIALIZER;
+ 553:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         static lv_color_t bg_color_save = _LV_COLOR_ZERO_INITIALIZER;
+ 554:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         static lv_color_t res_color_saved = _LV_COLOR_ZERO_INITIALIZER;
+ 555:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         static lv_opa_t res_opa_saved = 0;
+ 556:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 557:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         if(fg_opa != fg_opa_save || bg_opa != bg_opa_save || fg_color.full != fg_color_save.full ||
+ 558:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****            bg_color.full != bg_color_save.full) {
+ 559:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             fg_opa_save        = fg_opa;
+ 560:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             bg_opa_save        = bg_opa;
+ 561:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             fg_color_save.full = fg_color.full;
+ 562:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             bg_color_save.full = bg_color.full;
+ 563:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             /*Info:
+ 564:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****              * https://en.wikipedia.org/wiki/Alpha_compositing#Analytical_derivation_of_the_over_op
+ 565:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             res_opa_saved = 255 - ((uint16_t)((uint16_t)(255 - fg_opa) * (255 - bg_opa)) >> 8);
+ 566:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             LV_ASSERT(res_opa_saved != 0);
+ 567:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             lv_opa_t ratio = (uint16_t)((uint16_t)fg_opa * 255) / res_opa_saved;
+ 568:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****             res_color_saved = lv_color_mix(fg_color, bg_color, ratio);
+ 569:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 570:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         }
+ 571:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 572:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         res_color->full = res_color_saved.full;
+ 573:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         *res_opa = res_opa_saved;
+ 574:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     }
+ 575:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 576:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 577:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //! @endcond
+ 578:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 579:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 580:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Get the brightness of a color
+ 581:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param color a color
+ 582:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return the brightness [0..255]
+ 583:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 584:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline uint8_t lv_color_brightness(lv_color_t color)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 19
+
+
+ 585:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 586:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color32_t c32;
+ 587:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     c32.full        = lv_color_to32(color);
+ 588:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     uint16_t bright = (uint16_t)(3u * LV_COLOR_GET_R32(c32) + LV_COLOR_GET_B32(c32) + 4u * LV_COLOR
+ 589:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return (uint8_t)(bright >> 3);
+ 590:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 591:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 592:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline lv_color_t lv_color_make(uint8_t r, uint8_t g, uint8_t b)
+ 593:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return _LV_COLOR_MAKE_TYPE_HELPER LV_COLOR_MAKE(r, g, b);
+ 595:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 596:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 597:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline lv_color_t lv_color_hex(uint32_t c)
+ 598:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 599:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 16
+ 600:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color_t r;
+ 601:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 602:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /* Convert a 4 bytes per pixel in format ARGB32 to R5G6B5 format
+ 603:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         naive way (by calling lv_color_make with components):
+ 604:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     r = ((c & 0xFF0000) >> 19)
+ 605:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     g = ((c & 0xFF00) >> 10)
+ 606:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     b = ((c & 0xFF) >> 3)
+ 607:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     rgb565 = (r << 11) | (g << 5) | b
+ 608:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         That's 3 mask, 5 bitshift and 2 or operations
+ 609:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 610:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         A bit better:
+ 611:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     r = ((c & 0xF80000) >> 8)
+ 612:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     g = ((c & 0xFC00) >> 5)
+ 613:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     b = ((c & 0xFF) >> 3)
+ 614:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                     rgb565 = r | g | b
+ 615:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****         That's 3 mask, 3 bitshifts and 2 or operations */
+ 616:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     r.full = (uint16_t)(((c & 0xF80000) >> 8) | ((c & 0xFC00) >> 5) | ((c & 0xFF) >> 3));
+ 617:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else
+ 618:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     /* We want: rrrr rrrr GGGg gggg bbbb bbbb => gggb bbbb rrrr rGGG */
+ 619:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     r.full = (uint16_t)(((c & 0xF80000) >> 16) | ((c & 0xFC00) >> 13) | ((c & 0x1C00) << 3) | ((c &
+ 620:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 621:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return r;
+ 622:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 623:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     lv_color_t r;
+ 624:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     r.full = c | 0xFF000000;
+ 625:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return r;
+ 626:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #else /*LV_COLOR_DEPTH == 8*/
+ 627:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return lv_color_make((uint8_t)((c >> 16) & 0xFF), (uint8_t)((c >> 8) & 0xFF), (uint8_t)(c & 0xF
+ 628:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** #endif
+ 629:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 630:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 631:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline lv_color_t lv_color_hex3(uint32_t c)
+ 632:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 633:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return lv_color_make((uint8_t)(((c >> 4) & 0xF0) | ((c >> 8) & 0xF)), (uint8_t)((c & 0xF0) | ((
+ 634:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****                          (uint8_t)((c & 0xF) | ((c & 0xF) << 4)));
+ 635:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 636:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 637:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline void lv_color_filter_dsc_init(lv_color_filter_dsc_t * dsc, lv_color_filter_cb_t cb)
+ 638:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 639:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     dsc->filter_cb = cb;
+ 640:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 641:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 20
+
+
+ 642:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //! @cond Doxygen_Suppress
+ 643:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //!
+ 644:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM void lv_color_fill(lv_color_t * buf, lv_color_t color, uint32_t px_num);
+ 645:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 646:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** //! @endcond
+ 647:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_t lv_color_lighten(lv_color_t c, lv_opa_t lvl);
+ 648:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 649:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_t lv_color_darken(lv_color_t c, lv_opa_t lvl);
+ 650:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 651:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_t lv_color_change_lightness(lv_color_t c, lv_opa_t lvl);
+ 652:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 653:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 654:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Convert a HSV color to RGB
+ 655:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param h hue [0..359]
+ 656:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param s saturation [0..100]
+ 657:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param v value [0..100]
+ 658:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return the given RGB color in RGB (with LV_COLOR_DEPTH depth)
+ 659:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 660:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_t lv_color_hsv_to_rgb(uint16_t h, uint8_t s, uint8_t v);
+ 661:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 662:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 663:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Convert a 32-bit RGB color to HSV
+ 664:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param r8 8-bit red
+ 665:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param g8 8-bit green
+ 666:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param b8 8-bit blue
+ 667:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return the given RGB color in HSV
+ 668:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 669:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_hsv_t lv_color_rgb_to_hsv(uint8_t r8, uint8_t g8, uint8_t b8);
+ 670:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 671:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 672:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Convert a color to HSV
+ 673:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @param color color
+ 674:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return the given color in HSV
+ 675:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 676:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_hsv_t lv_color_to_hsv(lv_color_t color);
+ 677:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 678:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**
+ 679:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * Just a wrapper around LV_COLOR_CHROMA_KEY because it might be more convenient to use a function 
+ 680:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  * @return LV_COLOR_CHROMA_KEY
+ 681:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  */
+ 682:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline lv_color_t lv_color_chroma_key(void)
+ 683:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 684:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return LV_COLOR_CHROMA_KEY;
+ 685:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 686:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 687:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /**********************
+ 688:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  *  PREDEFINED COLORS
+ 689:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****  **********************/
+ 690:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** /*Source: https://vuetifyjs.com/en/styles/colors/#material-colors*/
+ 691:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** 
+ 692:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** lv_color_t lv_palette_main(lv_palette_t p);
+ 693:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline lv_color_t lv_color_white(void)
+  85              		.loc 2 693 26 view .LVU10
+  86              	.LBE30:
+ 694:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 695:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return lv_color_make(0xff, 0xff, 0xff);
+  87              		.loc 2 695 5 view .LVU11
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 21
+
+
+  88              	.LBB33:
+  89              	.LBB31:
+  90              	.LBI31:
+ 592:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+  91              		.loc 2 592 26 view .LVU12
+  92              	.LBB32:
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+  93              		.loc 2 594 5 view .LVU13
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+  94              		.loc 2 594 12 is_stmt 0 view .LVU14
+  95 0010 4FF6FF73 		movw	r3, #65535
+  96              	.LVL5:
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+  97              		.loc 2 594 12 view .LVU15
+  98              	.LBE32:
+  99              	.LBE31:
+ 100              	.LBE33:
+ 339:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_rect(draw_ctx, &rect_dsc, coords);
+ 101              		.loc 1 339 25 view .LVU16
+ 102 0014 ADF83E30 		strh	r3, [sp, #62]	@ movhi
+ 340:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 103              		.loc 1 340 5 is_stmt 1 view .LVU17
+ 104 0018 2A46     		mov	r2, r5
+ 105 001a 0EA9     		add	r1, sp, #56
+ 106 001c 2046     		mov	r0, r4
+ 107 001e FFF7FEFF 		bl	lv_draw_rect
+ 108              	.LVL6:
+ 342:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_label_dsc_init(&label_dsc);
+ 109              		.loc 1 342 5 view .LVU18
+ 343:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_draw_label(draw_ctx, &label_dsc, coords, msg, NULL);
+ 110              		.loc 1 343 5 view .LVU19
+ 111 0022 03A8     		add	r0, sp, #12
+ 112 0024 FFF7FEFF 		bl	lv_draw_label_dsc_init
+ 113              	.LVL7:
+ 344:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 114              		.loc 1 344 5 view .LVU20
+ 115 0028 0023     		movs	r3, #0
+ 116 002a 0093     		str	r3, [sp]
+ 117 002c 3346     		mov	r3, r6
+ 118 002e 2A46     		mov	r2, r5
+ 119 0030 03A9     		add	r1, sp, #12
+ 120 0032 2046     		mov	r0, r4
+ 121 0034 FFF7FEFF 		bl	lv_draw_label
+ 122              	.LVL8:
+ 345:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 123              		.loc 1 345 1 is_stmt 0 view .LVU21
+ 124 0038 20B0     		add	sp, sp, #128
+ 125              	.LCFI3:
+ 126              		.cfi_def_cfa_offset 16
+ 127              		@ sp needed
+ 128 003a 70BD     		pop	{r4, r5, r6, pc}
+ 345:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 129              		.loc 1 345 1 view .LVU22
+ 130              		.cfi_endproc
+ 131              	.LFE161:
+ 133              		.section	.text.lv_draw_img_dsc_init,"ax",%progbits
+ 134              		.align	1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 22
+
+
+ 135              		.global	lv_draw_img_dsc_init
+ 136              		.syntax unified
+ 137              		.thumb
+ 138              		.thumb_func
+ 140              	lv_draw_img_dsc_init:
+ 141              	.LVL9:
+ 142              	.LFB153:
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_memset_00(dsc, sizeof(lv_draw_img_dsc_t));
+ 143              		.loc 1 47 1 is_stmt 1 view -0
+ 144              		.cfi_startproc
+ 145              		@ args = 0, pretend = 0, frame = 0
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_memset_00(dsc, sizeof(lv_draw_img_dsc_t));
+ 147              		.loc 1 47 1 is_stmt 0 view .LVU24
+ 148 0000 10B5     		push	{r4, lr}
+ 149              	.LCFI4:
+ 150              		.cfi_def_cfa_offset 8
+ 151              		.cfi_offset 4, -8
+ 152              		.cfi_offset 14, -4
+ 153 0002 0446     		mov	r4, r0
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->recolor = lv_color_black();
+ 154              		.loc 1 48 5 is_stmt 1 view .LVU25
+ 155 0004 1C21     		movs	r1, #28
+ 156 0006 FFF7FEFF 		bl	lv_memset_00
+ 157              	.LVL10:
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->opa = LV_OPA_COVER;
+ 158              		.loc 1 49 5 view .LVU26
+ 159              	.LBB34:
+ 160              	.LBI34:
+ 696:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 697:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** static inline lv_color_t lv_color_black(void)
+ 161              		.loc 2 697 26 view .LVU27
+ 162              	.LBE34:
+ 698:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 699:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h ****     return lv_color_make(0x00, 0x0, 0x00);
+ 163              		.loc 2 699 5 view .LVU28
+ 164              	.LBB37:
+ 165              	.LBB35:
+ 166              	.LBI35:
+ 592:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** {
+ 167              		.loc 2 592 26 view .LVU29
+ 168              	.LBB36:
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 169              		.loc 2 594 5 view .LVU30
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 170              		.loc 2 594 12 is_stmt 0 view .LVU31
+ 171 000a 4FF00003 		mov	r3, #0	@ movhi
+ 172              	.LVL11:
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_color.h **** }
+ 173              		.loc 2 594 12 view .LVU32
+ 174              	.LBE36:
+ 175              	.LBE35:
+ 176              	.LBE37:
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->opa = LV_OPA_COVER;
+ 177              		.loc 1 49 20 view .LVU33
+ 178 000e A381     		strh	r3, [r4, #12]	@ movhi
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->zoom = LV_IMG_ZOOM_NONE;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 23
+
+
+ 179              		.loc 1 50 5 is_stmt 1 view .LVU34
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->zoom = LV_IMG_ZOOM_NONE;
+ 180              		.loc 1 50 14 is_stmt 0 view .LVU35
+ 181 0010 FF23     		movs	r3, #255
+ 182 0012 E373     		strb	r3, [r4, #15]
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->antialias = LV_COLOR_DEPTH > 8 ? 1 : 0;
+ 183              		.loc 1 51 5 is_stmt 1 view .LVU36
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     dsc->antialias = LV_COLOR_DEPTH > 8 ? 1 : 0;
+ 184              		.loc 1 51 15 is_stmt 0 view .LVU37
+ 185 0014 4FF48073 		mov	r3, #256
+ 186 0018 6380     		strh	r3, [r4, #2]	@ movhi
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 187              		.loc 1 52 5 is_stmt 1 view .LVU38
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 188              		.loc 1 52 20 is_stmt 0 view .LVU39
+ 189 001a 237E     		ldrb	r3, [r4, #24]	@ zero_extendqisi2
+ 190 001c 43F00103 		orr	r3, r3, #1
+ 191 0020 2376     		strb	r3, [r4, #24]
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 192              		.loc 1 53 1 view .LVU40
+ 193 0022 10BD     		pop	{r4, pc}
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 194              		.loc 1 53 1 view .LVU41
+ 195              		.cfi_endproc
+ 196              	.LFE153:
+ 198              		.section	.text.lv_img_cf_get_px_size,"ax",%progbits
+ 199              		.align	1
+ 200              		.global	lv_img_cf_get_px_size
+ 201              		.syntax unified
+ 202              		.thumb
+ 203              		.thumb_func
+ 205              	lv_img_cf_get_px_size:
+ 206              	.LVL12:
+ 207              	.LFB155:
+  93:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     uint8_t px_size = 0;
+ 208              		.loc 1 93 1 is_stmt 1 view -0
+ 209              		.cfi_startproc
+ 210              		@ args = 0, pretend = 0, frame = 0
+ 211              		@ frame_needed = 0, uses_anonymous_args = 0
+ 212              		@ link register save eliminated.
+  94:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 213              		.loc 1 94 5 view .LVU43
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_UNKNOWN:
+ 214              		.loc 1 96 5 view .LVU44
+ 215 0000 0438     		subs	r0, r0, #4
+ 216              	.LVL13:
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_UNKNOWN:
+ 217              		.loc 1 96 5 is_stmt 0 view .LVU45
+ 218 0002 0A28     		cmp	r0, #10
+ 219 0004 07D8     		bhi	.L8
+ 220 0006 DFE800F0 		tbb	[pc, r0]
+ 221              	.L10:
+ 222 000a 12       		.byte	(.L16-.L10)/2
+ 223 000b 08       		.byte	(.L15-.L10)/2
+ 224 000c 12       		.byte	(.L16-.L10)/2
+ 225 000d 0A       		.byte	(.L13-.L10)/2
+ 226 000e 0C       		.byte	(.L12-.L10)/2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 24
+
+
+ 227 000f 0E       		.byte	(.L11-.L10)/2
+ 228 0010 10       		.byte	(.L9-.L10)/2
+ 229 0011 0A       		.byte	(.L13-.L10)/2
+ 230 0012 0C       		.byte	(.L12-.L10)/2
+ 231 0013 0E       		.byte	(.L11-.L10)/2
+ 232 0014 10       		.byte	(.L9-.L10)/2
+ 233 0015 00       		.p2align 1
+ 234              	.L8:
+ 235 0016 0020     		movs	r0, #0
+ 236 0018 7047     		bx	lr
+ 237              	.L15:
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 238              		.loc 1 106 13 is_stmt 1 view .LVU46
+ 239              	.LVL14:
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_1BIT:
+ 240              		.loc 1 107 13 view .LVU47
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 241              		.loc 1 106 21 is_stmt 0 view .LVU48
+ 242 001a 1820     		movs	r0, #24
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_1BIT:
+ 243              		.loc 1 107 13 view .LVU49
+ 244 001c 7047     		bx	lr
+ 245              	.LVL15:
+ 246              	.L13:
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 247              		.loc 1 110 13 is_stmt 1 view .LVU50
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_2BIT:
+ 248              		.loc 1 111 13 view .LVU51
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 249              		.loc 1 110 21 is_stmt 0 view .LVU52
+ 250 001e 0120     		movs	r0, #1
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_2BIT:
+ 251              		.loc 1 111 13 view .LVU53
+ 252 0020 7047     		bx	lr
+ 253              	.LVL16:
+ 254              	.L12:
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 255              		.loc 1 114 13 is_stmt 1 view .LVU54
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_4BIT:
+ 256              		.loc 1 115 13 view .LVU55
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 257              		.loc 1 114 21 is_stmt 0 view .LVU56
+ 258 0022 0220     		movs	r0, #2
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_4BIT:
+ 259              		.loc 1 115 13 view .LVU57
+ 260 0024 7047     		bx	lr
+ 261              	.LVL17:
+ 262              	.L11:
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 263              		.loc 1 118 13 is_stmt 1 view .LVU58
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_8BIT:
+ 264              		.loc 1 119 13 view .LVU59
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 265              		.loc 1 118 21 is_stmt 0 view .LVU60
+ 266 0026 0420     		movs	r0, #4
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_INDEXED_8BIT:
+ 267              		.loc 1 119 13 view .LVU61
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 25
+
+
+ 268 0028 7047     		bx	lr
+ 269              	.LVL18:
+ 270              	.L9:
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 271              		.loc 1 122 13 is_stmt 1 view .LVU62
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         default:
+ 272              		.loc 1 123 13 view .LVU63
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 273              		.loc 1 122 21 is_stmt 0 view .LVU64
+ 274 002a 0820     		movs	r0, #8
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         default:
+ 275              		.loc 1 123 13 view .LVU65
+ 276 002c 7047     		bx	lr
+ 277              	.LVL19:
+ 278              	.L16:
+ 103:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 279              		.loc 1 103 21 view .LVU66
+ 280 002e 1020     		movs	r0, #16
+ 281              	.LVL20:
+ 129:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 282              		.loc 1 129 5 is_stmt 1 view .LVU67
+ 130:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 283              		.loc 1 130 1 is_stmt 0 view .LVU68
+ 284 0030 7047     		bx	lr
+ 285              		.cfi_endproc
+ 286              	.LFE155:
+ 288              		.section	.text.lv_img_cf_is_chroma_keyed,"ax",%progbits
+ 289              		.align	1
+ 290              		.global	lv_img_cf_is_chroma_keyed
+ 291              		.syntax unified
+ 292              		.thumb
+ 293              		.thumb_func
+ 295              	lv_img_cf_is_chroma_keyed:
+ 296              	.LVL21:
+ 297              	.LFB156:
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     bool is_chroma_keyed = false;
+ 298              		.loc 1 138 1 is_stmt 1 view -0
+ 299              		.cfi_startproc
+ 300              		@ args = 0, pretend = 0, frame = 0
+ 301              		@ frame_needed = 0, uses_anonymous_args = 0
+ 302              		@ link register save eliminated.
+ 139:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 303              		.loc 1 139 5 view .LVU70
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 304              		.loc 1 141 5 view .LVU71
+ 305 0000 0328     		cmp	r0, #3
+ 306 0002 05D0     		beq	.L19
+ 307 0004 0628     		cmp	r0, #6
+ 308 0006 01D0     		beq	.L21
+ 148:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 309              		.loc 1 148 29 is_stmt 0 view .LVU72
+ 310 0008 0020     		movs	r0, #0
+ 311              	.LVL22:
+ 152:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 312              		.loc 1 152 5 is_stmt 1 view .LVU73
+ 153:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 313              		.loc 1 153 1 is_stmt 0 view .LVU74
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 26
+
+
+ 314 000a 7047     		bx	lr
+ 315              	.LVL23:
+ 316              	.L21:
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 317              		.loc 1 141 5 view .LVU75
+ 318 000c 0120     		movs	r0, #1
+ 319              	.LVL24:
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 320              		.loc 1 141 5 view .LVU76
+ 321 000e 7047     		bx	lr
+ 322              	.LVL25:
+ 323              	.L19:
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 324              		.loc 1 141 5 view .LVU77
+ 325 0010 0120     		movs	r0, #1
+ 326              	.LVL26:
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
+ 327              		.loc 1 141 5 view .LVU78
+ 328 0012 7047     		bx	lr
+ 329              		.cfi_endproc
+ 330              	.LFE156:
+ 332              		.section	.text.lv_img_cf_has_alpha,"ax",%progbits
+ 333              		.align	1
+ 334              		.global	lv_img_cf_has_alpha
+ 335              		.syntax unified
+ 336              		.thumb
+ 337              		.thumb_func
+ 339              	lv_img_cf_has_alpha:
+ 340              	.LVL27:
+ 341              	.LFB157:
+ 161:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     bool has_alpha = false;
+ 342              		.loc 1 161 1 is_stmt 1 view -0
+ 343              		.cfi_startproc
+ 344              		@ args = 0, pretend = 0, frame = 0
+ 345              		@ frame_needed = 0, uses_anonymous_args = 0
+ 346              		@ link register save eliminated.
+ 162:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 347              		.loc 1 162 5 view .LVU80
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_ALPHA:
+ 348              		.loc 1 164 5 view .LVU81
+ 349 0000 0E28     		cmp	r0, #14
+ 350 0002 09D8     		bhi	.L24
+ 351 0004 0123     		movs	r3, #1
+ 352 0006 03FA00F0 		lsl	r0, r3, r0
+ 353              	.LVL28:
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         case LV_IMG_CF_TRUE_COLOR_ALPHA:
+ 354              		.loc 1 164 5 is_stmt 0 view .LVU82
+ 355 000a 47F6A473 		movw	r3, #32676
+ 356 000e 1842     		tst	r0, r3
+ 357 0010 14BF     		ite	ne
+ 358 0012 0120     		movne	r0, #1
+ 359 0014 0020     		moveq	r0, #0
+ 360 0016 7047     		bx	lr
+ 361              	.LVL29:
+ 362              	.L24:
+ 178:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             break;
+ 363              		.loc 1 178 23 view .LVU83
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 27
+
+
+ 364 0018 0020     		movs	r0, #0
+ 365              	.LVL30:
+ 182:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 366              		.loc 1 182 5 is_stmt 1 view .LVU84
+ 183:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 367              		.loc 1 183 1 is_stmt 0 view .LVU85
+ 368 001a 7047     		bx	lr
+ 369              		.cfi_endproc
+ 370              	.LFE157:
+ 372              		.section	.text.lv_img_src_get_type,"ax",%progbits
+ 373              		.align	1
+ 374              		.global	lv_img_src_get_type
+ 375              		.syntax unified
+ 376              		.thumb
+ 377              		.thumb_func
+ 379              	lv_img_src_get_type:
+ 380              	.LVL31:
+ 381              	.LFB158:
+ 194:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     lv_img_src_t img_src_type = LV_IMG_SRC_UNKNOWN;
+ 382              		.loc 1 194 1 is_stmt 1 view -0
+ 383              		.cfi_startproc
+ 384              		@ args = 0, pretend = 0, frame = 0
+ 385              		@ frame_needed = 0, uses_anonymous_args = 0
+ 386              		@ link register save eliminated.
+ 195:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 387              		.loc 1 195 5 view .LVU87
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     const uint8_t * u8_p = src;
+ 388              		.loc 1 197 5 view .LVU88
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     const uint8_t * u8_p = src;
+ 389              		.loc 1 197 7 is_stmt 0 view .LVU89
+ 390 0000 60B1     		cbz	r0, .L27
+ 198:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 391              		.loc 1 198 5 is_stmt 1 view .LVU90
+ 392              	.LVL32:
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_FILE; /*If it's an ASCII character then it's file name*/
+ 393              		.loc 1 201 5 view .LVU91
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_FILE; /*If it's an ASCII character then it's file name*/
+ 394              		.loc 1 201 12 is_stmt 0 view .LVU92
+ 395 0002 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_FILE; /*If it's an ASCII character then it's file name*/
+ 396              		.loc 1 201 24 view .LVU93
+ 397 0004 A2F12003 		sub	r3, r2, #32
+ 398 0008 DBB2     		uxtb	r3, r3
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_FILE; /*If it's an ASCII character then it's file name*/
+ 399              		.loc 1 201 7 view .LVU94
+ 400 000a 5F2B     		cmp	r3, #95
+ 401 000c 08D9     		bls	.L28
+ 204:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_SYMBOL; /*Symbols begins after 0x7F*/
+ 402              		.loc 1 204 10 is_stmt 1 view .LVU95
+ 204:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         img_src_type = LV_IMG_SRC_SYMBOL; /*Symbols begins after 0x7F*/
+ 403              		.loc 1 204 12 is_stmt 0 view .LVU96
+ 404 000e 12F0800F 		tst	r2, #128
+ 405 0012 01D1     		bne	.L30
+ 208:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 406              		.loc 1 208 22 view .LVU97
+ 407 0014 0020     		movs	r0, #0
+ 408              	.LVL33:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 28
+
+
+ 216:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 409              		.loc 1 216 1 view .LVU98
+ 410 0016 7047     		bx	lr
+ 411              	.LVL34:
+ 412              	.L30:
+ 205:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 413              		.loc 1 205 22 view .LVU99
+ 414 0018 0220     		movs	r0, #2
+ 415              	.LVL35:
+ 205:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 416              		.loc 1 205 22 view .LVU100
+ 417 001a 7047     		bx	lr
+ 418              	.LVL36:
+ 419              	.L27:
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     const uint8_t * u8_p = src;
+ 420              		.loc 1 197 28 view .LVU101
+ 421 001c 0320     		movs	r0, #3
+ 422              	.LVL37:
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     const uint8_t * u8_p = src;
+ 423              		.loc 1 197 28 view .LVU102
+ 424 001e 7047     		bx	lr
+ 425              	.LVL38:
+ 426              	.L28:
+ 202:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 427              		.loc 1 202 22 view .LVU103
+ 428 0020 0120     		movs	r0, #1
+ 429              	.LVL39:
+ 202:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 430              		.loc 1 202 22 view .LVU104
+ 431 0022 7047     		bx	lr
+ 432              		.cfi_endproc
+ 433              	.LFE158:
+ 435              		.section	.text.lv_draw_img_decoded,"ax",%progbits
+ 436              		.align	1
+ 437              		.global	lv_draw_img_decoded
+ 438              		.syntax unified
+ 439              		.thumb
+ 440              		.thumb_func
+ 442              	lv_draw_img_decoded:
+ 443              	.LVL40:
+ 444              	.LFB159:
+ 220:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_ctx->draw_img_decoded == NULL) return;
+ 445              		.loc 1 220 1 is_stmt 1 view -0
+ 446              		.cfi_startproc
+ 447              		@ args = 4, pretend = 0, frame = 0
+ 448              		@ frame_needed = 0, uses_anonymous_args = 0
+ 220:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_ctx->draw_img_decoded == NULL) return;
+ 449              		.loc 1 220 1 is_stmt 0 view .LVU106
+ 450 0000 30B5     		push	{r4, r5, lr}
+ 451              	.LCFI5:
+ 452              		.cfi_def_cfa_offset 12
+ 453              		.cfi_offset 4, -12
+ 454              		.cfi_offset 5, -8
+ 455              		.cfi_offset 14, -4
+ 456 0002 83B0     		sub	sp, sp, #12
+ 457              	.LCFI6:
+ 458              		.cfi_def_cfa_offset 24
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 29
+
+
+ 221:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 459              		.loc 1 221 5 is_stmt 1 view .LVU107
+ 221:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 460              		.loc 1 221 16 is_stmt 0 view .LVU108
+ 461 0004 4469     		ldr	r4, [r0, #20]
+ 221:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 462              		.loc 1 221 7 view .LVU109
+ 463 0006 1CB1     		cbz	r4, .L31
+ 223:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 464              		.loc 1 223 5 is_stmt 1 view .LVU110
+ 465 0008 9DF81850 		ldrb	r5, [sp, #24]	@ zero_extendqisi2
+ 466 000c 0095     		str	r5, [sp]
+ 467 000e A047     		blx	r4
+ 468              	.LVL41:
+ 469              	.L31:
+ 224:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 470              		.loc 1 224 1 is_stmt 0 view .LVU111
+ 471 0010 03B0     		add	sp, sp, #12
+ 472              	.LCFI7:
+ 473              		.cfi_def_cfa_offset 12
+ 474              		@ sp needed
+ 475 0012 30BD     		pop	{r4, r5, pc}
+ 224:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 476              		.loc 1 224 1 view .LVU112
+ 477              		.cfi_endproc
+ 478              	.LFE159:
+ 480              		.section	.text.decode_and_draw,"ax",%progbits
+ 481              		.align	1
+ 482              		.syntax unified
+ 483              		.thumb
+ 484              		.thumb_func
+ 486              	decode_and_draw:
+ 487              	.LVL42:
+ 488              	.LFB160:
+ 232:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_dsc->opa <= LV_OPA_MIN) return LV_RES_OK;
+ 489              		.loc 1 232 1 is_stmt 1 view -0
+ 490              		.cfi_startproc
+ 491              		@ args = 0, pretend = 0, frame = 56
+ 492              		@ frame_needed = 0, uses_anonymous_args = 0
+ 232:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_dsc->opa <= LV_OPA_MIN) return LV_RES_OK;
+ 493              		.loc 1 232 1 is_stmt 0 view .LVU114
+ 494 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 495              	.LCFI8:
+ 496              		.cfi_def_cfa_offset 36
+ 497              		.cfi_offset 4, -36
+ 498              		.cfi_offset 5, -32
+ 499              		.cfi_offset 6, -28
+ 500              		.cfi_offset 7, -24
+ 501              		.cfi_offset 8, -20
+ 502              		.cfi_offset 9, -16
+ 503              		.cfi_offset 10, -12
+ 504              		.cfi_offset 11, -8
+ 505              		.cfi_offset 14, -4
+ 506 0004 91B0     		sub	sp, sp, #68
+ 507              	.LCFI9:
+ 508              		.cfi_def_cfa_offset 104
+ 509 0006 1546     		mov	r5, r2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 30
+
+
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 510              		.loc 1 233 5 is_stmt 1 view .LVU115
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 511              		.loc 1 233 16 is_stmt 0 view .LVU116
+ 512 0008 CA7B     		ldrb	r2, [r1, #15]	@ zero_extendqisi2
+ 513              	.LVL43:
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 514              		.loc 1 233 7 view .LVU117
+ 515 000a 022A     		cmp	r2, #2
+ 516 000c 03D8     		bhi	.L54
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 517              		.loc 1 233 44 view .LVU118
+ 518 000e 0120     		movs	r0, #1
+ 519              	.LVL44:
+ 520              	.L35:
+ 332:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 521              		.loc 1 332 1 view .LVU119
+ 522 0010 11B0     		add	sp, sp, #68
+ 523              	.LCFI10:
+ 524              		.cfi_remember_state
+ 525              		.cfi_def_cfa_offset 36
+ 526              		@ sp needed
+ 527 0012 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 528              	.LVL45:
+ 529              	.L54:
+ 530              	.LCFI11:
+ 531              		.cfi_restore_state
+ 332:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 532              		.loc 1 332 1 view .LVU120
+ 533 0016 0646     		mov	r6, r0
+ 534 0018 0C46     		mov	r4, r1
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 535              		.loc 1 235 5 is_stmt 1 view .LVU121
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 536              		.loc 1 235 36 is_stmt 0 view .LVU122
+ 537 001a 4A69     		ldr	r2, [r1, #20]
+ 538 001c 8989     		ldrh	r1, [r1, #12]
+ 539              	.LVL46:
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 540              		.loc 1 235 36 view .LVU123
+ 541 001e 1846     		mov	r0, r3
+ 542              	.LVL47:
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 543              		.loc 1 235 36 view .LVU124
+ 544 0020 FFF7FEFF 		bl	_lv_img_cache_open
+ 545              	.LVL48:
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 546              		.loc 1 237 5 is_stmt 1 view .LVU125
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 547              		.loc 1 237 7 is_stmt 0 view .LVU126
+ 548 0024 0746     		mov	r7, r0
+ 549 0026 0028     		cmp	r0, #0
+ 550 0028 00F0D380 		beq	.L50
+ 240:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(lv_img_cf_is_chroma_keyed(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED;
+ 551              		.loc 1 240 5 is_stmt 1 view .LVU127
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 552              		.loc 1 241 5 view .LVU128
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 31
+
+
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 553              		.loc 1 241 54 is_stmt 0 view .LVU129
+ 554 002c 90F81480 		ldrb	r8, [r0, #20]	@ zero_extendqisi2
+ 555 0030 08F01F08 		and	r8, r8, #31
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 556              		.loc 1 241 8 view .LVU130
+ 557 0034 4046     		mov	r0, r8
+ 558              	.LVL49:
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 559              		.loc 1 241 8 view .LVU131
+ 560 0036 FFF7FEFF 		bl	lv_img_cf_is_chroma_keyed
+ 561              	.LVL50:
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 562              		.loc 1 241 7 view .LVU132
+ 563 003a 30B9     		cbnz	r0, .L51
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else cf = LV_IMG_CF_TRUE_COLOR;
+ 564              		.loc 1 242 10 is_stmt 1 view .LVU133
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else cf = LV_IMG_CF_TRUE_COLOR;
+ 565              		.loc 1 242 13 is_stmt 0 view .LVU134
+ 566 003c 4046     		mov	r0, r8
+ 567 003e FFF7FEFF 		bl	lv_img_cf_has_alpha
+ 568              	.LVL51:
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else cf = LV_IMG_CF_TRUE_COLOR;
+ 569              		.loc 1 242 12 view .LVU135
+ 570 0042 78B1     		cbz	r0, .L52
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else cf = LV_IMG_CF_TRUE_COLOR;
+ 571              		.loc 1 242 62 view .LVU136
+ 572 0044 4FF00509 		mov	r9, #5
+ 573 0048 01E0     		b	.L36
+ 574              	.L51:
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     else if(lv_img_cf_has_alpha(cdsc->dec_dsc.header.cf)) cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
+ 575              		.loc 1 241 63 view .LVU137
+ 576 004a 4FF00609 		mov	r9, #6
+ 577              	.L36:
+ 578              	.LVL52:
+ 245:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+ 579              		.loc 1 245 5 is_stmt 1 view .LVU138
+ 245:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+ 580              		.loc 1 245 21 is_stmt 0 view .LVU139
+ 581 004e 3A6A     		ldr	r2, [r7, #32]
+ 245:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+ 582              		.loc 1 245 7 view .LVU140
+ 583 0050 5AB1     		cbz	r2, .L37
+ 246:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 584              		.loc 1 246 9 is_stmt 1 view .LVU141
+ 246:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 585              		.loc 1 246 9 view .LVU142
+ 246:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 586              		.loc 1 246 9 view .LVU143
+ 248:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 587              		.loc 1 248 9 view .LVU144
+ 588 0052 2946     		mov	r1, r5
+ 589 0054 3046     		mov	r0, r6
+ 590 0056 FFF7FEFF 		bl	show_error
+ 591              	.LVL53:
+ 592              	.L38:
+ 330:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     return LV_RES_OK;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 32
+
+
+ 593              		.loc 1 330 5 view .LVU145
+ 594 005a 3846     		mov	r0, r7
+ 595 005c FFF7FEFF 		bl	draw_cleanup
+ 596              	.LVL54:
+ 331:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 597              		.loc 1 331 5 view .LVU146
+ 331:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** }
+ 598              		.loc 1 331 12 is_stmt 0 view .LVU147
+ 599 0060 0120     		movs	r0, #1
+ 600 0062 D5E7     		b	.L35
+ 601              	.LVL55:
+ 602              	.L52:
+ 243:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 603              		.loc 1 243 13 view .LVU148
+ 604 0064 4FF00409 		mov	r9, #4
+ 605 0068 F1E7     		b	.L36
+ 606              	.LVL56:
+ 607              	.L37:
+ 252:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t map_area_rot;
+ 608              		.loc 1 252 10 is_stmt 1 view .LVU149
+ 252:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t map_area_rot;
+ 609              		.loc 1 252 26 is_stmt 0 view .LVU150
+ 610 006a BB69     		ldr	r3, [r7, #24]
+ 252:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t map_area_rot;
+ 611              		.loc 1 252 12 view .LVU151
+ 612 006c 002B     		cmp	r3, #0
+ 613 006e 46D0     		beq	.L39
+ 614              	.LBB38:
+ 253:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_copy(&map_area_rot, coords);
+ 615              		.loc 1 253 9 is_stmt 1 view .LVU152
+ 254:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         if(draw_dsc->angle || draw_dsc->zoom != LV_IMG_ZOOM_NONE) {
+ 616              		.loc 1 254 9 view .LVU153
+ 617              	.LVL57:
+ 618              	.LBB39:
+ 619              	.LBI39:
+ 620              		.file 3 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @file lv_area.h
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #ifndef LV_AREA_H
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #define LV_AREA_H
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #ifdef __cplusplus
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** extern "C" {
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #endif
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  *      INCLUDES
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #include "../lv_conf_internal.h"
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #include <stdbool.h>
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #include <stdint.h>
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /*********************
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  *      DEFINES
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 33
+
+
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  *********************/
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #if LV_USE_LARGE_COORD
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** typedef int32_t lv_coord_t;
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #else
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** typedef int16_t lv_coord_t;
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** #endif
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**********************
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  *      TYPEDEFS
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  **********************/
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * Represents a point on the screen.
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  */
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** typedef struct {
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     lv_coord_t x;
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     lv_coord_t y;
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** } lv_point_t;
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /** Represents an area of the screen.*/
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** typedef struct {
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     lv_coord_t x1;
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     lv_coord_t y1;
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     lv_coord_t x2;
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     lv_coord_t y2;
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** } lv_area_t;
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /** Alignments*/
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** enum {
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_DEFAULT = 0,
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_TOP_LEFT,
+  54:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_TOP_MID,
+  55:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_TOP_RIGHT,
+  56:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_BOTTOM_LEFT,
+  57:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_BOTTOM_MID,
+  58:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_BOTTOM_RIGHT,
+  59:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_LEFT_MID,
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_RIGHT_MID,
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_CENTER,
+  62:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_TOP_LEFT,
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_TOP_MID,
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_TOP_RIGHT,
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_BOTTOM_LEFT,
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_BOTTOM_MID,
+  68:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_BOTTOM_RIGHT,
+  69:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_LEFT_TOP,
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_LEFT_MID,
+  71:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_LEFT_BOTTOM,
+  72:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_RIGHT_TOP,
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_RIGHT_MID,
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_ALIGN_OUT_RIGHT_BOTTOM,
+  75:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** };
+  76:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** typedef uint8_t lv_align_t;
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  78:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** enum {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 34
+
+
+  79:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_NONE     = 0x00,
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_LEFT     = (1 << 0),
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_RIGHT    = (1 << 1),
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_TOP      = (1 << 2),
+  83:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_BOTTOM   = (1 << 3),
+  84:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_HOR      = LV_DIR_LEFT | LV_DIR_RIGHT,
+  85:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_VER      = LV_DIR_TOP | LV_DIR_BOTTOM,
+  86:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     LV_DIR_ALL      = LV_DIR_HOR | LV_DIR_VER,
+  87:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** };
+  88:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  89:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** typedef uint8_t lv_dir_t;
+  90:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**********************
+  92:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * GLOBAL PROTOTYPES
+  93:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  **********************/
+  94:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+  95:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * Initialize an area
+  97:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param area_p pointer to an area
+  98:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param x1 left coordinate of the area
+  99:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param y1 top coordinate of the area
+ 100:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param x2 right coordinate of the area
+ 101:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param y2 bottom coordinate of the area
+ 102:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  */
+ 103:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** void lv_area_set(lv_area_t * area_p, lv_coord_t x1, lv_coord_t y1, lv_coord_t x2, lv_coord_t y2);
+ 104:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+ 105:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * Copy an area
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param dest pointer to the destination area
+ 108:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param src pointer to the source area
+ 109:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  */
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** inline static void lv_area_copy(lv_area_t * dest, const lv_area_t * src)
+ 621              		.loc 3 110 20 view .LVU154
+ 622              	.LBB40:
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** {
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->x1 = src->x1;
+ 623              		.loc 3 112 5 view .LVU155
+ 624              		.loc 3 112 19 is_stmt 0 view .LVU156
+ 625 0070 2B68     		ldr	r3, [r5]
+ 626              		.loc 3 112 14 view .LVU157
+ 627 0072 0893     		str	r3, [sp, #32]
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y1 = src->y1;
+ 628              		.loc 3 113 5 is_stmt 1 view .LVU158
+ 629              		.loc 3 113 19 is_stmt 0 view .LVU159
+ 630 0074 6B68     		ldr	r3, [r5, #4]
+ 631              		.loc 3 113 14 view .LVU160
+ 632 0076 0993     		str	r3, [sp, #36]
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->x2 = src->x2;
+ 633              		.loc 3 114 5 is_stmt 1 view .LVU161
+ 634              		.loc 3 114 19 is_stmt 0 view .LVU162
+ 635 0078 AB68     		ldr	r3, [r5, #8]
+ 636              		.loc 3 114 14 view .LVU163
+ 637 007a 0A93     		str	r3, [sp, #40]
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y2 = src->y2;
+ 638              		.loc 3 115 5 is_stmt 1 view .LVU164
+ 639              		.loc 3 115 19 is_stmt 0 view .LVU165
+ 640 007c EB68     		ldr	r3, [r5, #12]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 35
+
+
+ 641              		.loc 3 115 14 view .LVU166
+ 642 007e 0B93     		str	r3, [sp, #44]
+ 643              	.LVL58:
+ 644              		.loc 3 115 14 view .LVU167
+ 645              	.LBE40:
+ 646              	.LBE39:
+ 255:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             int32_t w = lv_area_get_width(coords);
+ 647              		.loc 1 255 9 is_stmt 1 view .LVU168
+ 255:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             int32_t w = lv_area_get_width(coords);
+ 648              		.loc 1 255 28 is_stmt 0 view .LVU169
+ 649 0080 2368     		ldr	r3, [r4]
+ 255:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             int32_t w = lv_area_get_width(coords);
+ 650              		.loc 1 255 11 view .LVU170
+ 651 0082 B3F1807F 		cmp	r3, #16777216
+ 652 0086 15D1     		bne	.L55
+ 653              	.L40:
+ 267:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         bool union_ok;
+ 654              		.loc 1 267 9 is_stmt 1 view .LVU171
+ 268:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         union_ok = _lv_area_intersect(&clip_com, draw_ctx->clip_area, &map_area_rot);
+ 655              		.loc 1 268 9 view .LVU172
+ 269:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
+ 656              		.loc 1 269 9 view .LVU173
+ 269:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
+ 657              		.loc 1 269 20 is_stmt 0 view .LVU174
+ 658 0088 08AA     		add	r2, sp, #32
+ 659 008a B168     		ldr	r1, [r6, #8]
+ 660 008c 0CA8     		add	r0, sp, #48
+ 661 008e FFF7FEFF 		bl	_lv_area_intersect
+ 662              	.LVL59:
+ 271:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_cleanup(cdsc);
+ 663              		.loc 1 271 9 is_stmt 1 view .LVU175
+ 271:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_cleanup(cdsc);
+ 664              		.loc 1 271 11 is_stmt 0 view .LVU176
+ 665 0092 0028     		cmp	r0, #0
+ 666 0094 2ED0     		beq	.L56
+ 276:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = &clip_com;
+ 667              		.loc 1 276 9 is_stmt 1 view .LVU177
+ 276:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = &clip_com;
+ 668              		.loc 1 276 27 is_stmt 0 view .LVU178
+ 669 0096 D6F80880 		ldr	r8, [r6, #8]
+ 670              	.LVL60:
+ 277:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_draw_img_decoded(draw_ctx, draw_dsc, coords, cdsc->dec_dsc.img_data, cf);
+ 671              		.loc 1 277 9 is_stmt 1 view .LVU179
+ 277:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_draw_img_decoded(draw_ctx, draw_dsc, coords, cdsc->dec_dsc.img_data, cf);
+ 672              		.loc 1 277 29 is_stmt 0 view .LVU180
+ 673 009a 0CAB     		add	r3, sp, #48
+ 674 009c B360     		str	r3, [r6, #8]
+ 278:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = clip_area_ori;
+ 675              		.loc 1 278 9 is_stmt 1 view .LVU181
+ 676 009e BB69     		ldr	r3, [r7, #24]
+ 677 00a0 CDF80090 		str	r9, [sp]
+ 678 00a4 2A46     		mov	r2, r5
+ 679 00a6 2146     		mov	r1, r4
+ 680 00a8 3046     		mov	r0, r6
+ 681              	.LVL61:
+ 278:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         draw_ctx->clip_area = clip_area_ori;
+ 682              		.loc 1 278 9 is_stmt 0 view .LVU182
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 36
+
+
+ 683 00aa FFF7FEFF 		bl	lv_draw_img_decoded
+ 684              	.LVL62:
+ 279:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 685              		.loc 1 279 9 is_stmt 1 view .LVU183
+ 279:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 686              		.loc 1 279 29 is_stmt 0 view .LVU184
+ 687 00ae C6F80880 		str	r8, [r6, #8]
+ 688              	.LBE38:
+ 689 00b2 D2E7     		b	.L38
+ 690              	.LVL63:
+ 691              	.L55:
+ 692              	.LBB46:
+ 693              	.LBB41:
+ 256:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             int32_t h = lv_area_get_height(coords);
+ 694              		.loc 1 256 13 is_stmt 1 view .LVU185
+ 695              	.LBB42:
+ 696              	.LBI42:
+ 116:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 117:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * Get the width of an area
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param area_p pointer to an area
+ 121:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @return the width of the area (if x1 == x2 -> width = 1)
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  */
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** static inline lv_coord_t lv_area_get_width(const lv_area_t * area_p)
+ 697              		.loc 3 123 26 view .LVU186
+ 698              	.LBB43:
+ 124:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** {
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     return (lv_coord_t)(area_p->x2 - area_p->x1 + 1);
+ 699              		.loc 3 125 5 view .LVU187
+ 700              		.loc 3 125 31 is_stmt 0 view .LVU188
+ 701 00b4 A968     		ldr	r1, [r5, #8]
+ 702              		.loc 3 125 44 view .LVU189
+ 703 00b6 2B68     		ldr	r3, [r5]
+ 704              		.loc 3 125 36 view .LVU190
+ 705 00b8 C91A     		subs	r1, r1, r3
+ 706              	.LVL64:
+ 707              		.loc 3 125 36 view .LVU191
+ 708              	.LBE43:
+ 709              	.LBE42:
+ 257:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 710              		.loc 1 257 13 is_stmt 1 view .LVU192
+ 711              	.LBB44:
+ 712              	.LBI44:
+ 126:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 127:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** 
+ 128:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** /**
+ 129:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * Get the height of an area
+ 130:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @param area_p pointer to an area
+ 131:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  * @return the height of the area (if y1 == y2 -> height = 1)
+ 132:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****  */
+ 133:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** static inline lv_coord_t lv_area_get_height(const lv_area_t * area_p)
+ 713              		.loc 3 133 26 view .LVU193
+ 714              	.LBB45:
+ 134:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** {
+ 135:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     return (lv_coord_t)(area_p->y2 - area_p->y1 + 1);
+ 715              		.loc 3 135 5 view .LVU194
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 37
+
+
+ 716              		.loc 3 135 31 is_stmt 0 view .LVU195
+ 717 00ba EA68     		ldr	r2, [r5, #12]
+ 718              		.loc 3 135 44 view .LVU196
+ 719 00bc 6B68     		ldr	r3, [r5, #4]
+ 720              		.loc 3 135 36 view .LVU197
+ 721 00be D21A     		subs	r2, r2, r3
+ 722              	.LVL65:
+ 723              		.loc 3 135 36 view .LVU198
+ 724              	.LBE45:
+ 725              	.LBE44:
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 726              		.loc 1 259 13 is_stmt 1 view .LVU199
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 727              		.loc 1 259 75 is_stmt 0 view .LVU200
+ 728 00c0 2046     		mov	r0, r4
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 729              		.loc 1 259 13 view .LVU201
+ 730 00c2 30F9043B 		ldrsh	r3, [r0], #4
+ 731 00c6 0190     		str	r0, [sp, #4]
+ 732 00c8 6088     		ldrh	r0, [r4, #2]
+ 733 00ca 0090     		str	r0, [sp]
+ 734 00cc 0132     		adds	r2, r2, #1
+ 735              	.LVL66:
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 736              		.loc 1 259 13 view .LVU202
+ 737 00ce 0131     		adds	r1, r1, #1
+ 738              	.LVL67:
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 739              		.loc 1 259 13 view .LVU203
+ 740 00d0 08A8     		add	r0, sp, #32
+ 741 00d2 FFF7FEFF 		bl	_lv_img_buf_get_transformed_area
+ 742              	.LVL68:
+ 261:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y1 += coords->y1;
+ 743              		.loc 1 261 13 is_stmt 1 view .LVU204
+ 261:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y1 += coords->y1;
+ 744              		.loc 1 261 38 is_stmt 0 view .LVU205
+ 745 00d6 2A68     		ldr	r2, [r5]
+ 261:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y1 += coords->y1;
+ 746              		.loc 1 261 29 view .LVU206
+ 747 00d8 089B     		ldr	r3, [sp, #32]
+ 748 00da 1344     		add	r3, r3, r2
+ 749 00dc 0893     		str	r3, [sp, #32]
+ 262:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.x2 += coords->x1;
+ 750              		.loc 1 262 13 is_stmt 1 view .LVU207
+ 262:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.x2 += coords->x1;
+ 751              		.loc 1 262 38 is_stmt 0 view .LVU208
+ 752 00de 6868     		ldr	r0, [r5, #4]
+ 262:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.x2 += coords->x1;
+ 753              		.loc 1 262 29 view .LVU209
+ 754 00e0 0999     		ldr	r1, [sp, #36]
+ 755 00e2 0144     		add	r1, r1, r0
+ 756 00e4 0991     		str	r1, [sp, #36]
+ 263:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y2 += coords->y1;
+ 757              		.loc 1 263 13 is_stmt 1 view .LVU210
+ 263:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             map_area_rot.y2 += coords->y1;
+ 758              		.loc 1 263 29 is_stmt 0 view .LVU211
+ 759 00e6 0A9B     		ldr	r3, [sp, #40]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 38
+
+
+ 760 00e8 1A44     		add	r2, r2, r3
+ 761 00ea 0A92     		str	r2, [sp, #40]
+ 264:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 762              		.loc 1 264 13 is_stmt 1 view .LVU212
+ 264:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 763              		.loc 1 264 29 is_stmt 0 view .LVU213
+ 764 00ec 0B9B     		ldr	r3, [sp, #44]
+ 765 00ee 0344     		add	r3, r3, r0
+ 766 00f0 0B93     		str	r3, [sp, #44]
+ 767 00f2 C9E7     		b	.L40
+ 768              	.LVL69:
+ 769              	.L56:
+ 264:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 770              		.loc 1 264 29 view .LVU214
+ 771              	.LBE41:
+ 272:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             return LV_RES_OK;
+ 772              		.loc 1 272 13 is_stmt 1 view .LVU215
+ 773 00f4 3846     		mov	r0, r7
+ 774              	.LVL70:
+ 272:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             return LV_RES_OK;
+ 775              		.loc 1 272 13 is_stmt 0 view .LVU216
+ 776 00f6 FFF7FEFF 		bl	draw_cleanup
+ 777              	.LVL71:
+ 273:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 778              		.loc 1 273 13 is_stmt 1 view .LVU217
+ 273:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 779              		.loc 1 273 20 is_stmt 0 view .LVU218
+ 780 00fa 0120     		movs	r0, #1
+ 781 00fc 88E7     		b	.L35
+ 782              	.L39:
+ 273:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 783              		.loc 1 273 20 view .LVU219
+ 784              	.LBE46:
+ 785              	.LBB47:
+ 283:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         bool union_ok;
+ 786              		.loc 1 283 9 is_stmt 1 view .LVU220
+ 284:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         union_ok = _lv_area_intersect(&mask_com, draw_ctx->clip_area, coords);
+ 787              		.loc 1 284 9 view .LVU221
+ 285:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
+ 788              		.loc 1 285 9 view .LVU222
+ 285:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
+ 789              		.loc 1 285 20 is_stmt 0 view .LVU223
+ 790 00fe 2A46     		mov	r2, r5
+ 791 0100 B168     		ldr	r1, [r6, #8]
+ 792 0102 04A8     		add	r0, sp, #16
+ 793 0104 FFF7FEFF 		bl	_lv_area_intersect
+ 794              	.LVL72:
+ 287:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_cleanup(cdsc);
+ 795              		.loc 1 287 9 is_stmt 1 view .LVU224
+ 287:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             draw_cleanup(cdsc);
+ 796              		.loc 1 287 11 is_stmt 0 view .LVU225
+ 797 0108 20B3     		cbz	r0, .L57
+ 292:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 798              		.loc 1 292 9 is_stmt 1 view .LVU226
+ 799              	.LVL73:
+ 800              	.LBB48:
+ 801              	.LBI48:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 39
+
+
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** {
+ 802              		.loc 3 123 26 view .LVU227
+ 803              	.LBB49:
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 804              		.loc 3 125 5 view .LVU228
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 805              		.loc 3 125 36 is_stmt 0 view .LVU229
+ 806 010a 069B     		ldr	r3, [sp, #24]
+ 807 010c 049A     		ldr	r2, [sp, #16]
+ 808 010e 9B1A     		subs	r3, r3, r2
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 809              		.loc 3 125 12 view .LVU230
+ 810 0110 0133     		adds	r3, r3, #1
+ 811 0112 0393     		str	r3, [sp, #12]
+ 812              	.LVL74:
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 813              		.loc 3 125 12 view .LVU231
+ 814              	.LBE49:
+ 815              	.LBE48:
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                         LV_IMG_PX_SIZE_ALPHA_BYTE);  /*+1 because of the possible a
+ 816              		.loc 1 294 9 is_stmt 1 view .LVU232
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                         LV_IMG_PX_SIZE_ALPHA_BYTE);  /*+1 because of the possible a
+ 817              		.loc 1 294 9 is_stmt 0 view .LVU233
+ 818              	.LBE47:
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 819              		.loc 3 125 5 is_stmt 1 view .LVU234
+ 820              	.LBB54:
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                         LV_IMG_PX_SIZE_ALPHA_BYTE);  /*+1 because of the possible a
+ 821              		.loc 1 294 26 is_stmt 0 view .LVU235
+ 822 0114 03EB4300 		add	r0, r3, r3, lsl #1
+ 823              	.LVL75:
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                         LV_IMG_PX_SIZE_ALPHA_BYTE);  /*+1 because of the possible a
+ 824              		.loc 1 294 26 view .LVU236
+ 825 0118 FFF7FEFF 		bl	lv_mem_buf_get
+ 826              	.LVL76:
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                                         LV_IMG_PX_SIZE_ALPHA_BYTE);  /*+1 because of the possible a
+ 827              		.loc 1 294 26 view .LVU237
+ 828 011c 8246     		mov	r10, r0
+ 829              	.LVL77:
+ 297:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t line;
+ 830              		.loc 1 297 9 is_stmt 1 view .LVU238
+ 297:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_t line;
+ 831              		.loc 1 297 27 is_stmt 0 view .LVU239
+ 832 011e D6F808B0 		ldr	fp, [r6, #8]
+ 833              	.LVL78:
+ 298:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_copy(&line, &mask_com);
+ 834              		.loc 1 298 9 is_stmt 1 view .LVU240
+ 299:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_area_set_height(&line, 1);
+ 835              		.loc 1 299 9 view .LVU241
+ 836              	.LBB50:
+ 837              	.LBI50:
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** {
+ 838              		.loc 3 110 20 view .LVU242
+ 839              	.LBB51:
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y1 = src->y1;
+ 840              		.loc 3 112 5 view .LVU243
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y1 = src->y1;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 40
+
+
+ 841              		.loc 3 112 19 is_stmt 0 view .LVU244
+ 842 0122 049B     		ldr	r3, [sp, #16]
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y1 = src->y1;
+ 843              		.loc 3 112 14 view .LVU245
+ 844 0124 0893     		str	r3, [sp, #32]
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->x2 = src->x2;
+ 845              		.loc 3 113 5 is_stmt 1 view .LVU246
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->x2 = src->x2;
+ 846              		.loc 3 113 19 is_stmt 0 view .LVU247
+ 847 0126 059B     		ldr	r3, [sp, #20]
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->x2 = src->x2;
+ 848              		.loc 3 113 14 view .LVU248
+ 849 0128 0993     		str	r3, [sp, #36]
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y2 = src->y2;
+ 850              		.loc 3 114 5 is_stmt 1 view .LVU249
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y2 = src->y2;
+ 851              		.loc 3 114 19 is_stmt 0 view .LVU250
+ 852 012a 069B     		ldr	r3, [sp, #24]
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h ****     dest->y2 = src->y2;
+ 853              		.loc 3 114 14 view .LVU251
+ 854 012c 0A93     		str	r3, [sp, #40]
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 855              		.loc 3 115 5 is_stmt 1 view .LVU252
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 856              		.loc 3 115 19 is_stmt 0 view .LVU253
+ 857 012e 079B     		ldr	r3, [sp, #28]
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 858              		.loc 3 115 14 view .LVU254
+ 859 0130 0B93     		str	r3, [sp, #44]
+ 860              	.LVL79:
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_area.h **** }
+ 861              		.loc 3 115 14 view .LVU255
+ 862              	.LBE51:
+ 863              	.LBE50:
+ 300:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t x = mask_com.x1 - coords->x1;
+ 864              		.loc 1 300 9 is_stmt 1 view .LVU256
+ 865 0132 0121     		movs	r1, #1
+ 866 0134 08A8     		add	r0, sp, #32
+ 867              	.LVL80:
+ 300:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t x = mask_com.x1 - coords->x1;
+ 868              		.loc 1 300 9 is_stmt 0 view .LVU257
+ 869 0136 FFF7FEFF 		bl	lv_area_set_height
+ 870              	.LVL81:
+ 301:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t y = mask_com.y1 - coords->y1;
+ 871              		.loc 1 301 9 is_stmt 1 view .LVU258
+ 301:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t y = mask_com.y1 - coords->y1;
+ 872              		.loc 1 301 41 is_stmt 0 view .LVU259
+ 873 013a 2B68     		ldr	r3, [r5]
+ 301:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t y = mask_com.y1 - coords->y1;
+ 874              		.loc 1 301 17 view .LVU260
+ 875 013c 049A     		ldr	r2, [sp, #16]
+ 876 013e D31A     		subs	r3, r2, r3
+ 877 0140 0293     		str	r3, [sp, #8]
+ 878              	.LVL82:
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t row;
+ 879              		.loc 1 302 9 is_stmt 1 view .LVU261
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t row;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 41
+
+
+ 880              		.loc 1 302 29 is_stmt 0 view .LVU262
+ 881 0142 DDF81480 		ldr	r8, [sp, #20]
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t row;
+ 882              		.loc 1 302 41 view .LVU263
+ 883 0146 6D68     		ldr	r5, [r5, #4]
+ 884              	.LVL83:
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         int32_t row;
+ 885              		.loc 1 302 17 view .LVU264
+ 886 0148 A8EB0505 		sub	r5, r8, r5
+ 887              	.LVL84:
+ 303:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_res_t read_res;
+ 888              		.loc 1 303 9 is_stmt 1 view .LVU265
+ 304:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         for(row = mask_com.y1; row <= mask_com.y2; row++) {
+ 889              		.loc 1 304 9 view .LVU266
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 890              		.loc 1 305 9 view .LVU267
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 891              		.loc 1 305 9 is_stmt 0 view .LVU268
+ 892 014c 2346     		mov	r3, r4
+ 893              	.LVL85:
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 894              		.loc 1 305 9 view .LVU269
+ 895 014e 5446     		mov	r4, r10
+ 896              	.LVL86:
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 897              		.loc 1 305 9 view .LVU270
+ 898 0150 9A46     		mov	r10, r3
+ 899              	.LVL87:
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 900              		.loc 1 305 9 view .LVU271
+ 901 0152 13E0     		b	.L44
+ 902              	.LVL88:
+ 903              	.L57:
+ 288:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             return LV_RES_OK;
+ 904              		.loc 1 288 13 is_stmt 1 view .LVU272
+ 905 0154 3846     		mov	r0, r7
+ 906              	.LVL89:
+ 288:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             return LV_RES_OK;
+ 907              		.loc 1 288 13 is_stmt 0 view .LVU273
+ 908 0156 FFF7FEFF 		bl	draw_cleanup
+ 909              	.LVL90:
+ 289:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 910              		.loc 1 289 13 is_stmt 1 view .LVU274
+ 289:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 911              		.loc 1 289 20 is_stmt 0 view .LVU275
+ 912 015a 0120     		movs	r0, #1
+ 913 015c 58E7     		b	.L35
+ 914              	.LVL91:
+ 915              	.L59:
+ 916              	.LBB52:
+ 312:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 LV_LOG_WARN("Image draw can't read the line");
+ 917              		.loc 1 312 17 is_stmt 1 view .LVU276
+ 918 015e 3846     		mov	r0, r7
+ 919              	.LVL92:
+ 312:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 LV_LOG_WARN("Image draw can't read the line");
+ 920              		.loc 1 312 17 is_stmt 0 view .LVU277
+ 921 0160 FFF7FEFF 		bl	lv_img_decoder_close
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 42
+
+
+ 922              	.LVL93:
+ 313:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_mem_buf_release(buf);
+ 923              		.loc 1 313 17 is_stmt 1 view .LVU278
+ 313:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_mem_buf_release(buf);
+ 924              		.loc 1 313 17 view .LVU279
+ 313:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_mem_buf_release(buf);
+ 925              		.loc 1 313 17 view .LVU280
+ 314:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 draw_cleanup(cdsc);
+ 926              		.loc 1 314 17 view .LVU281
+ 927 0164 2046     		mov	r0, r4
+ 928 0166 FFF7FEFF 		bl	lv_mem_buf_release
+ 929              	.LVL94:
+ 315:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 draw_ctx->clip_area = clip_area_ori;
+ 930              		.loc 1 315 17 view .LVU282
+ 931 016a 3846     		mov	r0, r7
+ 932 016c FFF7FEFF 		bl	draw_cleanup
+ 933              	.LVL95:
+ 316:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 return LV_RES_INV;
+ 934              		.loc 1 316 17 view .LVU283
+ 316:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 return LV_RES_INV;
+ 935              		.loc 1 316 37 is_stmt 0 view .LVU284
+ 936 0170 C6F808B0 		str	fp, [r6, #8]
+ 317:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             }
+ 937              		.loc 1 317 17 is_stmt 1 view .LVU285
+ 317:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             }
+ 938              		.loc 1 317 24 is_stmt 0 view .LVU286
+ 939 0174 0020     		movs	r0, #0
+ 940 0176 4BE7     		b	.L35
+ 941              	.L46:
+ 317:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             }
+ 942              		.loc 1 317 24 view .LVU287
+ 943              	.LBE52:
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 944              		.loc 1 305 52 is_stmt 1 discriminator 2 view .LVU288
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 945              		.loc 1 305 55 is_stmt 0 discriminator 2 view .LVU289
+ 946 0178 08F10108 		add	r8, r8, #1
+ 947              	.LVL96:
+ 948              	.L44:
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 949              		.loc 1 305 32 is_stmt 1 discriminator 1 view .LVU290
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 950              		.loc 1 305 47 is_stmt 0 discriminator 1 view .LVU291
+ 951 017c 079B     		ldr	r3, [sp, #28]
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_area_t mask_line;
+ 952              		.loc 1 305 9 discriminator 1 view .LVU292
+ 953 017e 4345     		cmp	r3, r8
+ 954 0180 21DB     		blt	.L58
+ 955              	.LBB53:
+ 306:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             union_ok = _lv_area_intersect(&mask_line, clip_area_ori, &line);
+ 956              		.loc 1 306 13 is_stmt 1 view .LVU293
+ 307:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(union_ok == false) continue;
+ 957              		.loc 1 307 13 view .LVU294
+ 307:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(union_ok == false) continue;
+ 958              		.loc 1 307 24 is_stmt 0 view .LVU295
+ 959 0182 08AA     		add	r2, sp, #32
+ 960 0184 5946     		mov	r1, fp
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 43
+
+
+ 961 0186 0CA8     		add	r0, sp, #48
+ 962 0188 FFF7FEFF 		bl	_lv_area_intersect
+ 963              	.LVL97:
+ 308:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 964              		.loc 1 308 13 is_stmt 1 view .LVU296
+ 308:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 965              		.loc 1 308 15 is_stmt 0 view .LVU297
+ 966 018c 0028     		cmp	r0, #0
+ 967 018e F3D0     		beq	.L46
+ 310:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(read_res != LV_RES_OK) {
+ 968              		.loc 1 310 13 is_stmt 1 view .LVU298
+ 310:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(read_res != LV_RES_OK) {
+ 969              		.loc 1 310 24 is_stmt 0 view .LVU299
+ 970 0190 0094     		str	r4, [sp]
+ 971 0192 039B     		ldr	r3, [sp, #12]
+ 972 0194 2A46     		mov	r2, r5
+ 973 0196 0299     		ldr	r1, [sp, #8]
+ 974 0198 3846     		mov	r0, r7
+ 975              	.LVL98:
+ 310:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             if(read_res != LV_RES_OK) {
+ 976              		.loc 1 310 24 view .LVU300
+ 977 019a FFF7FEFF 		bl	lv_img_decoder_read_line
+ 978              	.LVL99:
+ 311:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_img_decoder_close(&cdsc->dec_dsc);
+ 979              		.loc 1 311 13 is_stmt 1 view .LVU301
+ 311:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****                 lv_img_decoder_close(&cdsc->dec_dsc);
+ 980              		.loc 1 311 15 is_stmt 0 view .LVU302
+ 981 019e 0128     		cmp	r0, #1
+ 982 01a0 DDD1     		bne	.L59
+ 320:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_draw_img_decoded(draw_ctx, draw_dsc, &line, buf, cf);
+ 983              		.loc 1 320 13 is_stmt 1 view .LVU303
+ 320:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             lv_draw_img_decoded(draw_ctx, draw_dsc, &line, buf, cf);
+ 984              		.loc 1 320 33 is_stmt 0 view .LVU304
+ 985 01a2 0CAB     		add	r3, sp, #48
+ 986 01a4 B360     		str	r3, [r6, #8]
+ 321:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y1++;
+ 987              		.loc 1 321 13 is_stmt 1 view .LVU305
+ 988 01a6 CDF80090 		str	r9, [sp]
+ 989 01aa 2346     		mov	r3, r4
+ 990 01ac 08AA     		add	r2, sp, #32
+ 991 01ae 5146     		mov	r1, r10
+ 992 01b0 3046     		mov	r0, r6
+ 993              	.LVL100:
+ 321:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y1++;
+ 994              		.loc 1 321 13 is_stmt 0 view .LVU306
+ 995 01b2 FFF7FEFF 		bl	lv_draw_img_decoded
+ 996              	.LVL101:
+ 322:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y2++;
+ 997              		.loc 1 322 13 is_stmt 1 view .LVU307
+ 322:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y2++;
+ 998              		.loc 1 322 17 is_stmt 0 view .LVU308
+ 999 01b6 099B     		ldr	r3, [sp, #36]
+ 322:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             line.y2++;
+ 1000              		.loc 1 322 20 view .LVU309
+ 1001 01b8 0133     		adds	r3, r3, #1
+ 1002 01ba 0993     		str	r3, [sp, #36]
+ 323:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             y++;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 44
+
+
+ 1003              		.loc 1 323 13 is_stmt 1 view .LVU310
+ 323:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             y++;
+ 1004              		.loc 1 323 17 is_stmt 0 view .LVU311
+ 1005 01bc 0B9B     		ldr	r3, [sp, #44]
+ 323:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****             y++;
+ 1006              		.loc 1 323 20 view .LVU312
+ 1007 01be 0133     		adds	r3, r3, #1
+ 1008 01c0 0B93     		str	r3, [sp, #44]
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 1009              		.loc 1 324 13 is_stmt 1 view .LVU313
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 1010              		.loc 1 324 14 is_stmt 0 view .LVU314
+ 1011 01c2 0135     		adds	r5, r5, #1
+ 1012              	.LVL102:
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 1013              		.loc 1 324 14 view .LVU315
+ 1014 01c4 D8E7     		b	.L46
+ 1015              	.L58:
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         }
+ 1016              		.loc 1 324 14 view .LVU316
+ 1017              	.LBE53:
+ 326:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_mem_buf_release(buf);
+ 1018              		.loc 1 326 9 is_stmt 1 view .LVU317
+ 326:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         lv_mem_buf_release(buf);
+ 1019              		.loc 1 326 29 is_stmt 0 view .LVU318
+ 1020 01c6 C6F808B0 		str	fp, [r6, #8]
+ 327:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1021              		.loc 1 327 9 is_stmt 1 view .LVU319
+ 1022 01ca 2046     		mov	r0, r4
+ 1023 01cc FFF7FEFF 		bl	lv_mem_buf_release
+ 1024              	.LVL103:
+ 1025 01d0 43E7     		b	.L38
+ 1026              	.LVL104:
+ 1027              	.L50:
+ 327:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1028              		.loc 1 327 9 is_stmt 0 view .LVU320
+ 1029              	.LBE54:
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 1030              		.loc 1 237 29 view .LVU321
+ 1031 01d2 0020     		movs	r0, #0
+ 1032              	.LVL105:
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 1033              		.loc 1 237 29 view .LVU322
+ 1034 01d4 1CE7     		b	.L35
+ 1035              		.cfi_endproc
+ 1036              	.LFE160:
+ 1038              		.section	.rodata.lv_draw_img.str1.4,"aMS",%progbits,1
+ 1039              		.align	2
+ 1040              	.LC0:
+ 1041 0000 4E6F0A64 		.ascii	"No\012data\000"
+ 1041      61746100 
+ 1042              		.section	.text.lv_draw_img,"ax",%progbits
+ 1043              		.align	1
+ 1044              		.global	lv_draw_img
+ 1045              		.syntax unified
+ 1046              		.thumb
+ 1047              		.thumb_func
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 45
+
+
+ 1049              	lv_draw_img:
+ 1050              	.LVL106:
+ 1051              	.LFB154:
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(src == NULL) {
+ 1052              		.loc 1 63 1 is_stmt 1 view -0
+ 1053              		.cfi_startproc
+ 1054              		@ args = 0, pretend = 0, frame = 0
+ 1055              		@ frame_needed = 0, uses_anonymous_args = 0
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(src == NULL) {
+ 1056              		.loc 1 63 1 is_stmt 0 view .LVU324
+ 1057 0000 70B5     		push	{r4, r5, r6, lr}
+ 1058              	.LCFI12:
+ 1059              		.cfi_def_cfa_offset 16
+ 1060              		.cfi_offset 4, -16
+ 1061              		.cfi_offset 5, -12
+ 1062              		.cfi_offset 6, -8
+ 1063              		.cfi_offset 14, -4
+ 1064 0002 0446     		mov	r4, r0
+ 1065 0004 1546     		mov	r5, r2
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw: src is NULL");
+ 1066              		.loc 1 64 5 is_stmt 1 view .LVU325
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw: src is NULL");
+ 1067              		.loc 1 64 7 is_stmt 0 view .LVU326
+ 1068 0006 4BB1     		cbz	r3, .L66
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 1069              		.loc 1 70 5 is_stmt 1 view .LVU327
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 1070              		.loc 1 70 11 is_stmt 0 view .LVU328
+ 1071 0008 CA7B     		ldrb	r2, [r1, #15]	@ zero_extendqisi2
+ 1072              	.LVL107:
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 1073              		.loc 1 70 7 view .LVU329
+ 1074 000a 022A     		cmp	r2, #2
+ 1075 000c 05D9     		bls	.L60
+  72:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     if(draw_ctx->draw_img) {
+ 1076              		.loc 1 72 5 is_stmt 1 view .LVU330
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         res = draw_ctx->draw_img(draw_ctx, dsc, coords, src);
+ 1077              		.loc 1 73 5 view .LVU331
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         res = draw_ctx->draw_img(draw_ctx, dsc, coords, src);
+ 1078              		.loc 1 73 16 is_stmt 0 view .LVU332
+ 1079 000e A669     		ldr	r6, [r4, #24]
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         res = draw_ctx->draw_img(draw_ctx, dsc, coords, src);
+ 1080              		.loc 1 73 7 view .LVU333
+ 1081 0010 4EB1     		cbz	r6, .L63
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1082              		.loc 1 74 9 is_stmt 1 view .LVU334
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1083              		.loc 1 74 15 is_stmt 0 view .LVU335
+ 1084 0012 2A46     		mov	r2, r5
+ 1085 0014 2046     		mov	r0, r4
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1086              		.loc 1 74 15 view .LVU336
+ 1087 0016 B047     		blx	r6
+ 1088              	.LVL108:
+ 1089              	.L64:
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+ 1090              		.loc 1 80 5 is_stmt 1 view .LVU337
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 46
+
+
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         LV_LOG_WARN("Image draw error");
+ 1091              		.loc 1 80 7 is_stmt 0 view .LVU338
+ 1092 0018 50B1     		cbz	r0, .L67
+ 1093              	.LVL109:
+ 1094              	.L60:
+  85:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c **** 
+ 1095              		.loc 1 85 1 view .LVU339
+ 1096 001a 70BD     		pop	{r4, r5, r6, pc}
+ 1097              	.LVL110:
+ 1098              	.L66:
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+ 1099              		.loc 1 65 9 is_stmt 1 view .LVU340
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+ 1100              		.loc 1 65 9 view .LVU341
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+ 1101              		.loc 1 65 9 view .LVU342
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+ 1102              		.loc 1 66 9 view .LVU343
+ 1103 001c 074A     		ldr	r2, .L68
+ 1104              	.LVL111:
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+ 1105              		.loc 1 66 9 is_stmt 0 view .LVU344
+ 1106 001e 2946     		mov	r1, r5
+ 1107              	.LVL112:
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+ 1108              		.loc 1 66 9 view .LVU345
+ 1109 0020 FFF7FEFF 		bl	show_error
+ 1110              	.LVL113:
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1111              		.loc 1 67 9 is_stmt 1 view .LVU346
+ 1112 0024 F9E7     		b	.L60
+ 1113              	.LVL114:
+ 1114              	.L63:
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1115              		.loc 1 77 9 view .LVU347
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1116              		.loc 1 77 15 is_stmt 0 view .LVU348
+ 1117 0026 2A46     		mov	r2, r5
+ 1118 0028 2046     		mov	r0, r4
+ 1119              	.LVL115:
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1120              		.loc 1 77 15 view .LVU349
+ 1121 002a FFF7FEFF 		bl	decode_and_draw
+ 1122              	.LVL116:
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1123              		.loc 1 77 15 view .LVU350
+ 1124 002e F3E7     		b	.L64
+ 1125              	.L67:
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+ 1126              		.loc 1 81 9 is_stmt 1 view .LVU351
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+ 1127              		.loc 1 81 9 view .LVU352
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         show_error(draw_ctx, coords, "No\ndata");
+ 1128              		.loc 1 81 9 view .LVU353
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+ 1129              		.loc 1 82 9 view .LVU354
+ 1130 0030 024A     		ldr	r2, .L68
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 47
+
+
+ 1131 0032 2946     		mov	r1, r5
+ 1132 0034 2046     		mov	r0, r4
+ 1133              	.LVL117:
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****         return;
+ 1134              		.loc 1 82 9 is_stmt 0 view .LVU355
+ 1135 0036 FFF7FEFF 		bl	show_error
+ 1136              	.LVL118:
+  83:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.c ****     }
+ 1137              		.loc 1 83 9 is_stmt 1 view .LVU356
+ 1138 003a EEE7     		b	.L60
+ 1139              	.L69:
+ 1140              		.align	2
+ 1141              	.L68:
+ 1142 003c 00000000 		.word	.LC0
+ 1143              		.cfi_endproc
+ 1144              	.LFE154:
+ 1146              		.text
+ 1147              	.Letext0:
+ 1148              		.file 4 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 1149              		.file 5 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1150              		.file 6 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_types.h"
+ 1151              		.file 7 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_img_buf.h"
+ 1152              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_img_decoder.h"
+ 1153              		.file 9 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/../font/lv_font.h"
+ 1154              		.file 10 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_txt.h"
+ 1155              		.file 11 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_bidi.h"
+ 1156              		.file 12 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_style.h"
+ 1157              		.file 13 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_img.h"
+ 1158              		.file 14 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_img_cache.h"
+ 1159              		.file 15 "Middlewares/LVGL/GUI/lvgl/src/draw/../hal/../draw/lv_draw_rect.h"
+ 1160              		.file 16 "Middlewares/LVGL/GUI/lvgl/src/draw/../hal/../draw/lv_draw_label.h"
+ 1161              		.file 17 "Middlewares/LVGL/GUI/lvgl/src/draw/../hal/../draw/lv_draw_line.h"
+ 1162              		.file 18 "Middlewares/LVGL/GUI/lvgl/src/draw/../hal/../draw/lv_draw_arc.h"
+ 1163              		.file 19 "Middlewares/LVGL/GUI/lvgl/src/draw/../hal/../draw/lv_draw.h"
+ 1164              		.file 20 "Middlewares/LVGL/GUI/lvgl/src/draw/../misc/lv_mem.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s 			page 48
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_draw_img.c
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:20     .text.draw_cleanup:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:25     .text.draw_cleanup:00000000 draw_cleanup
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:48     .text.show_error:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:53     .text.show_error:00000000 show_error
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:134    .text.lv_draw_img_dsc_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:140    .text.lv_draw_img_dsc_init:00000000 lv_draw_img_dsc_init
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:199    .text.lv_img_cf_get_px_size:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:205    .text.lv_img_cf_get_px_size:00000000 lv_img_cf_get_px_size
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:222    .text.lv_img_cf_get_px_size:0000000a $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:289    .text.lv_img_cf_is_chroma_keyed:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:295    .text.lv_img_cf_is_chroma_keyed:00000000 lv_img_cf_is_chroma_keyed
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:333    .text.lv_img_cf_has_alpha:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:339    .text.lv_img_cf_has_alpha:00000000 lv_img_cf_has_alpha
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:373    .text.lv_img_src_get_type:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:379    .text.lv_img_src_get_type:00000000 lv_img_src_get_type
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:436    .text.lv_draw_img_decoded:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:442    .text.lv_draw_img_decoded:00000000 lv_draw_img_decoded
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:481    .text.decode_and_draw:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:486    .text.decode_and_draw:00000000 decode_and_draw
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:1039   .rodata.lv_draw_img.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:1043   .text.lv_draw_img:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:1049   .text.lv_draw_img:00000000 lv_draw_img
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:1142   .text.lv_draw_img:0000003c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:233    .text.lv_img_cf_get_px_size:00000015 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc8MZzEi.s:233    .text.lv_img_cf_get_px_size:00000016 $t
+
+UNDEFINED SYMBOLS
+lv_img_decoder_close
+lv_draw_rect_dsc_init
+lv_draw_rect
+lv_draw_label_dsc_init
+lv_draw_label
+lv_memset_00
+_lv_img_cache_open
+_lv_area_intersect
+_lv_img_buf_get_transformed_area
+lv_mem_buf_get
+lv_area_set_height
+lv_mem_buf_release
+lv_img_decoder_read_line

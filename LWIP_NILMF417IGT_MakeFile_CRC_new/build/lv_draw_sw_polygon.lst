@@ -1,0 +1,1060 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_draw_sw_polygon.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_draw_sw_polygon,"ax",%progbits
+  20              		.align	1
+  21              		.global	lv_draw_sw_polygon
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lv_draw_sw_polygon:
+  27              	.LVL0:
+  28              	.LFB53:
+  29              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  * @file lv_draw_sw_polygon.c
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #include "lv_draw_sw.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #include "../../misc/lv_math.h"
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #include "../../misc/lv_mem.h"
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #include "../../misc/lv_area.h"
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #include "../../misc/lv_color.h"
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #include "../lv_draw_rect.h"
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /*********************
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *      DEFINES
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *********************/
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**********************
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *      TYPEDEFS
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  **********************/
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**********************
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *  STATIC PROTOTYPES
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  **********************/
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**********************
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *  STATIC VARIABLES
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 2
+
+
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  **********************/
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**********************
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *      MACROS
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  **********************/
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**********************
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  *   GLOBAL FUNCTIONS
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  **********************/
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** /**
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  * Draw a polygon. Only convex polygons are supported
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  * @param points an array of points
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  * @param point_cnt number of points
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  * @param clip_area polygon will be drawn only in this area
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  * @param draw_dsc pointer to an initialized `lv_draw_rect_dsc_t` variable
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****  */
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** void lv_draw_sw_polygon(lv_draw_ctx_t * draw_ctx, const lv_draw_rect_dsc_t * draw_dsc, const lv_poi
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                         uint16_t point_cnt)
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** {
+  30              		.loc 1 49 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 56
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 49 1 is_stmt 0 view .LVU1
+  35 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 36
+  38              		.cfi_offset 4, -36
+  39              		.cfi_offset 5, -32
+  40              		.cfi_offset 6, -28
+  41              		.cfi_offset 7, -24
+  42              		.cfi_offset 8, -20
+  43              		.cfi_offset 9, -16
+  44              		.cfi_offset 10, -12
+  45              		.cfi_offset 11, -8
+  46              		.cfi_offset 14, -4
+  47 0004 91B0     		sub	sp, sp, #68
+  48              	.LCFI1:
+  49              		.cfi_def_cfa_offset 104
+  50 0006 0490     		str	r0, [sp, #16]
+  51 0008 0691     		str	r1, [sp, #24]
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #if LV_DRAW_COMPLEX
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(point_cnt < 3) return;
+  52              		.loc 1 51 5 is_stmt 1 view .LVU2
+  53              		.loc 1 51 7 is_stmt 0 view .LVU3
+  54 000a 022B     		cmp	r3, #2
+  55 000c 40F23A81 		bls	.L1
+  56 0010 1746     		mov	r7, r2
+  57 0012 9846     		mov	r8, r3
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(points == NULL) return;
+  58              		.loc 1 52 5 is_stmt 1 view .LVU4
+  59              		.loc 1 52 7 is_stmt 0 view .LVU5
+  60 0014 002A     		cmp	r2, #0
+  61 0016 00F03581 		beq	.L1
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  54:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     /*Join adjacent points if they are on the same coordinate*/
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 3
+
+
+  55:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_point_t * p = lv_mem_buf_get(point_cnt * sizeof(lv_point_t));
+  62              		.loc 1 55 5 is_stmt 1 view .LVU6
+  63              		.loc 1 55 22 is_stmt 0 view .LVU7
+  64 001a D800     		lsls	r0, r3, #3
+  65              	.LVL1:
+  66              		.loc 1 55 22 view .LVU8
+  67 001c FFF7FEFF 		bl	lv_mem_buf_get
+  68              	.LVL2:
+  56:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(p == NULL) return;
+  69              		.loc 1 56 5 is_stmt 1 view .LVU9
+  70              		.loc 1 56 7 is_stmt 0 view .LVU10
+  71 0020 0446     		mov	r4, r0
+  72 0022 0028     		cmp	r0, #0
+  73 0024 00F02E81 		beq	.L1
+  57:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     uint16_t i;
+  74              		.loc 1 57 5 is_stmt 1 view .LVU11
+  58:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     uint16_t pcnt = 0;
+  75              		.loc 1 58 5 view .LVU12
+  76              	.LVL3:
+  59:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     p[0] = points[0];
+  77              		.loc 1 59 5 view .LVU13
+  78              		.loc 1 59 10 is_stmt 0 view .LVU14
+  79 0028 97E80300 		ldm	r7, {r0, r1}
+  80              	.LVL4:
+  81              		.loc 1 59 10 view .LVU15
+  82 002c 84E80300 		stm	r4, {r0, r1}
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+  83              		.loc 1 60 5 is_stmt 1 view .LVU16
+  84              	.LVL5:
+  58:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     uint16_t pcnt = 0;
+  85              		.loc 1 58 14 is_stmt 0 view .LVU17
+  86 0030 0025     		movs	r5, #0
+  87              		.loc 1 60 11 view .LVU18
+  88 0032 2E46     		mov	r6, r5
+  89              		.loc 1 60 5 view .LVU19
+  90 0034 09E0     		b	.L3
+  91              	.LVL6:
+  92              	.L4:
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+  62:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             p[pcnt] = points[i];
+  93              		.loc 1 62 13 is_stmt 1 view .LVU20
+  94              		.loc 1 62 14 is_stmt 0 view .LVU21
+  95 0036 04EBC502 		add	r2, r4, r5, lsl #3
+  96              		.loc 1 62 21 view .LVU22
+  97 003a 93E80300 		ldm	r3, {r0, r1}
+  98 003e 82E80300 		stm	r2, {r0, r1}
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             pcnt++;
+  99              		.loc 1 63 13 is_stmt 1 view .LVU23
+ 100              		.loc 1 63 17 is_stmt 0 view .LVU24
+ 101 0042 0135     		adds	r5, r5, #1
+ 102              	.LVL7:
+ 103              		.loc 1 63 17 view .LVU25
+ 104 0044 ADB2     		uxth	r5, r5
+ 105              	.LVL8:
+ 106              	.L5:
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+ 107              		.loc 1 60 35 is_stmt 1 discriminator 2 view .LVU26
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 4
+
+
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+ 108              		.loc 1 60 36 is_stmt 0 discriminator 2 view .LVU27
+ 109 0046 0136     		adds	r6, r6, #1
+ 110              	.LVL9:
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+ 111              		.loc 1 60 36 discriminator 2 view .LVU28
+ 112 0048 B6B2     		uxth	r6, r6
+ 113              	.LVL10:
+ 114              	.L3:
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+ 115              		.loc 1 60 16 is_stmt 1 discriminator 1 view .LVU29
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+ 116              		.loc 1 60 30 is_stmt 0 discriminator 1 view .LVU30
+ 117 004a 08F1FF33 		add	r3, r8, #-1
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt - 1; i++) {
+ 118              		.loc 1 60 5 discriminator 1 view .LVU31
+ 119 004e 9E42     		cmp	r6, r3
+ 120 0050 0FDA     		bge	.L34
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 121              		.loc 1 61 9 is_stmt 1 view .LVU32
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 122              		.loc 1 61 18 is_stmt 0 view .LVU33
+ 123 0052 07EBC603 		add	r3, r7, r6, lsl #3
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 124              		.loc 1 61 21 view .LVU34
+ 125 0056 57F83610 		ldr	r1, [r7, r6, lsl #3]
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 126              		.loc 1 61 33 view .LVU35
+ 127 005a 721C     		adds	r2, r6, #1
+ 128 005c 07EBC200 		add	r0, r7, r2, lsl #3
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 129              		.loc 1 61 40 view .LVU36
+ 130 0060 57F83220 		ldr	r2, [r7, r2, lsl #3]
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 131              		.loc 1 61 11 view .LVU37
+ 132 0064 9142     		cmp	r1, r2
+ 133 0066 E6D1     		bne	.L4
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 134              		.loc 1 61 55 discriminator 1 view .LVU38
+ 135 0068 5A68     		ldr	r2, [r3, #4]
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 136              		.loc 1 61 74 discriminator 1 view .LVU39
+ 137 006a 4168     		ldr	r1, [r0, #4]
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(points[i].x != points[i + 1].x || points[i].y != points[i + 1].y) {
+ 138              		.loc 1 61 43 discriminator 1 view .LVU40
+ 139 006c 8A42     		cmp	r2, r1
+ 140 006e E2D1     		bne	.L4
+ 141 0070 E9E7     		b	.L5
+ 142              	.L34:
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     /*The first and the last points are also adjacent*/
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(points[0].x != points[point_cnt - 1].x || points[0].y != points[point_cnt - 1].y) {
+ 143              		.loc 1 67 5 is_stmt 1 view .LVU41
+ 144              		.loc 1 67 17 is_stmt 0 view .LVU42
+ 145 0072 3968     		ldr	r1, [r7]
+ 146              		.loc 1 67 29 view .LVU43
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 5
+
+
+ 147 0074 08F10058 		add	r8, r8, #536870912
+ 148 0078 08F1FF38 		add	r8, r8, #-1
+ 149 007c 07EBC803 		add	r3, r7, r8, lsl #3
+ 150              		.loc 1 67 44 view .LVU44
+ 151 0080 57F83820 		ldr	r2, [r7, r8, lsl #3]
+ 152              		.loc 1 67 7 view .LVU45
+ 153 0084 9142     		cmp	r1, r2
+ 154 0086 10D0     		beq	.L35
+ 155              	.L7:
+  68:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         p[pcnt] = points[point_cnt - 1];
+ 156              		.loc 1 68 9 is_stmt 1 view .LVU46
+ 157              		.loc 1 68 10 is_stmt 0 view .LVU47
+ 158 0088 04EBC502 		add	r2, r4, r5, lsl #3
+ 159              		.loc 1 68 17 view .LVU48
+ 160 008c 93E80300 		ldm	r3, {r0, r1}
+ 161 0090 82E80300 		stm	r2, {r0, r1}
+  69:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         pcnt++;
+ 162              		.loc 1 69 9 is_stmt 1 view .LVU49
+ 163              		.loc 1 69 13 is_stmt 0 view .LVU50
+ 164 0094 0135     		adds	r5, r5, #1
+ 165              	.LVL11:
+ 166              		.loc 1 69 13 view .LVU51
+ 167 0096 ADB2     		uxth	r5, r5
+ 168              	.LVL12:
+ 169              	.L8:
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+  71:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  72:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     point_cnt = pcnt;
+ 170              		.loc 1 72 5 is_stmt 1 view .LVU52
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(point_cnt < 3) {
+ 171              		.loc 1 73 5 view .LVU53
+ 172              		.loc 1 73 7 is_stmt 0 view .LVU54
+ 173 0098 022D     		cmp	r5, #2
+ 174 009a 0BD9     		bls	.L36
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         lv_mem_buf_release(p);
+  75:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         return;
+  76:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  78:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_area_t poly_coords = {.x1 = LV_COORD_MAX, .y1 = LV_COORD_MAX, .x2 = LV_COORD_MIN, .y2 = LV_C
+ 175              		.loc 1 78 5 is_stmt 1 view .LVU55
+ 176              		.loc 1 78 15 is_stmt 0 view .LVU56
+ 177 009c 7B4B     		ldr	r3, .L44
+ 178 009e 0FCB     		ldm	r3, {r0, r1, r2, r3}
+ 179 00a0 10AE     		add	r6, sp, #64
+ 180              	.LVL13:
+ 181              		.loc 1 78 15 view .LVU57
+ 182 00a2 06E90F00 		stmdb	r6, {r0, r1, r2, r3}
+  79:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 0; i < point_cnt; i++) {
+ 183              		.loc 1 80 5 is_stmt 1 view .LVU58
+ 184              	.LVL14:
+ 185              		.loc 1 80 11 is_stmt 0 view .LVU59
+ 186 00a6 0023     		movs	r3, #0
+ 187              		.loc 1 80 5 view .LVU60
+ 188 00a8 26E0     		b	.L10
+ 189              	.LVL15:
+ 190              	.L35:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 6
+
+
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         p[pcnt] = points[point_cnt - 1];
+ 191              		.loc 1 67 59 discriminator 1 view .LVU61
+ 192 00aa 7968     		ldr	r1, [r7, #4]
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         p[pcnt] = points[point_cnt - 1];
+ 193              		.loc 1 67 86 discriminator 1 view .LVU62
+ 194 00ac 5A68     		ldr	r2, [r3, #4]
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         p[pcnt] = points[point_cnt - 1];
+ 195              		.loc 1 67 47 discriminator 1 view .LVU63
+ 196 00ae 9142     		cmp	r1, r2
+ 197 00b0 EAD1     		bne	.L7
+ 198 00b2 F1E7     		b	.L8
+ 199              	.LVL16:
+ 200              	.L36:
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         lv_mem_buf_release(p);
+ 201              		.loc 1 74 9 is_stmt 1 view .LVU64
+ 202 00b4 2046     		mov	r0, r4
+ 203 00b6 FFF7FEFF 		bl	lv_mem_buf_release
+ 204              	.LVL17:
+  75:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+ 205              		.loc 1 75 9 view .LVU65
+ 206 00ba E3E0     		b	.L1
+ 207              	.LVL18:
+ 208              	.L11:
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x1 = LV_MIN(poly_coords.x1, p[i].x);
+ 209              		.loc 1 81 9 discriminator 3 view .LVU66
+ 210              		.loc 1 81 26 is_stmt 0 discriminator 3 view .LVU67
+ 211 00bc 04EBC301 		add	r1, r4, r3, lsl #3
+ 212 00c0 54F83320 		ldr	r2, [r4, r3, lsl #3]
+ 213 00c4 0C98     		ldr	r0, [sp, #48]
+ 214 00c6 8242     		cmp	r2, r0
+ 215 00c8 A8BF     		it	ge
+ 216 00ca 0246     		movge	r2, r0
+ 217              		.loc 1 81 24 discriminator 3 view .LVU68
+ 218 00cc 0C92     		str	r2, [sp, #48]
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.y1 = LV_MIN(poly_coords.y1, p[i].y);
+ 219              		.loc 1 82 9 is_stmt 1 discriminator 3 view .LVU69
+ 220              		.loc 1 82 26 is_stmt 0 discriminator 3 view .LVU70
+ 221 00ce 4A68     		ldr	r2, [r1, #4]
+ 222 00d0 0D98     		ldr	r0, [sp, #52]
+ 223 00d2 8242     		cmp	r2, r0
+ 224 00d4 A8BF     		it	ge
+ 225 00d6 0246     		movge	r2, r0
+ 226              		.loc 1 82 24 discriminator 3 view .LVU71
+ 227 00d8 0D92     		str	r2, [sp, #52]
+  83:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x2 = LV_MAX(poly_coords.x2, p[i].x);
+ 228              		.loc 1 83 9 is_stmt 1 discriminator 3 view .LVU72
+ 229              		.loc 1 83 26 is_stmt 0 discriminator 3 view .LVU73
+ 230 00da 54F83320 		ldr	r2, [r4, r3, lsl #3]
+ 231 00de 0E98     		ldr	r0, [sp, #56]
+ 232 00e0 8242     		cmp	r2, r0
+ 233 00e2 B8BF     		it	lt
+ 234 00e4 0246     		movlt	r2, r0
+ 235              		.loc 1 83 24 discriminator 3 view .LVU74
+ 236 00e6 0E92     		str	r2, [sp, #56]
+  84:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.y2 = LV_MAX(poly_coords.y2, p[i].y);
+ 237              		.loc 1 84 9 is_stmt 1 discriminator 3 view .LVU75
+ 238              		.loc 1 84 26 is_stmt 0 discriminator 3 view .LVU76
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 7
+
+
+ 239 00e8 4A68     		ldr	r2, [r1, #4]
+ 240 00ea 0F99     		ldr	r1, [sp, #60]
+ 241 00ec 8A42     		cmp	r2, r1
+ 242 00ee B8BF     		it	lt
+ 243 00f0 0A46     		movlt	r2, r1
+ 244              		.loc 1 84 24 discriminator 3 view .LVU77
+ 245 00f2 0F92     		str	r2, [sp, #60]
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x1 = LV_MIN(poly_coords.x1, p[i].x);
+ 246              		.loc 1 80 31 is_stmt 1 discriminator 3 view .LVU78
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x1 = LV_MIN(poly_coords.x1, p[i].x);
+ 247              		.loc 1 80 32 is_stmt 0 discriminator 3 view .LVU79
+ 248 00f4 0133     		adds	r3, r3, #1
+ 249              	.LVL19:
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x1 = LV_MIN(poly_coords.x1, p[i].x);
+ 250              		.loc 1 80 32 discriminator 3 view .LVU80
+ 251 00f6 9BB2     		uxth	r3, r3
+ 252              	.LVL20:
+ 253              	.L10:
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x1 = LV_MIN(poly_coords.x1, p[i].x);
+ 254              		.loc 1 80 16 is_stmt 1 discriminator 1 view .LVU81
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         poly_coords.x1 = LV_MIN(poly_coords.x1, p[i].x);
+ 255              		.loc 1 80 5 is_stmt 0 discriminator 1 view .LVU82
+ 256 00f8 AB42     		cmp	r3, r5
+ 257 00fa DFD3     		bcc	.L11
+  85:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+  86:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  87:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     bool is_common;
+ 258              		.loc 1 87 5 is_stmt 1 view .LVU83
+  88:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_area_t clip_area;
+ 259              		.loc 1 88 5 view .LVU84
+  89:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     is_common = _lv_area_intersect(&clip_area, &poly_coords, draw_ctx->clip_area);
+ 260              		.loc 1 89 5 view .LVU85
+ 261              		.loc 1 89 17 is_stmt 0 view .LVU86
+ 262 00fc 049B     		ldr	r3, [sp, #16]
+ 263              	.LVL21:
+ 264              		.loc 1 89 17 view .LVU87
+ 265 00fe 9A68     		ldr	r2, [r3, #8]
+ 266 0100 0CA9     		add	r1, sp, #48
+ 267 0102 08A8     		add	r0, sp, #32
+ 268 0104 FFF7FEFF 		bl	_lv_area_intersect
+ 269              	.LVL22:
+  90:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(!is_common) {
+ 270              		.loc 1 90 5 is_stmt 1 view .LVU88
+ 271              		.loc 1 90 7 is_stmt 0 view .LVU89
+ 272 0108 0390     		str	r0, [sp, #12]
+ 273 010a 40B1     		cbz	r0, .L37
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         lv_mem_buf_release(p);
+  92:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         return;
+  93:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+  94:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  95:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     const lv_area_t * clip_area_ori = draw_ctx->clip_area;
+ 274              		.loc 1 95 5 is_stmt 1 view .LVU90
+ 275              		.loc 1 95 23 is_stmt 0 view .LVU91
+ 276 010c 049A     		ldr	r2, [sp, #16]
+ 277 010e 9368     		ldr	r3, [r2, #8]
+ 278 0110 0793     		str	r3, [sp, #28]
+ 279              	.LVL23:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 8
+
+
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     draw_ctx->clip_area = &clip_area;
+ 280              		.loc 1 96 5 is_stmt 1 view .LVU92
+ 281              		.loc 1 96 25 is_stmt 0 view .LVU93
+ 282 0112 08AB     		add	r3, sp, #32
+ 283              	.LVL24:
+ 284              		.loc 1 96 25 view .LVU94
+ 285 0114 9360     		str	r3, [r2, #8]
+ 286              	.LVL25:
+  97:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+  98:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     /*Find the lowest point*/
+  99:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_coord_t y_min = p[0].y;
+ 287              		.loc 1 99 5 is_stmt 1 view .LVU95
+ 288              		.loc 1 99 16 is_stmt 0 view .LVU96
+ 289 0116 6168     		ldr	r1, [r4, #4]
+ 290              	.LVL26:
+ 100:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     int16_t y_min_i = 0;
+ 291              		.loc 1 100 5 is_stmt 1 view .LVU97
+ 101:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 102:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     for(i = 1; i < point_cnt; i++) {
+ 292              		.loc 1 102 5 view .LVU98
+ 100:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     int16_t y_min_i = 0;
+ 293              		.loc 1 100 13 is_stmt 0 view .LVU99
+ 294 0118 0026     		movs	r6, #0
+ 295              		.loc 1 102 11 view .LVU100
+ 296 011a 0123     		movs	r3, #1
+ 297              		.loc 1 102 5 view .LVU101
+ 298 011c 05E0     		b	.L13
+ 299              	.LVL27:
+ 300              	.L37:
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         return;
+ 301              		.loc 1 91 9 is_stmt 1 view .LVU102
+ 302 011e 2046     		mov	r0, r4
+ 303              	.LVL28:
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         return;
+ 304              		.loc 1 91 9 is_stmt 0 view .LVU103
+ 305 0120 FFF7FEFF 		bl	lv_mem_buf_release
+ 306              	.LVL29:
+  92:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+ 307              		.loc 1 92 9 is_stmt 1 view .LVU104
+ 308 0124 AEE0     		b	.L1
+ 309              	.LVL30:
+ 310              	.L14:
+ 311              		.loc 1 102 31 discriminator 2 view .LVU105
+ 312              		.loc 1 102 32 is_stmt 0 discriminator 2 view .LVU106
+ 313 0126 0133     		adds	r3, r3, #1
+ 314              	.LVL31:
+ 315              		.loc 1 102 32 discriminator 2 view .LVU107
+ 316 0128 9BB2     		uxth	r3, r3
+ 317              	.LVL32:
+ 318              	.L13:
+ 319              		.loc 1 102 16 is_stmt 1 discriminator 1 view .LVU108
+ 320              		.loc 1 102 5 is_stmt 0 discriminator 1 view .LVU109
+ 321 012a AB42     		cmp	r3, r5
+ 322 012c 07D2     		bcs	.L38
+ 103:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(p[i].y < y_min) {
+ 323              		.loc 1 103 9 is_stmt 1 view .LVU110
+ 324              		.loc 1 103 13 is_stmt 0 view .LVU111
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 9
+
+
+ 325 012e 04EBC302 		add	r2, r4, r3, lsl #3
+ 326              		.loc 1 103 16 view .LVU112
+ 327 0132 5268     		ldr	r2, [r2, #4]
+ 328              		.loc 1 103 11 view .LVU113
+ 329 0134 8A42     		cmp	r2, r1
+ 330 0136 F6DA     		bge	.L14
+ 104:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             y_min = p[i].y;
+ 331              		.loc 1 104 13 is_stmt 1 view .LVU114
+ 332              	.LVL33:
+ 105:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             y_min_i = i;
+ 333              		.loc 1 105 13 view .LVU115
+ 334              		.loc 1 105 21 is_stmt 0 view .LVU116
+ 335 0138 1EB2     		sxth	r6, r3
+ 336              	.LVL34:
+ 104:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             y_min = p[i].y;
+ 337              		.loc 1 104 19 view .LVU117
+ 338 013a 1146     		mov	r1, r2
+ 339 013c F3E7     		b	.L14
+ 340              	.LVL35:
+ 341              	.L38:
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     }
+ 108:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 109:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_draw_mask_line_param_t * mp = lv_mem_buf_get(sizeof(lv_draw_mask_line_param_t) * point_cnt);
+ 342              		.loc 1 109 5 is_stmt 1 view .LVU118
+ 343              		.loc 1 109 38 is_stmt 0 view .LVU119
+ 344 013e AA46     		mov	r10, r5
+ 345              		.loc 1 109 87 view .LVU120
+ 346 0140 C5EBC500 		rsb	r0, r5, r5, lsl #3
+ 347              	.LVL36:
+ 348              		.loc 1 109 38 view .LVU121
+ 349 0144 C000     		lsls	r0, r0, #3
+ 350 0146 FFF7FEFF 		bl	lv_mem_buf_get
+ 351              	.LVL37:
+ 352              		.loc 1 109 38 view .LVU122
+ 353 014a 0590     		str	r0, [sp, #20]
+ 354              	.LVL38:
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_draw_mask_line_param_t * mp_next = mp;
+ 355              		.loc 1 110 5 is_stmt 1 view .LVU123
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     int32_t i_prev_left = y_min_i;
+ 356              		.loc 1 112 5 view .LVU124
+ 357              		.loc 1 112 13 is_stmt 0 view .LVU125
+ 358 014c 3746     		mov	r7, r6
+ 359              	.LVL39:
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     int32_t i_prev_right = y_min_i;
+ 360              		.loc 1 113 5 is_stmt 1 view .LVU126
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     int32_t i_next_left;
+ 361              		.loc 1 114 5 view .LVU127
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     int32_t i_next_right;
+ 362              		.loc 1 115 5 view .LVU128
+ 116:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     uint32_t mask_cnt = 0;
+ 363              		.loc 1 116 5 view .LVU129
+ 117:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     /*Get the index of the left and right points*/
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     i_next_left = y_min_i - 1;
+ 364              		.loc 1 119 5 view .LVU130
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 10
+
+
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(i_next_left < 0) i_next_left = point_cnt + i_next_left;
+ 365              		.loc 1 120 5 view .LVU131
+ 366              		.loc 1 120 7 is_stmt 0 view .LVU132
+ 367 014e 721E     		subs	r2, r6, #1
+ 368              	.LVL40:
+ 369              		.loc 1 120 7 view .LVU133
+ 370 0150 25D4     		bmi	.L39
+ 371              	.L16:
+ 121:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     i_next_right = y_min_i + 1;
+ 372              		.loc 1 122 5 is_stmt 1 view .LVU134
+ 373              		.loc 1 122 18 is_stmt 0 view .LVU135
+ 374 0152 7B1C     		adds	r3, r7, #1
+ 375              	.LVL41:
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(i_next_right > point_cnt - 1) i_next_right = 0;
+ 376              		.loc 1 123 5 is_stmt 1 view .LVU136
+ 377              		.loc 1 123 21 is_stmt 0 view .LVU137
+ 378 0154 AB46     		mov	fp, r5
+ 379              		.loc 1 123 7 view .LVU138
+ 380 0156 9D42     		cmp	r5, r3
+ 381 0158 00DC     		bgt	.L17
+ 382              		.loc 1 123 51 view .LVU139
+ 383 015a 0023     		movs	r3, #0
+ 384              	.LVL42:
+ 385              	.L17:
+ 124:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     /**
+ 126:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      * Check if the order of points is inverted or not.
+ 127:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      * The normal case is when the left point is on `y_min_i - 1`
+ 128:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      * Explanation:
+ 129:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      *   if angle(p_left) < angle(p_right) -> inverted
+ 130:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      *   dy_left/dx_left < dy_right/dx_right
+ 131:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      *   dy_left * dx_right < dy_right * dx_left
+ 132:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****      */
+ 133:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_coord_t dxl = p[i_next_left].x - p[y_min_i].x;
+ 386              		.loc 1 133 5 is_stmt 1 view .LVU140
+ 387              		.loc 1 133 23 is_stmt 0 view .LVU141
+ 388 015c 04EBC200 		add	r0, r4, r2, lsl #3
+ 389              	.LVL43:
+ 390              		.loc 1 133 36 view .LVU142
+ 391 0160 54F83220 		ldr	r2, [r4, r2, lsl #3]
+ 392              	.LVL44:
+ 393              		.loc 1 133 42 view .LVU143
+ 394 0164 04EBC605 		add	r5, r4, r6, lsl #3
+ 395              	.LVL45:
+ 396              		.loc 1 133 51 view .LVU144
+ 397 0168 54F83610 		ldr	r1, [r4, r6, lsl #3]
+ 398              		.loc 1 133 16 view .LVU145
+ 399 016c 521A     		subs	r2, r2, r1
+ 400              	.LVL46:
+ 134:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_coord_t dxr = p[i_next_right].x - p[y_min_i].x;
+ 401              		.loc 1 134 5 is_stmt 1 view .LVU146
+ 402              		.loc 1 134 23 is_stmt 0 view .LVU147
+ 403 016e 04EBC306 		add	r6, r4, r3, lsl #3
+ 404              	.LVL47:
+ 405              		.loc 1 134 37 view .LVU148
+ 406 0172 54F83330 		ldr	r3, [r4, r3, lsl #3]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 11
+
+
+ 407              	.LVL48:
+ 408              		.loc 1 134 16 view .LVU149
+ 409 0176 591A     		subs	r1, r3, r1
+ 410              	.LVL49:
+ 135:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_coord_t dyl = p[i_next_left].y - p[y_min_i].y;
+ 411              		.loc 1 135 5 is_stmt 1 view .LVU150
+ 412              		.loc 1 135 36 is_stmt 0 view .LVU151
+ 413 0178 4068     		ldr	r0, [r0, #4]
+ 414              		.loc 1 135 51 view .LVU152
+ 415 017a 6D68     		ldr	r5, [r5, #4]
+ 416              		.loc 1 135 16 view .LVU153
+ 417 017c 401B     		subs	r0, r0, r5
+ 418              	.LVL50:
+ 136:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_coord_t dyr = p[i_next_right].y - p[y_min_i].y;
+ 419              		.loc 1 136 5 is_stmt 1 view .LVU154
+ 420              		.loc 1 136 37 is_stmt 0 view .LVU155
+ 421 017e 7368     		ldr	r3, [r6, #4]
+ 422              		.loc 1 136 16 view .LVU156
+ 423 0180 5B1B     		subs	r3, r3, r5
+ 424              	.LVL51:
+ 137:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     bool inv = false;
+ 425              		.loc 1 138 5 is_stmt 1 view .LVU157
+ 139:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(dyl * dxr < dyr * dxl) inv = true;
+ 426              		.loc 1 139 5 view .LVU158
+ 427              		.loc 1 139 12 is_stmt 0 view .LVU159
+ 428 0182 00FB01F1 		mul	r1, r0, r1
+ 429              	.LVL52:
+ 430              		.loc 1 139 24 view .LVU160
+ 431 0186 02FB03F3 		mul	r3, r2, r3
+ 432              	.LVL53:
+ 433              		.loc 1 139 7 view .LVU161
+ 434 018a 9942     		cmp	r1, r3
+ 435 018c 01DB     		blt	.L18
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(dyl * dxr < dyr * dxl) inv = true;
+ 436              		.loc 1 138 10 view .LVU162
+ 437 018e 0023     		movs	r3, #0
+ 438 0190 0393     		str	r3, [sp, #12]
+ 439              	.L18:
+ 440              	.LVL54:
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     if(dyl * dxr < dyr * dxl) inv = true;
+ 441              		.loc 1 138 10 view .LVU163
+ 442 0192 B946     		mov	r9, r7
+ 443 0194 059B     		ldr	r3, [sp, #20]
+ 444 0196 9E46     		mov	lr, r3
+ 445 0198 4FF00008 		mov	r8, #0
+ 446 019c 35E0     		b	.L28
+ 447              	.LVL55:
+ 448              	.L39:
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 449              		.loc 1 120 25 is_stmt 1 discriminator 1 view .LVU164
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 450              		.loc 1 120 37 is_stmt 0 discriminator 1 view .LVU165
+ 451 019e 2A44     		add	r2, r2, r5
+ 452              	.LVL56:
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 453              		.loc 1 120 37 discriminator 1 view .LVU166
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 12
+
+
+ 454 01a0 D7E7     		b	.L16
+ 455              	.LVL57:
+ 456              	.L43:
+ 140:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     do {
+ 142:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(!inv) {
+ 143:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_next_left = i_prev_left - 1;
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_left < 0) i_next_left = point_cnt + i_next_left;
+ 457              		.loc 1 144 33 is_stmt 1 discriminator 1 view .LVU167
+ 458              		.loc 1 144 45 is_stmt 0 discriminator 1 view .LVU168
+ 459 01a2 5D44     		add	r5, r5, fp
+ 460              	.LVL58:
+ 461              		.loc 1 144 45 discriminator 1 view .LVU169
+ 462 01a4 36E0     		b	.L20
+ 463              	.LVL59:
+ 464              	.L19:
+ 145:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 146:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_next_right = i_prev_right + 1;
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_right > point_cnt - 1) i_next_right = 0;
+ 148:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 149:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         else {
+ 150:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_next_left = i_prev_left + 1;
+ 465              		.loc 1 150 13 is_stmt 1 view .LVU170
+ 466              		.loc 1 150 25 is_stmt 0 view .LVU171
+ 467 01a6 7D1C     		adds	r5, r7, #1
+ 468              	.LVL60:
+ 151:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_left > point_cnt - 1) i_next_left = 0;
+ 469              		.loc 1 151 13 is_stmt 1 view .LVU172
+ 470              		.loc 1 151 15 is_stmt 0 view .LVU173
+ 471 01a8 AB45     		cmp	fp, r5
+ 472 01aa 00DC     		bgt	.L22
+ 473              		.loc 1 151 57 view .LVU174
+ 474 01ac 0025     		movs	r5, #0
+ 475              	.LVL61:
+ 476              	.L22:
+ 152:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 153:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_next_right = i_prev_right - 1;
+ 477              		.loc 1 153 13 is_stmt 1 view .LVU175
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_right < 0) i_next_right = point_cnt + i_next_right;
+ 478              		.loc 1 154 13 view .LVU176
+ 479              		.loc 1 154 15 is_stmt 0 view .LVU177
+ 480 01ae B9F10106 		subs	r6, r9, #1
+ 481              	.LVL62:
+ 482              		.loc 1 154 15 view .LVU178
+ 483 01b2 35D4     		bmi	.L40
+ 484              	.LVL63:
+ 485              	.L21:
+ 155:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 156:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 157:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(p[i_next_left].y >= p[i_prev_left].y) {
+ 486              		.loc 1 157 9 is_stmt 1 view .LVU179
+ 487              		.loc 1 157 13 is_stmt 0 view .LVU180
+ 488 01b4 4FEAC50C 		lsl	ip, r5, #3
+ 489 01b8 04EBC503 		add	r3, r4, r5, lsl #3
+ 490              		.loc 1 157 26 view .LVU181
+ 491 01bc 5868     		ldr	r0, [r3, #4]
+ 492              		.loc 1 157 33 view .LVU182
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 13
+
+
+ 493 01be F900     		lsls	r1, r7, #3
+ 494 01c0 04EBC703 		add	r3, r4, r7, lsl #3
+ 495              		.loc 1 157 46 view .LVU183
+ 496 01c4 5A68     		ldr	r2, [r3, #4]
+ 497              		.loc 1 157 11 view .LVU184
+ 498 01c6 9042     		cmp	r0, r2
+ 499 01c8 08DB     		blt	.L23
+ 158:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(p[i_next_left].y != p[i_prev_left].y &&
+ 500              		.loc 1 158 13 is_stmt 1 view .LVU185
+ 501              		.loc 1 158 15 is_stmt 0 view .LVU186
+ 502 01ca 04D0     		beq	.L24
+ 159:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                p[i_next_left].x != p[i_prev_left].x) {
+ 503              		.loc 1 159 30 discriminator 1 view .LVU187
+ 504 01cc 54F80C30 		ldr	r3, [r4, ip]
+ 505              		.loc 1 159 50 discriminator 1 view .LVU188
+ 506 01d0 6158     		ldr	r1, [r4, r1]
+ 158:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(p[i_next_left].y != p[i_prev_left].y &&
+ 507              		.loc 1 158 53 discriminator 1 view .LVU189
+ 508 01d2 8B42     		cmp	r3, r1
+ 509 01d4 26D1     		bne	.L41
+ 510              	.LVL64:
+ 511              	.L24:
+ 160:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 lv_draw_mask_line_points_init(mp_next, p[i_prev_left].x, p[i_prev_left].y,
+ 161:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               p[i_next_left].x, p[i_next_left].y,
+ 162:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               LV_DRAW_MASK_LINE_SIDE_RIGHT);
+ 163:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 lv_draw_mask_add(mp_next, mp);
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 mp_next++;
+ 165:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 166:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             mask_cnt++;
+ 512              		.loc 1 166 13 is_stmt 1 view .LVU190
+ 513              		.loc 1 166 21 is_stmt 0 view .LVU191
+ 514 01d6 08F10108 		add	r8, r8, #1
+ 515              	.LVL65:
+ 167:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_prev_left = i_next_left;
+ 516              		.loc 1 167 13 is_stmt 1 view .LVU192
+ 517              		.loc 1 167 25 is_stmt 0 view .LVU193
+ 518 01da 2F46     		mov	r7, r5
+ 519              	.LVL66:
+ 520              	.L23:
+ 168:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 169:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 170:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(mask_cnt == point_cnt) break;
+ 521              		.loc 1 170 9 is_stmt 1 view .LVU194
+ 522              		.loc 1 170 11 is_stmt 0 view .LVU195
+ 523 01dc C245     		cmp	r10, r8
+ 524 01de 3FD0     		beq	.L25
+ 171:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 172:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(p[i_next_right].y >= p[i_prev_right].y) {
+ 525              		.loc 1 172 9 is_stmt 1 view .LVU196
+ 526              		.loc 1 172 13 is_stmt 0 view .LVU197
+ 527 01e0 F500     		lsls	r5, r6, #3
+ 528              	.LVL67:
+ 529              		.loc 1 172 13 view .LVU198
+ 530 01e2 04EBC603 		add	r3, r4, r6, lsl #3
+ 531              		.loc 1 172 27 view .LVU199
+ 532 01e6 5868     		ldr	r0, [r3, #4]
+ 533              		.loc 1 172 34 view .LVU200
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 14
+
+
+ 534 01e8 4FEAC901 		lsl	r1, r9, #3
+ 535 01ec 04EBC903 		add	r3, r4, r9, lsl #3
+ 536              		.loc 1 172 48 view .LVU201
+ 537 01f0 5A68     		ldr	r2, [r3, #4]
+ 538              		.loc 1 172 11 view .LVU202
+ 539 01f2 9042     		cmp	r0, r2
+ 540 01f4 07DB     		blt	.L26
+ 173:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(p[i_next_right].y != p[i_prev_right].y &&
+ 541              		.loc 1 173 13 is_stmt 1 view .LVU203
+ 542              		.loc 1 173 15 is_stmt 0 view .LVU204
+ 543 01f6 03D0     		beq	.L27
+ 174:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                p[i_next_right].x != p[i_prev_right].x) {
+ 544              		.loc 1 174 31 discriminator 1 view .LVU205
+ 545 01f8 6359     		ldr	r3, [r4, r5]
+ 546              		.loc 1 174 52 discriminator 1 view .LVU206
+ 547 01fa 6158     		ldr	r1, [r4, r1]
+ 173:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(p[i_next_right].y != p[i_prev_right].y &&
+ 548              		.loc 1 173 55 discriminator 1 view .LVU207
+ 549 01fc 8B42     		cmp	r3, r1
+ 550 01fe 20D1     		bne	.L42
+ 551              	.L27:
+ 175:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 176:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 lv_draw_mask_line_points_init(mp_next, p[i_prev_right].x, p[i_prev_right].y,
+ 177:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               p[i_next_right].x, p[i_next_right].y,
+ 178:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               LV_DRAW_MASK_LINE_SIDE_LEFT);
+ 179:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 lv_draw_mask_add(mp_next, mp);
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 mp_next++;
+ 181:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 182:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             mask_cnt++;
+ 552              		.loc 1 182 13 is_stmt 1 view .LVU208
+ 553              		.loc 1 182 21 is_stmt 0 view .LVU209
+ 554 0200 08F10108 		add	r8, r8, #1
+ 555              	.LVL68:
+ 183:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_prev_right = i_next_right;
+ 556              		.loc 1 183 13 is_stmt 1 view .LVU210
+ 557              		.loc 1 183 26 is_stmt 0 view .LVU211
+ 558 0204 B146     		mov	r9, r6
+ 559              	.LVL69:
+ 560              	.L26:
+ 184:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 185:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 186:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     } while(mask_cnt < point_cnt);
+ 561              		.loc 1 186 12 is_stmt 1 view .LVU212
+ 562              		.loc 1 186 5 is_stmt 0 view .LVU213
+ 563 0206 C245     		cmp	r10, r8
+ 564 0208 2AD9     		bls	.L25
+ 565              	.LVL70:
+ 566              	.L28:
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         if(!inv) {
+ 567              		.loc 1 141 5 is_stmt 1 view .LVU214
+ 142:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_next_left = i_prev_left - 1;
+ 568              		.loc 1 142 9 view .LVU215
+ 142:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             i_next_left = i_prev_left - 1;
+ 569              		.loc 1 142 11 is_stmt 0 view .LVU216
+ 570 020a 039B     		ldr	r3, [sp, #12]
+ 571 020c 002B     		cmp	r3, #0
+ 572 020e CAD1     		bne	.L19
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 15
+
+
+ 143:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_left < 0) i_next_left = point_cnt + i_next_left;
+ 573              		.loc 1 143 13 is_stmt 1 view .LVU217
+ 574              	.LVL71:
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 575              		.loc 1 144 13 view .LVU218
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 576              		.loc 1 144 15 is_stmt 0 view .LVU219
+ 577 0210 7D1E     		subs	r5, r7, #1
+ 578              	.LVL72:
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 579              		.loc 1 144 15 view .LVU220
+ 580 0212 C6D4     		bmi	.L43
+ 581              	.L20:
+ 146:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_right > point_cnt - 1) i_next_right = 0;
+ 582              		.loc 1 146 13 is_stmt 1 view .LVU221
+ 146:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             if(i_next_right > point_cnt - 1) i_next_right = 0;
+ 583              		.loc 1 146 26 is_stmt 0 view .LVU222
+ 584 0214 09F10106 		add	r6, r9, #1
+ 585              	.LVL73:
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 586              		.loc 1 147 13 is_stmt 1 view .LVU223
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 587              		.loc 1 147 15 is_stmt 0 view .LVU224
+ 588 0218 B345     		cmp	fp, r6
+ 589 021a CBDC     		bgt	.L21
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 590              		.loc 1 147 59 view .LVU225
+ 591 021c 0026     		movs	r6, #0
+ 592              	.LVL74:
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 593              		.loc 1 147 59 view .LVU226
+ 594 021e C9E7     		b	.L21
+ 595              	.LVL75:
+ 596              	.L40:
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 597              		.loc 1 154 34 is_stmt 1 discriminator 1 view .LVU227
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 598              		.loc 1 154 47 is_stmt 0 discriminator 1 view .LVU228
+ 599 0220 5E44     		add	r6, r6, fp
+ 600              	.LVL76:
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****         }
+ 601              		.loc 1 154 47 discriminator 1 view .LVU229
+ 602 0222 C7E7     		b	.L21
+ 603              	.L41:
+ 160:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               p[i_next_left].x, p[i_next_left].y,
+ 604              		.loc 1 160 17 is_stmt 1 view .LVU230
+ 605 0224 0127     		movs	r7, #1
+ 606              	.LVL77:
+ 160:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               p[i_next_left].x, p[i_next_left].y,
+ 607              		.loc 1 160 17 is_stmt 0 view .LVU231
+ 608 0226 0197     		str	r7, [sp, #4]
+ 609 0228 0090     		str	r0, [sp]
+ 610 022a 7746     		mov	r7, lr
+ 611 022c 7046     		mov	r0, lr
+ 612 022e FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 613              	.LVL78:
+ 163:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 mp_next++;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 16
+
+
+ 614              		.loc 1 163 17 is_stmt 1 view .LVU232
+ 615 0232 0599     		ldr	r1, [sp, #20]
+ 616 0234 3846     		mov	r0, r7
+ 617 0236 FFF7FEFF 		bl	lv_draw_mask_add
+ 618              	.LVL79:
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 619              		.loc 1 164 17 view .LVU233
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 620              		.loc 1 164 24 is_stmt 0 view .LVU234
+ 621 023a 3B46     		mov	r3, r7
+ 622 023c 3833     		adds	r3, r3, #56
+ 623 023e 9E46     		mov	lr, r3
+ 624              	.LVL80:
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 625              		.loc 1 164 24 view .LVU235
+ 626 0240 C9E7     		b	.L24
+ 627              	.LVL81:
+ 628              	.L42:
+ 176:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                                               p[i_next_right].x, p[i_next_right].y,
+ 629              		.loc 1 176 17 is_stmt 1 view .LVU236
+ 630 0242 0025     		movs	r5, #0
+ 631 0244 0195     		str	r5, [sp, #4]
+ 632 0246 0090     		str	r0, [sp]
+ 633 0248 7546     		mov	r5, lr
+ 634 024a 7046     		mov	r0, lr
+ 635 024c FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 636              	.LVL82:
+ 179:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****                 mp_next++;
+ 637              		.loc 1 179 17 view .LVU237
+ 638 0250 0599     		ldr	r1, [sp, #20]
+ 639 0252 2846     		mov	r0, r5
+ 640 0254 FFF7FEFF 		bl	lv_draw_mask_add
+ 641              	.LVL83:
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 642              		.loc 1 180 17 view .LVU238
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 643              		.loc 1 180 24 is_stmt 0 view .LVU239
+ 644 0258 2B46     		mov	r3, r5
+ 645 025a 3833     		adds	r3, r3, #56
+ 646 025c 9E46     		mov	lr, r3
+ 647              	.LVL84:
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****             }
+ 648              		.loc 1 180 24 view .LVU240
+ 649 025e CFE7     		b	.L27
+ 650              	.LVL85:
+ 651              	.L25:
+ 187:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 188:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_draw_rect(draw_ctx, draw_dsc, &poly_coords);
+ 652              		.loc 1 188 5 is_stmt 1 view .LVU241
+ 653 0260 0CAA     		add	r2, sp, #48
+ 654 0262 0699     		ldr	r1, [sp, #24]
+ 655 0264 049E     		ldr	r6, [sp, #16]
+ 656              	.LVL86:
+ 657              		.loc 1 188 5 is_stmt 0 view .LVU242
+ 658 0266 3046     		mov	r0, r6
+ 659 0268 FFF7FEFF 		bl	lv_draw_rect
+ 660              	.LVL87:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 17
+
+
+ 189:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 190:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_draw_mask_remove_custom(mp);
+ 661              		.loc 1 190 5 is_stmt 1 view .LVU243
+ 662 026c 059D     		ldr	r5, [sp, #20]
+ 663 026e 2846     		mov	r0, r5
+ 664 0270 FFF7FEFF 		bl	lv_draw_mask_remove_custom
+ 665              	.LVL88:
+ 191:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 192:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_mem_buf_release(mp);
+ 666              		.loc 1 192 5 view .LVU244
+ 667 0274 2846     		mov	r0, r5
+ 668 0276 FFF7FEFF 		bl	lv_mem_buf_release
+ 669              	.LVL89:
+ 193:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     lv_mem_buf_release(p);
+ 670              		.loc 1 193 5 view .LVU245
+ 671 027a 2046     		mov	r0, r4
+ 672 027c FFF7FEFF 		bl	lv_mem_buf_release
+ 673              	.LVL90:
+ 194:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** 
+ 195:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     draw_ctx->clip_area = clip_area_ori;
+ 674              		.loc 1 195 5 view .LVU246
+ 675              		.loc 1 195 25 is_stmt 0 view .LVU247
+ 676 0280 079A     		ldr	r2, [sp, #28]
+ 677 0282 B260     		str	r2, [r6, #8]
+ 678              	.LVL91:
+ 679              	.L1:
+ 196:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #else
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     LV_UNUSED(points);
+ 198:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     LV_UNUSED(point_cnt);
+ 199:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     LV_UNUSED(draw_ctx);
+ 200:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     LV_UNUSED(draw_dsc);
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c ****     LV_LOG_WARN("Can't draw polygon with LV_DRAW_COMPLEX == 0");
+ 202:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** #endif /*LV_DRAW_COMPLEX*/
+ 203:Middlewares/LVGL/GUI/lvgl/src/draw/sw/lv_draw_sw_polygon.c **** }
+ 680              		.loc 1 203 1 view .LVU248
+ 681 0284 11B0     		add	sp, sp, #68
+ 682              	.LCFI2:
+ 683              		.cfi_def_cfa_offset 36
+ 684              		@ sp needed
+ 685 0286 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 686              	.LVL92:
+ 687              	.L45:
+ 688              		.loc 1 203 1 view .LVU249
+ 689 028a 00BF     		.align	2
+ 690              	.L44:
+ 691 028c 00000000 		.word	.LANCHOR0
+ 692              		.cfi_endproc
+ 693              	.LFE53:
+ 695              		.section	.rodata
+ 696              		.align	2
+ 697              		.set	.LANCHOR0,. + 0
+ 698              	.LC0:
+ 699 0000 FFFFFF1F 		.word	536870911
+ 700 0004 FFFFFF1F 		.word	536870911
+ 701 0008 010000E0 		.word	-536870911
+ 702 000c 010000E0 		.word	-536870911
+ 703              		.text
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 18
+
+
+ 704              	.Letext0:
+ 705              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 706              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 707              		.file 4 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_types.h"
+ 708              		.file 5 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_color.h"
+ 709              		.file 6 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_area.h"
+ 710              		.file 7 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/../font/lv_font.h"
+ 711              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_txt.h"
+ 712              		.file 9 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_bidi.h"
+ 713              		.file 10 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_style.h"
+ 714              		.file 11 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw_mask.h"
+ 715              		.file 12 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_img_buf.h"
+ 716              		.file 13 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw_rect.h"
+ 717              		.file 14 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw_label.h"
+ 718              		.file 15 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw_img.h"
+ 719              		.file 16 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw_line.h"
+ 720              		.file 17 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw_arc.h"
+ 721              		.file 18 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../lv_draw.h"
+ 722              		.file 19 "Middlewares/LVGL/GUI/lvgl/src/draw/sw/../../misc/lv_mem.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_draw_sw_polygon.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s:20     .text.lv_draw_sw_polygon:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s:26     .text.lv_draw_sw_polygon:00000000 lv_draw_sw_polygon
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s:691    .text.lv_draw_sw_polygon:0000028c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLremkg.s:696    .rodata:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_mem_buf_get
+lv_mem_buf_release
+_lv_area_intersect
+lv_draw_mask_line_points_init
+lv_draw_mask_add
+lv_draw_rect
+lv_draw_mask_remove_custom

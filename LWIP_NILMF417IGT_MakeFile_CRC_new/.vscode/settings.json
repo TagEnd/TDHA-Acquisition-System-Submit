@@ -1,0 +1,47 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "e:\\Code\\stm32\\Research\\CollectDeviceV2\\NILMF417IGT_MakeFile\\build",
+            "binaryPath": "e:\\Code\\stm32\\Research\\CollectDeviceV2\\NILMF417IGT_MakeFile\\build\\NILMF417IGT.elf",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "*.js": "javascript",
+        "math.h": "c",
+        "usart.h": "c",
+        "main.h": "c",
+        "stdio.h": "c",
+        "ad7606.h": "c",
+        "freertos.h": "c",
+        "fatfs.h": "c",
+        "fft_math.h": "c",
+        "ff_gen_drv.h": "c",
+        "lcd.h": "c",
+        "lcd_init.h": "c",
+        "lv_port_disp_template.h": "c",
+        "lv_color.h": "c",
+        "lv_port_indev_template.h": "c",
+        "lvgl.h": "c",
+        "arm_math.h": "c",
+        "arm_common_tables.h": "c",
+        "arm_const_structs.h": "c",
+        "cstdint": "c",
+        "string.h": "c",
+        "lwip.h": "c",
+        "ieeefp.h": "c",
+        "tim.h": "c",
+        "memory_resource": "c",
+        "memory": "c",
+        "type_traits": "c",
+        "typeinfo": "c",
+        "functional": "c",
+        "memp_std.h": "c",
+        "screengui.h": "c",
+        "ethernetif.h": "c",
+        "rtc.h": "c",
+        "crc.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled",
+    "cortex-debug.variableUseNaturalFormat": true
+}

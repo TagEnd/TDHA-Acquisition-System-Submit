@@ -1,0 +1,952 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_draw_line.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_draw_line_dsc_init,"ax",%progbits
+  20              		.align	1
+  21              		.global	lv_draw_line_dsc_init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lv_draw_line_dsc_init:
+  27              	.LVL0:
+  28              	.LFB153:
+  29              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  * @file lv_draw_line.c
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** #include <stdbool.h>
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** #include "../core/lv_refr.h"
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** #include "../misc/lv_math.h"
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *      DEFINES
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /**********************
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *      TYPEDEFS
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  **********************/
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /**********************
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *  STATIC PROTOTYPES
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  **********************/
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /**********************
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *  STATIC VARIABLES
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  **********************/
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /**********************
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 2
+
+
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *      MACROS
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  **********************/
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** /**********************
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  *   GLOBAL FUNCTIONS
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****  **********************/
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** LV_ATTRIBUTE_FAST_MEM void lv_draw_line_dsc_init(lv_draw_line_dsc_t * dsc)
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** {
+  30              		.loc 1 38 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 38 1 is_stmt 0 view .LVU1
+  35 0000 10B5     		push	{r4, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 4, -8
+  39              		.cfi_offset 14, -4
+  40 0002 0446     		mov	r4, r0
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     lv_memset_00(dsc, sizeof(lv_draw_line_dsc_t));
+  41              		.loc 1 39 5 is_stmt 1 view .LVU2
+  42 0004 1421     		movs	r1, #20
+  43 0006 FFF7FEFF 		bl	lv_memset_00
+  44              	.LVL1:
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     dsc->width = 1;
+  45              		.loc 1 40 5 view .LVU3
+  46              		.loc 1 40 16 is_stmt 0 view .LVU4
+  47 000a 0123     		movs	r3, #1
+  48 000c 6360     		str	r3, [r4, #4]
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     dsc->opa = LV_OPA_COVER;
+  49              		.loc 1 41 5 is_stmt 1 view .LVU5
+  50              		.loc 1 41 14 is_stmt 0 view .LVU6
+  51 000e FF23     		movs	r3, #255
+  52 0010 2374     		strb	r3, [r4, #16]
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     dsc->color = lv_color_black();
+  53              		.loc 1 42 5 is_stmt 1 view .LVU7
+  54              	.LBB8:
+  55              	.LBI8:
+  56              		.file 2 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h"
+   1:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @file lv_color.h
+   3:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #ifndef LV_COLOR_H
+   7:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_H
+   8:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+   9:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #ifdef __cplusplus
+  10:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** extern "C" {
+  11:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  12:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *      INCLUDES
+  15:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #include "../lv_conf_internal.h"
+  17:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #include "lv_assert.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 3
+
+
+  18:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #include "lv_math.h"
+  19:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #include "lv_types.h"
+  20:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  21:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*Error checking*/
+  22:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 24
+  23:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #error "LV_COLOR_DEPTH 24 is deprecated. Use LV_COLOR_DEPTH 32 instead (lv_conf.h)"
+  24:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  25:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  26:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 32 && LV_COLOR_SCREEN_TRANSP != 0
+  27:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #error "LV_COLOR_SCREEN_TRANSP requires LV_COLOR_DEPTH == 32. Set it in lv_conf.h"
+  28:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  29:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  30:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 16 && LV_COLOR_16_SWAP != 0
+  31:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #error "LV_COLOR_16_SWAP requires LV_COLOR_DEPTH == 16. Set it in lv_conf.h"
+  32:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  33:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  34:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #include <stdint.h>
+  35:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  36:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*********************
+  37:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *      DEFINES
+  38:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *********************/
+  39:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_EXPORT_CONST_INT(LV_COLOR_DEPTH);
+  40:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_EXPORT_CONST_INT(LV_COLOR_16_SWAP);
+  41:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  42:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Opacity percentages.
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** enum {
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_TRANSP = 0,
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_0      = 0,
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_10     = 25,
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_20     = 51,
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_30     = 76,
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_40     = 102,
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_50     = 127,
+  53:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_60     = 153,
+  54:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_70     = 178,
+  55:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_80     = 204,
+  56:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_90     = 229,
+  57:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_100    = 255,
+  58:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_OPA_COVER  = 255,
+  59:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** };
+  60:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  61:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_OPA_MIN 2    /*Opacities below this will be transparent*/
+  62:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_OPA_MAX 253  /*Opacities above this will fully cover*/
+  63:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  64:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+  65:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SIZE 8
+  66:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+  67:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SIZE 8
+  68:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+  69:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SIZE 16
+  70:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+  71:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SIZE 32
+  72:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+  73:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #error "Invalid LV_COLOR_DEPTH in lv_conf.h! Set it to 1, 8, 16 or 32!"
+  74:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 4
+
+
+  75:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  76:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if defined(__cplusplus) && !defined(_LV_COLOR_HAS_MODERN_CPP)
+  77:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+  78:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** * MSVC compiler's definition of the __cplusplus indicating 199711L regardless to C++ standard versi
+  79:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** * see https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-cplusplus
+  80:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** * so we use _MSC_VER macro instead of __cplusplus
+  81:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** */
+  82:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #ifdef _MSC_VER
+  83:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if _MSC_VER >= 1900 /*Visual Studio 2015*/
+  84:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 1
+  85:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  86:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+  87:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if __cplusplus >= 201103L
+  88:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 1
+  89:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  90:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  91:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif /*__cplusplus*/
+  92:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  93:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #ifndef _LV_COLOR_HAS_MODERN_CPP
+  94:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 0
+  95:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+  96:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+  97:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if _LV_COLOR_HAS_MODERN_CPP
+  98:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*Fix msvc compiler error C4576 inside C++ code*/
+  99:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define _LV_COLOR_MAKE_TYPE_HELPER lv_color_t
+ 100:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 101:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define _LV_COLOR_MAKE_TYPE_HELPER (lv_color_t)
+ 102:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 103:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 104:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*---------------------------------------
+ 105:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Macros for all existing color depths
+ 106:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * to set/get values of the color channels
+ 107:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *------------------------------------------*/
+ 108:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_R1(c, v) (c).ch.red = (uint8_t)((v) & 0x1)
+ 109:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_G1(c, v) (c).ch.green = (uint8_t)((v) & 0x1)
+ 110:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_B1(c, v) (c).ch.blue = (uint8_t)((v) & 0x1)
+ 111:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_A1(c, v) do {} while(0)
+ 112:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 113:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_R1(c) (c).ch.red
+ 114:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_G1(c) (c).ch.green
+ 115:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_B1(c) (c).ch.blue
+ 116:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_A1(c) 0xFF
+ 117:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER1 {0x00}
+ 119:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_MAKE1(r8, g8, b8)  {(uint8_t)((b8 >> 7) | (g8 >> 7) | (r8 >> 7))}
+ 120:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 121:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_R8(c, v) (c).ch.red = (uint8_t)((v) & 0x7U)
+ 122:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_G8(c, v) (c).ch.green = (uint8_t)((v) & 0x7U)
+ 123:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_B8(c, v) (c).ch.blue = (uint8_t)((v) & 0x3U)
+ 124:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_A8(c, v) do {} while(0)
+ 125:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 126:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_R8(c) (c).ch.red
+ 127:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_G8(c) (c).ch.green
+ 128:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_B8(c) (c).ch.blue
+ 129:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_A8(c) 0xFF
+ 130:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 131:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER8 {{0x00, 0x00, 0x00}}
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 5
+
+
+ 132:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_MAKE8(r8, g8, b8) {{(uint8_t)((b8 >> 6) & 0x3U), (uint8_t)((g8 >> 5) & 0x7U), (ui
+ 133:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 134:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_R16(c, v) (c).ch.red = (uint8_t)((v) & 0x1FU)
+ 135:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 136:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_G16(c, v) (c).ch.green = (uint8_t)((v) & 0x3FU)
+ 137:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 138:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_G16(c, v) {(c).ch.green_h = (uint8_t)(((v) >> 3) & 0x7); (c).ch.green_l = (ui
+ 139:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 140:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_B16(c, v) (c).ch.blue = (uint8_t)((v) & 0x1FU)
+ 141:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_A16(c, v) do {} while(0)
+ 142:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 143:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_R16(c) (c).ch.red
+ 144:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 145:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_G16(c) (c).ch.green
+ 146:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 147:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_G16(c) (((c).ch.green_h << 3) + (c).ch.green_l)
+ 148:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 149:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_B16(c) (c).ch.blue
+ 150:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_A16(c) 0xFF
+ 151:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 152:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 153:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER16  {{0x00, 0x00, 0x00}}
+ 154:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_MAKE16(r8, g8, b8) {{(uint8_t)((b8 >> 3) & 0x1FU), (uint8_t)((g8 >> 2) & 0x3FU), 
+ 155:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 156:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER16 {{0x00, 0x00, 0x00, 0x00}}
+ 157:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_MAKE16(r8, g8, b8) {{(uint8_t)((g8 >> 5) & 0x7U), (uint8_t)((r8 >> 3) & 0x1FU), (
+ 158:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 159:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 160:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_R32(c, v) (c).ch.red = (uint8_t)((v) & 0xFF)
+ 161:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_G32(c, v) (c).ch.green = (uint8_t)((v) & 0xFF)
+ 162:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_B32(c, v) (c).ch.blue = (uint8_t)((v) & 0xFF)
+ 163:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_SET_A32(c, v) (c).ch.alpha = (uint8_t)((v) & 0xFF)
+ 164:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 165:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_R32(c) (c).ch.red
+ 166:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_G32(c) (c).ch.green
+ 167:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_B32(c) (c).ch.blue
+ 168:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_GET_A32(c) (c).ch.alpha
+ 169:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 170:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define _LV_COLOR_ZERO_INITIALIZER32  {{0x00, 0x00, 0x00, 0x00}}
+ 171:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** # define LV_COLOR_MAKE32(r8, g8, b8) {{b8, g8, r8, 0xff}} /*Fix 0xff alpha*/
+ 172:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 173:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*---------------------------------------
+ 174:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Macros for the current color depth
+ 175:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * to set/get values of the color channels
+ 176:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *------------------------------------------*/
+ 177:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SET_R(c, v) LV_CONCAT(LV_COLOR_SET_R, LV_COLOR_DEPTH)(c, v)
+ 178:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SET_G(c, v) LV_CONCAT(LV_COLOR_SET_G, LV_COLOR_DEPTH)(c, v)
+ 179:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SET_B(c, v) LV_CONCAT(LV_COLOR_SET_B, LV_COLOR_DEPTH)(c, v)
+ 180:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_SET_A(c, v) LV_CONCAT(LV_COLOR_SET_A, LV_COLOR_DEPTH)(c, v)
+ 181:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 182:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_GET_R(c) LV_CONCAT(LV_COLOR_GET_R, LV_COLOR_DEPTH)(c)
+ 183:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_GET_G(c) LV_CONCAT(LV_COLOR_GET_G, LV_COLOR_DEPTH)(c)
+ 184:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_GET_B(c) LV_CONCAT(LV_COLOR_GET_B, LV_COLOR_DEPTH)(c)
+ 185:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_GET_A(c) LV_CONCAT(LV_COLOR_GET_A, LV_COLOR_DEPTH)(c)
+ 186:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 187:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define _LV_COLOR_ZERO_INITIALIZER LV_CONCAT(_LV_COLOR_ZERO_INITIALIZER, LV_COLOR_DEPTH)
+ 188:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #define LV_COLOR_MAKE(r8, g8, b8) LV_CONCAT(LV_COLOR_MAKE, LV_COLOR_DEPTH)(r8, g8, b8)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 6
+
+
+ 189:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 190:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**********************
+ 191:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *      TYPEDEFS
+ 192:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  **********************/
+ 193:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 194:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef union {
+ 195:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint8_t full; /*must be declared first to set all bits of byte via initializer list*/
+ 196:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     union {
+ 197:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t blue : 1;
+ 198:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t green : 1;
+ 199:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t red : 1;
+ 200:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     } ch;
+ 201:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_color1_t;
+ 202:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 203:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef union {
+ 204:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     struct {
+ 205:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t blue : 2;
+ 206:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t green : 3;
+ 207:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t red : 3;
+ 208:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     } ch;
+ 209:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint8_t full;
+ 210:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_color8_t;
+ 211:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 212:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef union {
+ 213:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     struct {
+ 214:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 215:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t blue : 5;
+ 216:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t green : 6;
+ 217:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t red : 5;
+ 218:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 219:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t green_h : 3;
+ 220:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t red : 5;
+ 221:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t blue : 5;
+ 222:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint16_t green_l : 3;
+ 223:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 224:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     } ch;
+ 225:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint16_t full;
+ 226:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_color16_t;
+ 227:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 228:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef union {
+ 229:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     struct {
+ 230:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t blue;
+ 231:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t green;
+ 232:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t red;
+ 233:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         uint8_t alpha;
+ 234:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     } ch;
+ 235:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint32_t full;
+ 236:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_color32_t;
+ 237:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 238:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef LV_CONCAT3(uint, LV_COLOR_SIZE, _t) lv_color_int_t;
+ 239:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef LV_CONCAT3(lv_color, LV_COLOR_DEPTH, _t) lv_color_t;
+ 240:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 241:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef struct {
+ 242:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint16_t h;
+ 243:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint8_t s;
+ 244:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint8_t v;
+ 245:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_color_hsv_t;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 7
+
+
+ 246:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 247:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //! @cond Doxygen_Suppress
+ 248:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*No idea where the guard is required but else throws warnings in the docs*/
+ 249:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef uint8_t lv_opa_t;
+ 250:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //! @endcond
+ 251:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 252:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** struct _lv_color_filter_dsc_t;
+ 253:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 254:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef lv_color_t (*lv_color_filter_cb_t)(const struct _lv_color_filter_dsc_t *, lv_color_t, lv_op
+ 255:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 256:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef struct _lv_color_filter_dsc_t {
+ 257:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color_filter_cb_t filter_cb;
+ 258:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     void * user_data;
+ 259:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_color_filter_dsc_t;
+ 260:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 261:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 262:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** typedef enum {
+ 263:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_RED,
+ 264:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_PINK,
+ 265:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_PURPLE,
+ 266:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_DEEP_PURPLE,
+ 267:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_INDIGO,
+ 268:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_BLUE,
+ 269:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_LIGHT_BLUE,
+ 270:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_CYAN,
+ 271:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_TEAL,
+ 272:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_GREEN,
+ 273:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_LIGHT_GREEN,
+ 274:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_LIME,
+ 275:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_YELLOW,
+ 276:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_AMBER,
+ 277:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_ORANGE,
+ 278:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_DEEP_ORANGE,
+ 279:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_BROWN,
+ 280:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_BLUE_GREY,
+ 281:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_GREY,
+ 282:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     _LV_PALETTE_LAST,
+ 283:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_PALETTE_NONE = 0xff,
+ 284:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** } lv_palette_t;
+ 285:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 286:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**********************
+ 287:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * GLOBAL PROTOTYPES
+ 288:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  **********************/
+ 289:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 290:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*In color conversations:
+ 291:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * - When converting to bigger color type the LSB weight of 1 LSB is calculated
+ 292:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *   E.g. 16 bit Red has 5 bits
+ 293:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *         8 bit Red has 3 bits
+ 294:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *        ----------------------
+ 295:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *        8 bit red LSB = (2^5 - 1) / (2^3 - 1) = 31 / 7 = 4
+ 296:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *
+ 297:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * - When calculating to smaller color type simply shift out the LSBs
+ 298:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *   E.g.  8 bit Red has 3 bits
+ 299:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *        16 bit Red has 5 bits
+ 300:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *        ----------------------
+ 301:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *         Shift right with 5 - 3 = 2
+ 302:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 8
+
+
+ 303:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline uint8_t lv_color_to1(lv_color_t color)
+ 304:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 305:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 306:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return color.full;
+ 307:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 308:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x4) || (LV_COLOR_GET_G(color) & 0x4) || (LV_COLOR_GET_B(color) & 0
+ 309:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 1;
+ 310:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 311:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else {
+ 312:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0;
+ 313:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 314:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 315:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x10) || (LV_COLOR_GET_G(color) & 0x20) || (LV_COLOR_GET_B(color) &
+ 316:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 1;
+ 317:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 318:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else {
+ 319:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0;
+ 320:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 321:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 322:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x80) || (LV_COLOR_GET_G(color) & 0x80) || (LV_COLOR_GET_B(color) &
+ 323:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 1;
+ 324:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 325:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else {
+ 326:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0;
+ 327:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 328:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 329:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 330:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 331:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline uint8_t lv_color_to8(lv_color_t color)
+ 332:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 333:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 334:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if(color.full == 0)
+ 335:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0;
+ 336:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else
+ 337:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0xFF;
+ 338:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 339:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return color.full;
+ 340:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 341:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color8_t ret;
+ 342:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R8(ret, LV_COLOR_GET_R(color) >> 2); /*5 - 3  = 2*/
+ 343:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G8(ret, LV_COLOR_GET_G(color) >> 3); /*6 - 3  = 3*/
+ 344:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B8(ret, LV_COLOR_GET_B(color) >> 3); /*5 - 2  = 3*/
+ 345:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret.full;
+ 346:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 347:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color8_t ret;
+ 348:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R8(ret, LV_COLOR_GET_R(color) >> 5); /*8 - 3  = 5*/
+ 349:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G8(ret, LV_COLOR_GET_G(color) >> 5); /*8 - 3  = 5*/
+ 350:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B8(ret, LV_COLOR_GET_B(color) >> 6); /*8 - 2  = 6*/
+ 351:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret.full;
+ 352:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 353:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 354:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 355:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline uint16_t lv_color_to16(lv_color_t color)
+ 356:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 357:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 358:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if(color.full == 0)
+ 359:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 9
+
+
+ 360:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else
+ 361:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0xFFFF;
+ 362:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 363:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color16_t ret;
+ 364:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R16(ret, LV_COLOR_GET_R(color) * 4);  /*(2^5 - 1)/(2^3 - 1) = 31/7 = 4*/
+ 365:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G16(ret, LV_COLOR_GET_G(color) * 9);  /*(2^6 - 1)/(2^3 - 1) = 63/7 = 9*/
+ 366:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B16(ret, LV_COLOR_GET_B(color) * 10); /*(2^5 - 1)/(2^2 - 1) = 31/3 = 10*/
+ 367:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret.full;
+ 368:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 369:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return color.full;
+ 370:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 371:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color16_t ret;
+ 372:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R16(ret, LV_COLOR_GET_R(color) >> 3); /*8 - 5  = 3*/
+ 373:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G16(ret, LV_COLOR_GET_G(color) >> 2); /*8 - 6  = 2*/
+ 374:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B16(ret, LV_COLOR_GET_B(color) >> 3); /*8 - 5  = 3*/
+ 375:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret.full;
+ 376:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 377:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 378:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 379:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline uint32_t lv_color_to32(lv_color_t color)
+ 380:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 381:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 1
+ 382:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if(color.full == 0)
+ 383:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0xFF000000;
+ 384:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else
+ 385:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         return 0xFFFFFFFF;
+ 386:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
+ 387:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color32_t ret;
+ 388:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R32(ret, LV_COLOR_GET_R(color) * 36); /*(2^8 - 1)/(2^3 - 1) = 255/7 = 36*/
+ 389:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G32(ret, LV_COLOR_GET_G(color) * 36); /*(2^8 - 1)/(2^3 - 1) = 255/7 = 36*/
+ 390:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B32(ret, LV_COLOR_GET_B(color) * 85); /*(2^8 - 1)/(2^2 - 1) = 255/3 = 85*/
+ 391:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_A32(ret, 0xFF);
+ 392:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret.full;
+ 393:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
+ 394:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /**
+ 395:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * The floating point math for conversion is:
+ 396:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *  valueto = valuefrom * ( (2^bitsto - 1) / (float)(2^bitsfrom - 1) )
+ 397:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * The faster integer math for conversion is:
+ 398:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *  valueto = ( valuefrom * multiplier + adder ) >> divisor
+ 399:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *   multiplier = FLOOR( ( (2^bitsto - 1) << divisor ) / (float)(2^bitsfrom - 1) )
+ 400:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *
+ 401:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * Find the first divisor where ( adder >> divisor ) <= 0
+ 402:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *
+ 403:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * 5-bit to 8-bit: ( 31 * multiplier + adder ) >> divisor = 255
+ 404:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * divisor  multiplier  adder  min (0)  max (31)
+ 405:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       0           8      7        7       255
+ 406:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       1          16     14        7       255
+ 407:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       2          32     28        7       255
+ 408:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       3          65     25        3       255
+ 409:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       4         131     19        1       255
+ 410:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       5         263      7        0       255
+ 411:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *
+ 412:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * 6-bit to 8-bit: 255 = ( 63 * multiplier + adder ) >> divisor
+ 413:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      * divisor  multiplier  adder  min (0)  max (63)
+ 414:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       0           4      3        3       255
+ 415:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       1           8      6        3       255
+ 416:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       2          16     12        3       255
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 10
+
+
+ 417:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       3          32     24        3       255
+ 418:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       4          64     48        3       255
+ 419:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       5         129     33        1       255
+ 420:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      *       6         259      3        0       255
+ 421:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****      */
+ 422:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 423:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color32_t ret;
+ 424:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R32(ret, (LV_COLOR_GET_R(color) * 263 + 7) >> 5);
+ 425:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G32(ret, (LV_COLOR_GET_G(color) * 259 + 3) >> 6);
+ 426:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B32(ret, (LV_COLOR_GET_B(color) * 263 + 7) >> 5);
+ 427:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_A32(ret, 0xFF);
+ 428:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret.full;
+ 429:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 430:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return color.full;
+ 431:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 432:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 433:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 434:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //! @cond Doxygen_Suppress
+ 435:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 436:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 437:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Mix two colors with a given ratio.
+ 438:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param c1 the first color to mix (usually the foreground)
+ 439:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param c2 the second color to mix (usually the background)
+ 440:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param mix The ratio of the colors. 0: full `c2`, 255: full `c1`, 127: half `c1` and half`c2`
+ 441:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return the mixed color
+ 442:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 443:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline lv_color_t lv_color_mix(lv_color_t c1, lv_color_t c2, uint8_t m
+ 444:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 445:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color_t ret;
+ 446:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 447:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 16 && LV_COLOR_16_SWAP == 0
+ 448:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Source: https://stackoverflow.com/a/50012418/1999969*/
+ 449:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     mix = (mix + 4) >> 3;
+ 450:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint32_t bg = (uint32_t)((uint32_t)c2.full | ((uint32_t)c2.full << 16)) &
+ 451:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                   0x7E0F81F; /*0b00000111111000001111100000011111*/
+ 452:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint32_t fg = (uint32_t)((uint32_t)c1.full | ((uint32_t)c1.full << 16)) & 0x7E0F81F;
+ 453:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint32_t result = ((((fg - bg) * mix) >> 5) + bg) & 0x7E0F81F;
+ 454:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     ret.full = (uint16_t)((result >> 16) | result);
+ 455:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH != 1
+ 456:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 8, 16 or 32*/
+ 457:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R(ret, LV_UDIV255((uint16_t)LV_COLOR_GET_R(c1) * mix + LV_COLOR_GET_R(c2) *
+ 458:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                                    (255 - mix) + LV_COLOR_MIX_ROUND_OFS));
+ 459:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G(ret, LV_UDIV255((uint16_t)LV_COLOR_GET_G(c1) * mix + LV_COLOR_GET_G(c2) *
+ 460:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                                    (255 - mix) + LV_COLOR_MIX_ROUND_OFS));
+ 461:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B(ret, LV_UDIV255((uint16_t)LV_COLOR_GET_B(c1) * mix + LV_COLOR_GET_B(c2) *
+ 462:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                                    (255 - mix) + LV_COLOR_MIX_ROUND_OFS));
+ 463:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_A(ret, 0xFF);
+ 464:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 465:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 1*/
+ 466:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     ret.full = mix > LV_OPA_50 ? c1.full : c2.full;
+ 467:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 468:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 469:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret;
+ 470:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 471:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 472:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline void lv_color_premult(lv_color_t c, uint8_t mix, uint16_t * out
+ 473:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 11
+
+
+ 474:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 1
+ 475:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     out[0] = (uint16_t)LV_COLOR_GET_R(c) * mix;
+ 476:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     out[1] = (uint16_t)LV_COLOR_GET_G(c) * mix;
+ 477:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     out[2] = (uint16_t)LV_COLOR_GET_B(c) * mix;
+ 478:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 479:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     (void) mix;
+ 480:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Pre-multiplication can't be used with 1 bpp*/
+ 481:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     out[0] = LV_COLOR_GET_R(c);
+ 482:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     out[1] = LV_COLOR_GET_G(c);
+ 483:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     out[2] = LV_COLOR_GET_B(c);
+ 484:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 485:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 486:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 487:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 488:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 489:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Mix two colors with a given ratio. It runs faster then `lv_color_mix` but requires some pre comp
+ 490:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param premult_c1 The first color. Should be preprocessed with `lv_color_premult(c1)`
+ 491:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param c2 The second color. As it is no pre computation required on it
+ 492:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param mix The ratio of the colors. 0: full `c1`, 255: full `c2`, 127: half `c1` and half `c2`.
+ 493:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *            Should be modified like mix = `255 - mix`
+ 494:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return the mixed color
+ 495:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @note 255 won't give clearly `c1`.
+ 496:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 497:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline lv_color_t lv_color_mix_premult(uint16_t * premult_c1, lv_color
+ 498:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 499:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color_t ret;
+ 500:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 1
+ 501:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 8 or 32*/
+ 502:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R(ret, LV_UDIV255(premult_c1[0] + LV_COLOR_GET_R(c2) * mix + LV_COLOR_MIX_ROUND_OF
+ 503:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G(ret, LV_UDIV255(premult_c1[1] + LV_COLOR_GET_G(c2) * mix + LV_COLOR_MIX_ROUND_OF
+ 504:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B(ret, LV_UDIV255(premult_c1[2] + LV_COLOR_GET_B(c2) * mix + LV_COLOR_MIX_ROUND_OF
+ 505:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_A(ret, 0xFF);
+ 506:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 507:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 1*/
+ 508:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Restore color1*/
+ 509:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color_t c1;
+ 510:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_R(c1, premult_c1[0]);
+ 511:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_G(c1, premult_c1[1]);
+ 512:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     LV_COLOR_SET_B(c1, premult_c1[2]);
+ 513:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     ret.full = mix > LV_OPA_50 ? c2.full : c1.full;
+ 514:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 515:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 516:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return ret;
+ 517:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 518:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 519:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 520:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Mix two colors. Both color can have alpha value.
+ 521:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param bg_color background color
+ 522:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param bg_opa alpha of the background color
+ 523:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param fg_color foreground color
+ 524:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param fg_opa alpha of the foreground color
+ 525:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param res_color the result color
+ 526:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param res_opa the result opacity
+ 527:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 528:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM static inline void lv_color_mix_with_alpha(lv_color_t bg_color, lv_opa_t bg_o
+ 529:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                                                                  lv_color_t fg_color, lv_opa_t fg_o
+ 530:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                                                                  lv_color_t * res_color, lv_opa_t *
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 12
+
+
+ 531:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 532:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Pick the foreground if it's fully opaque or the Background is fully transparent*/
+ 533:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     if(fg_opa >= LV_OPA_MAX || bg_opa <= LV_OPA_MIN) {
+ 534:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         res_color->full = fg_color.full;
+ 535:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         *res_opa = fg_opa;
+ 536:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 537:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Transparent foreground: use the Background*/
+ 538:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else if(fg_opa <= LV_OPA_MIN) {
+ 539:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         res_color->full = bg_color.full;
+ 540:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         *res_opa = bg_opa;
+ 541:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 542:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Opaque background: use simple mix*/
+ 543:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else if(bg_opa >= LV_OPA_MAX) {
+ 544:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         *res_color = lv_color_mix(fg_color, bg_color, fg_opa);
+ 545:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         *res_opa = LV_OPA_COVER;
+ 546:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 547:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /*Both colors have alpha. Expensive calculation need to be applied*/
+ 548:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     else {
+ 549:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         /*Save the parameters and the result. If they will be asked again don't compute again*/
+ 550:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         static lv_opa_t fg_opa_save     = 0;
+ 551:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         static lv_opa_t bg_opa_save     = 0;
+ 552:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         static lv_color_t fg_color_save = _LV_COLOR_ZERO_INITIALIZER;
+ 553:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         static lv_color_t bg_color_save = _LV_COLOR_ZERO_INITIALIZER;
+ 554:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         static lv_color_t res_color_saved = _LV_COLOR_ZERO_INITIALIZER;
+ 555:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         static lv_opa_t res_opa_saved = 0;
+ 556:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 557:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         if(fg_opa != fg_opa_save || bg_opa != bg_opa_save || fg_color.full != fg_color_save.full ||
+ 558:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****            bg_color.full != bg_color_save.full) {
+ 559:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             fg_opa_save        = fg_opa;
+ 560:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             bg_opa_save        = bg_opa;
+ 561:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             fg_color_save.full = fg_color.full;
+ 562:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             bg_color_save.full = bg_color.full;
+ 563:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             /*Info:
+ 564:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****              * https://en.wikipedia.org/wiki/Alpha_compositing#Analytical_derivation_of_the_over_op
+ 565:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             res_opa_saved = 255 - ((uint16_t)((uint16_t)(255 - fg_opa) * (255 - bg_opa)) >> 8);
+ 566:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             LV_ASSERT(res_opa_saved != 0);
+ 567:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             lv_opa_t ratio = (uint16_t)((uint16_t)fg_opa * 255) / res_opa_saved;
+ 568:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****             res_color_saved = lv_color_mix(fg_color, bg_color, ratio);
+ 569:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 570:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         }
+ 571:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 572:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         res_color->full = res_color_saved.full;
+ 573:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         *res_opa = res_opa_saved;
+ 574:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     }
+ 575:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 576:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 577:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //! @endcond
+ 578:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 579:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 580:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Get the brightness of a color
+ 581:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param color a color
+ 582:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return the brightness [0..255]
+ 583:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 584:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline uint8_t lv_color_brightness(lv_color_t color)
+ 585:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 586:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color32_t c32;
+ 587:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     c32.full        = lv_color_to32(color);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 13
+
+
+ 588:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     uint16_t bright = (uint16_t)(3u * LV_COLOR_GET_R32(c32) + LV_COLOR_GET_B32(c32) + 4u * LV_COLOR
+ 589:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return (uint8_t)(bright >> 3);
+ 590:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 591:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 592:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline lv_color_t lv_color_make(uint8_t r, uint8_t g, uint8_t b)
+ 593:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return _LV_COLOR_MAKE_TYPE_HELPER LV_COLOR_MAKE(r, g, b);
+ 595:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 596:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 597:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline lv_color_t lv_color_hex(uint32_t c)
+ 598:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 599:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 16
+ 600:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color_t r;
+ 601:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
+ 602:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /* Convert a 4 bytes per pixel in format ARGB32 to R5G6B5 format
+ 603:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         naive way (by calling lv_color_make with components):
+ 604:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     r = ((c & 0xFF0000) >> 19)
+ 605:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     g = ((c & 0xFF00) >> 10)
+ 606:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     b = ((c & 0xFF) >> 3)
+ 607:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     rgb565 = (r << 11) | (g << 5) | b
+ 608:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         That's 3 mask, 5 bitshift and 2 or operations
+ 609:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 610:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         A bit better:
+ 611:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     r = ((c & 0xF80000) >> 8)
+ 612:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     g = ((c & 0xFC00) >> 5)
+ 613:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     b = ((c & 0xFF) >> 3)
+ 614:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                     rgb565 = r | g | b
+ 615:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****         That's 3 mask, 3 bitshifts and 2 or operations */
+ 616:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     r.full = (uint16_t)(((c & 0xF80000) >> 8) | ((c & 0xFC00) >> 5) | ((c & 0xFF) >> 3));
+ 617:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else
+ 618:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     /* We want: rrrr rrrr GGGg gggg bbbb bbbb => gggb bbbb rrrr rGGG */
+ 619:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     r.full = (uint16_t)(((c & 0xF80000) >> 16) | ((c & 0xFC00) >> 13) | ((c & 0x1C00) << 3) | ((c &
+ 620:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 621:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return r;
+ 622:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 32
+ 623:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     lv_color_t r;
+ 624:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     r.full = c | 0xFF000000;
+ 625:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return r;
+ 626:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #else /*LV_COLOR_DEPTH == 8*/
+ 627:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return lv_color_make((uint8_t)((c >> 16) & 0xFF), (uint8_t)((c >> 8) & 0xFF), (uint8_t)(c & 0xF
+ 628:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** #endif
+ 629:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 630:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 631:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline lv_color_t lv_color_hex3(uint32_t c)
+ 632:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 633:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return lv_color_make((uint8_t)(((c >> 4) & 0xF0) | ((c >> 8) & 0xF)), (uint8_t)((c & 0xF0) | ((
+ 634:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****                          (uint8_t)((c & 0xF) | ((c & 0xF) << 4)));
+ 635:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 636:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 637:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline void lv_color_filter_dsc_init(lv_color_filter_dsc_t * dsc, lv_color_filter_cb_t cb)
+ 638:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 639:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     dsc->filter_cb = cb;
+ 640:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 641:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 642:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //! @cond Doxygen_Suppress
+ 643:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //!
+ 644:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** LV_ATTRIBUTE_FAST_MEM void lv_color_fill(lv_color_t * buf, lv_color_t color, uint32_t px_num);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 14
+
+
+ 645:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 646:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** //! @endcond
+ 647:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_t lv_color_lighten(lv_color_t c, lv_opa_t lvl);
+ 648:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 649:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_t lv_color_darken(lv_color_t c, lv_opa_t lvl);
+ 650:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 651:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_t lv_color_change_lightness(lv_color_t c, lv_opa_t lvl);
+ 652:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 653:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 654:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Convert a HSV color to RGB
+ 655:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param h hue [0..359]
+ 656:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param s saturation [0..100]
+ 657:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param v value [0..100]
+ 658:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return the given RGB color in RGB (with LV_COLOR_DEPTH depth)
+ 659:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 660:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_t lv_color_hsv_to_rgb(uint16_t h, uint8_t s, uint8_t v);
+ 661:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 662:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 663:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Convert a 32-bit RGB color to HSV
+ 664:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param r8 8-bit red
+ 665:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param g8 8-bit green
+ 666:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param b8 8-bit blue
+ 667:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return the given RGB color in HSV
+ 668:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 669:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_hsv_t lv_color_rgb_to_hsv(uint8_t r8, uint8_t g8, uint8_t b8);
+ 670:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 671:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 672:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Convert a color to HSV
+ 673:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @param color color
+ 674:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return the given color in HSV
+ 675:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 676:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_hsv_t lv_color_to_hsv(lv_color_t color);
+ 677:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 678:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**
+ 679:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * Just a wrapper around LV_COLOR_CHROMA_KEY because it might be more convenient to use a function 
+ 680:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  * @return LV_COLOR_CHROMA_KEY
+ 681:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  */
+ 682:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline lv_color_t lv_color_chroma_key(void)
+ 683:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 684:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return LV_COLOR_CHROMA_KEY;
+ 685:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 686:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 687:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /**********************
+ 688:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  *  PREDEFINED COLORS
+ 689:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****  **********************/
+ 690:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** /*Source: https://vuetifyjs.com/en/styles/colors/#material-colors*/
+ 691:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** 
+ 692:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** lv_color_t lv_palette_main(lv_palette_t p);
+ 693:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline lv_color_t lv_color_white(void)
+ 694:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 695:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return lv_color_make(0xff, 0xff, 0xff);
+ 696:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+ 697:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** static inline lv_color_t lv_color_black(void)
+  57              		.loc 2 697 26 view .LVU8
+  58              	.LBE8:
+ 698:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+ 699:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h ****     return lv_color_make(0x00, 0x0, 0x00);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 15
+
+
+  59              		.loc 2 699 5 view .LVU9
+  60              	.LVL2:
+  61              	.LBB11:
+  62              	.LBB9:
+  63              	.LBI9:
+ 592:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** {
+  64              		.loc 2 592 26 view .LVU10
+  65              	.LBB10:
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+  66              		.loc 2 594 5 view .LVU11
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+  67              		.loc 2 594 12 is_stmt 0 view .LVU12
+  68 0012 4FF00003 		mov	r3, #0	@ movhi
+  69              	.LVL3:
+ 594:Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_color.h **** }
+  70              		.loc 2 594 12 view .LVU13
+  71              	.LBE10:
+  72              	.LBE9:
+  73              	.LBE11:
+  74              		.loc 1 42 18 view .LVU14
+  75 0016 2380     		strh	r3, [r4]	@ movhi
+  43:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** }
+  76              		.loc 1 43 1 view .LVU15
+  77 0018 10BD     		pop	{r4, pc}
+  78              		.loc 1 43 1 view .LVU16
+  79              		.cfi_endproc
+  80              	.LFE153:
+  82              		.section	.text.lv_draw_line,"ax",%progbits
+  83              		.align	1
+  84              		.global	lv_draw_line
+  85              		.syntax unified
+  86              		.thumb
+  87              		.thumb_func
+  89              	lv_draw_line:
+  90              	.LVL4:
+  91              	.LFB154:
+  44:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  45:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** LV_ATTRIBUTE_FAST_MEM void lv_draw_line(struct _lv_draw_ctx_t * draw_ctx, const lv_draw_line_dsc_t 
+  46:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****                                         const lv_point_t * point1, const lv_point_t * point2)
+  47:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** {
+  92              		.loc 1 47 1 is_stmt 1 view -0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96              		.loc 1 47 1 is_stmt 0 view .LVU18
+  97 0000 10B5     		push	{r4, lr}
+  98              	.LCFI1:
+  99              		.cfi_def_cfa_offset 8
+ 100              		.cfi_offset 4, -8
+ 101              		.cfi_offset 14, -4
+  48:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     if(dsc->width == 0) return;
+ 102              		.loc 1 48 5 is_stmt 1 view .LVU19
+ 103              		.loc 1 48 7 is_stmt 0 view .LVU20
+ 104 0002 4C68     		ldr	r4, [r1, #4]
+ 105 0004 34B1     		cbz	r4, .L3
+  49:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     if(dsc->opa <= LV_OPA_MIN) return;
+ 106              		.loc 1 49 5 is_stmt 1 view .LVU21
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 16
+
+
+ 107              		.loc 1 49 11 is_stmt 0 view .LVU22
+ 108 0006 91F810C0 		ldrb	ip, [r1, #16]	@ zero_extendqisi2
+ 109              		.loc 1 49 7 view .LVU23
+ 110 000a BCF1020F 		cmp	ip, #2
+ 111 000e 01D9     		bls	.L3
+  50:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** 
+  51:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c ****     draw_ctx->draw_line(draw_ctx, dsc, point1, point2);
+ 112              		.loc 1 51 5 is_stmt 1 view .LVU24
+ 113              		.loc 1 51 13 is_stmt 0 view .LVU25
+ 114 0010 046A     		ldr	r4, [r0, #32]
+ 115              		.loc 1 51 5 view .LVU26
+ 116 0012 A047     		blx	r4
+ 117              	.LVL5:
+ 118              	.L3:
+  52:Middlewares/LVGL/GUI/lvgl/src/draw/lv_draw_line.c **** }
+ 119              		.loc 1 52 1 view .LVU27
+ 120 0014 10BD     		pop	{r4, pc}
+ 121              		.cfi_endproc
+ 122              	.LFE154:
+ 124              		.text
+ 125              	.Letext0:
+ 126              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 127              		.file 4 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 128              		.file 5 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/../font/../misc/lv_area.h"
+ 129              		.file 6 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/../font/lv_font.h"
+ 130              		.file 7 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_types.h"
+ 131              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_txt.h"
+ 132              		.file 9 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_bidi.h"
+ 133              		.file 10 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_style.h"
+ 134              		.file 11 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_img_buf.h"
+ 135              		.file 12 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_draw_rect.h"
+ 136              		.file 13 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_draw_label.h"
+ 137              		.file 14 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_draw_img.h"
+ 138              		.file 15 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_draw_line.h"
+ 139              		.file 16 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_draw_arc.h"
+ 140              		.file 17 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../hal/../draw/lv_draw.h"
+ 141              		.file 18 "Middlewares/LVGL/GUI/lvgl/src/draw/../core/../misc/lv_mem.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_draw_line.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s:20     .text.lv_draw_line_dsc_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s:26     .text.lv_draw_line_dsc_init:00000000 lv_draw_line_dsc_init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s:83     .text.lv_draw_line:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccCwz2Xn.s:89     .text.lv_draw_line:00000000 lv_draw_line
+
+UNDEFINED SYMBOLS
+lv_memset_00

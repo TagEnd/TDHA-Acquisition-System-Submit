@@ -1,0 +1,916 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"arm_bitreversal.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.arm_bitreversal_f32,"ax",%progbits
+  20              		.align	1
+  21              		.global	arm_bitreversal_f32
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	arm_bitreversal_f32:
+  27              	.LVL0:
+  28              	.LFB135:
+  29              		.file 1 "Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c"
+   1:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** /* ----------------------------------------------------------------------
+   2:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Project:      CMSIS DSP Library
+   3:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Title:        arm_bitreversal.c
+   4:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Description:  Bitreversal functions
+   5:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  *
+   6:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * $Date:        27. January 2017
+   7:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * $Revision:    V.1.5.1
+   8:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  *
+   9:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Target Processor: Cortex-M cores
+  10:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * -------------------------------------------------------------------- */
+  11:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** /*
+  12:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Copyright (C) 2010-2017 ARM Limited or its affiliates. All rights reserved.
+  13:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  *
+  14:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * SPDX-License-Identifier: Apache-2.0
+  15:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  *
+  16:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  17:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * not use this file except in compliance with the License.
+  18:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * You may obtain a copy of the License at
+  19:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  *
+  20:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * www.apache.org/licenses/LICENSE-2.0
+  21:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  *
+  22:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * Unless required by applicable law or agreed to in writing, software
+  23:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  24:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  25:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * See the License for the specific language governing permissions and
+  26:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  * limitations under the License.
+  27:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****  */
+  28:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  29:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** #include "arm_math.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 2
+
+
+  30:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** #include "arm_common_tables.h"
+  31:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  32:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** /*
+  33:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @brief  In-place bit reversal function.
+  34:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in, out] *pSrc        points to the in-place buffer of floating-point data type.
+  35:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in]      fftSize      length of the FFT.
+  36:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in]      bitRevFactor bit reversal modifier that supports different size FFTs with the sam
+  37:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in]      *pBitRevTab  points to the bit reversal table.
+  38:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @return none.
+  39:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** */
+  40:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  41:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** void arm_bitreversal_f32(
+  42:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** float32_t * pSrc,
+  43:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t fftSize,
+  44:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t bitRevFactor,
+  45:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t * pBitRevTab)
+  46:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** {
+  30              		.loc 1 46 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		.loc 1 46 1 is_stmt 0 view .LVU1
+  35 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 28
+  38              		.cfi_offset 4, -28
+  39              		.cfi_offset 5, -24
+  40              		.cfi_offset 6, -20
+  41              		.cfi_offset 7, -16
+  42              		.cfi_offset 8, -12
+  43              		.cfi_offset 9, -8
+  44              		.cfi_offset 14, -4
+  47:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    uint16_t fftLenBy2, fftLenBy2p1;
+  45              		.loc 1 47 4 is_stmt 1 view .LVU2
+  48:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    uint16_t i, j;
+  46              		.loc 1 48 4 view .LVU3
+  49:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    float32_t in;
+  47              		.loc 1 49 4 view .LVU4
+  50:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  51:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    /*  Initializations */
+  52:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    j = 0U;
+  48              		.loc 1 52 4 view .LVU5
+  49              	.LVL1:
+  53:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2 = fftSize >> 1U;
+  50              		.loc 1 53 4 view .LVU6
+  51              		.loc 1 53 14 is_stmt 0 view .LVU7
+  52 0004 4C08     		lsrs	r4, r1, #1
+  53              	.LVL2:
+  54:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2p1 = (fftSize >> 1U) + 1U;
+  54              		.loc 1 54 4 is_stmt 1 view .LVU8
+  55              		.loc 1 54 16 is_stmt 0 view .LVU9
+  56 0006 651C     		adds	r5, r4, #1
+  57              	.LVL3:
+  55:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  56:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    /* Bit Reversal Implementation */
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    for (i = 0U; i <= (fftLenBy2 - 2U); i += 2U)
+  58              		.loc 1 57 4 is_stmt 1 view .LVU10
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 3
+
+
+  52:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2 = fftSize >> 1U;
+  59              		.loc 1 52 6 is_stmt 0 view .LVU11
+  60 0008 4FF0000C 		mov	ip, #0
+  61              		.loc 1 57 11 view .LVU12
+  62 000c 6146     		mov	r1, ip
+  63              	.LVL4:
+  64              		.loc 1 57 4 view .LVU13
+  65 000e 27E0     		b	.L2
+  66              	.LVL5:
+  67              	.L3:
+  58:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+  59:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       if (i < j)
+  60:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+  61:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i] <-> pSrc[j]; */
+  62:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[2U * i];
+  63:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+  64:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+  65:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  66:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+1U] <-> pSrc[j+1U] */
+  67:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[(2U * i) + 1U];
+  68:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+  69:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+  70:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  71:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+fftLenBy2p1] <-> pSrc[j+fftLenBy2p1] */
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[2U * (i + fftLenBy2p1)];
+  73:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+  75:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  76:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+fftLenBy2p1+1U] <-> pSrc[j+fftLenBy2p1+1U] */
+  77:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[(2U * (i + fftLenBy2p1)) + 1U];
+  78:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+  79:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U];
+  80:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U] = in;
+  81:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  82:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       }
+  83:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  84:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  pSrc[i+1U] <-> pSrc[j+1U] */
+  85:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       in = pSrc[2U * (i + 1U)];
+  68              		.loc 1 85 7 is_stmt 1 discriminator 2 view .LVU14
+  69              		.loc 1 85 25 is_stmt 0 discriminator 2 view .LVU15
+  70 0010 0EF10107 		add	r7, lr, #1
+  71              		.loc 1 85 16 discriminator 2 view .LVU16
+  72 0014 4FEAC70E 		lsl	lr, r7, #3
+  73 0018 00EBC707 		add	r7, r0, r7, lsl #3
+  74              		.loc 1 85 10 discriminator 2 view .LVU17
+  75 001c D7F80080 		ldr	r8, [r7]	@ float
+  76              	.LVL6:
+  86:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[2U * (i + 1U)] = pSrc[2U * (j + fftLenBy2)];
+  77              		.loc 1 86 7 is_stmt 1 discriminator 2 view .LVU18
+  78              		.loc 1 86 42 is_stmt 0 discriminator 2 view .LVU19
+  79 0020 0CEB0406 		add	r6, ip, r4
+  80              		.loc 1 86 33 discriminator 2 view .LVU20
+  81 0024 4FEAC60C 		lsl	ip, r6, #3
+  82              	.LVL7:
+  83              		.loc 1 86 33 discriminator 2 view .LVU21
+  84 0028 00EBC606 		add	r6, r0, r6, lsl #3
+  85 002c D6F80090 		ldr	r9, [r6]	@ float
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 4
+
+
+  86              		.loc 1 86 27 discriminator 2 view .LVU22
+  87 0030 C7F80090 		str	r9, [r7]	@ float
+  87:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[2U * (j + fftLenBy2)] = in;
+  88              		.loc 1 87 7 is_stmt 1 discriminator 2 view .LVU23
+  89              		.loc 1 87 34 is_stmt 0 discriminator 2 view .LVU24
+  90 0034 C6F80080 		str	r8, [r6]	@ float
+  88:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  89:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  pSrc[i+2U] <-> pSrc[j+2U] */
+  90:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       in = pSrc[(2U * (i + 1U)) + 1U];
+  91              		.loc 1 90 7 is_stmt 1 discriminator 2 view .LVU25
+  92              		.loc 1 90 16 is_stmt 0 discriminator 2 view .LVU26
+  93 0038 0EF1040E 		add	lr, lr, #4
+  94 003c 8644     		add	lr, lr, r0
+  95              		.loc 1 90 10 discriminator 2 view .LVU27
+  96 003e DEF80060 		ldr	r6, [lr]	@ float
+  97              	.LVL8:
+  91:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[(2U * (i + 1U)) + 1U] = pSrc[(2U * (j + fftLenBy2)) + 1U];
+  98              		.loc 1 91 7 is_stmt 1 discriminator 2 view .LVU28
+  99              		.loc 1 91 40 is_stmt 0 discriminator 2 view .LVU29
+ 100 0042 0CF1040C 		add	ip, ip, #4
+ 101 0046 8444     		add	ip, ip, r0
+ 102 0048 DCF80070 		ldr	r7, [ip]	@ float
+ 103              		.loc 1 91 34 discriminator 2 view .LVU30
+ 104 004c CEF80070 		str	r7, [lr]	@ float
+  92:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[(2U * (j + fftLenBy2)) + 1U] = in;
+ 105              		.loc 1 92 7 is_stmt 1 discriminator 2 view .LVU31
+ 106              		.loc 1 92 41 is_stmt 0 discriminator 2 view .LVU32
+ 107 0050 CCF80060 		str	r6, [ip]	@ float
+  93:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  94:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  Reading the index for the bit reversal */
+  95:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       j = *pBitRevTab;
+ 108              		.loc 1 95 7 is_stmt 1 discriminator 2 view .LVU33
+ 109              		.loc 1 95 9 is_stmt 0 discriminator 2 view .LVU34
+ 110 0054 B3F800C0 		ldrh	ip, [r3]
+ 111              	.LVL9:
+  96:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+  97:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  Updating the bit reversal index depending on the fft length  */
+  98:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pBitRevTab += bitRevFactor;
+ 112              		.loc 1 98 7 is_stmt 1 discriminator 2 view .LVU35
+ 113              		.loc 1 98 18 is_stmt 0 discriminator 2 view .LVU36
+ 114 0058 03EB4203 		add	r3, r3, r2, lsl #1
+ 115              	.LVL10:
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 116              		.loc 1 57 40 is_stmt 1 discriminator 2 view .LVU37
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 117              		.loc 1 57 42 is_stmt 0 discriminator 2 view .LVU38
+ 118 005c 0231     		adds	r1, r1, #2
+ 119              	.LVL11:
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 120              		.loc 1 57 42 discriminator 2 view .LVU39
+ 121 005e 89B2     		uxth	r1, r1
+ 122              	.LVL12:
+ 123              	.L2:
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 124              		.loc 1 57 17 is_stmt 1 discriminator 1 view .LVU40
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 125              		.loc 1 57 19 is_stmt 0 discriminator 1 view .LVU41
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 5
+
+
+ 126 0060 8E46     		mov	lr, r1
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 127              		.loc 1 57 33 discriminator 1 view .LVU42
+ 128 0062 A61E     		subs	r6, r4, #2
+  57:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 129              		.loc 1 57 4 discriminator 1 view .LVU43
+ 130 0064 B142     		cmp	r1, r6
+ 131 0066 3ED8     		bhi	.L6
+  59:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 132              		.loc 1 59 7 is_stmt 1 view .LVU44
+  59:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 133              		.loc 1 59 10 is_stmt 0 view .LVU45
+ 134 0068 6145     		cmp	r1, ip
+ 135 006a D1D2     		bcs	.L3
+  62:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 136              		.loc 1 62 10 is_stmt 1 view .LVU46
+  62:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 137              		.loc 1 62 19 is_stmt 0 view .LVU47
+ 138 006c 4FEACE07 		lsl	r7, lr, #3
+ 139 0070 00EBCE09 		add	r9, r0, lr, lsl #3
+  62:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 140              		.loc 1 62 13 view .LVU48
+ 141 0074 D9ED007A 		vldr.32	s15, [r9]
+ 142              	.LVL13:
+  63:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 143              		.loc 1 63 10 is_stmt 1 view .LVU49
+  63:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 144              		.loc 1 63 29 is_stmt 0 view .LVU50
+ 145 0078 4FEACC06 		lsl	r6, ip, #3
+ 146 007c 00EBCC08 		add	r8, r0, ip, lsl #3
+ 147 0080 98ED007A 		vldr.32	s14, [r8]
+  63:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 148              		.loc 1 63 23 view .LVU51
+ 149 0084 89ED007A 		vstr.32	s14, [r9]
+  64:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 150              		.loc 1 64 10 is_stmt 1 view .LVU52
+  64:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 151              		.loc 1 64 23 is_stmt 0 view .LVU53
+ 152 0088 C8ED007A 		vstr.32	s15, [r8]
+  67:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 153              		.loc 1 67 10 is_stmt 1 view .LVU54
+  67:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 154              		.loc 1 67 19 is_stmt 0 view .LVU55
+ 155 008c 0437     		adds	r7, r7, #4
+ 156 008e 0744     		add	r7, r7, r0
+  67:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 157              		.loc 1 67 13 view .LVU56
+ 158 0090 D7F80080 		ldr	r8, [r7]	@ float
+ 159              	.LVL14:
+  68:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ 160              		.loc 1 68 10 is_stmt 1 view .LVU57
+  68:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ 161              		.loc 1 68 36 is_stmt 0 view .LVU58
+ 162 0094 0436     		adds	r6, r6, #4
+ 163 0096 0644     		add	r6, r6, r0
+ 164 0098 D6F80090 		ldr	r9, [r6]	@ float
+  68:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 6
+
+
+ 165              		.loc 1 68 30 view .LVU59
+ 166 009c C7F80090 		str	r9, [r7]	@ float
+  69:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 167              		.loc 1 69 10 is_stmt 1 view .LVU60
+  69:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 168              		.loc 1 69 30 is_stmt 0 view .LVU61
+ 169 00a0 C6F80080 		str	r8, [r6]	@ float
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 170              		.loc 1 72 10 is_stmt 1 view .LVU62
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 171              		.loc 1 72 28 is_stmt 0 view .LVU63
+ 172 00a4 01EB0509 		add	r9, r1, r5
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 173              		.loc 1 72 19 view .LVU64
+ 174 00a8 4FEAC907 		lsl	r7, r9, #3
+ 175 00ac 00EBC909 		add	r9, r0, r9, lsl #3
+  72:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 176              		.loc 1 72 13 view .LVU65
+ 177 00b0 D9ED007A 		vldr.32	s15, [r9]
+ 178              	.LVL15:
+  73:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 179              		.loc 1 73 10 is_stmt 1 view .LVU66
+  73:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 180              		.loc 1 73 54 is_stmt 0 view .LVU67
+ 181 00b4 0CEB0508 		add	r8, ip, r5
+  73:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 182              		.loc 1 73 45 view .LVU68
+ 183 00b8 4FEAC806 		lsl	r6, r8, #3
+ 184 00bc 00EBC808 		add	r8, r0, r8, lsl #3
+ 185 00c0 98ED007A 		vldr.32	s14, [r8]
+  73:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 186              		.loc 1 73 39 view .LVU69
+ 187 00c4 89ED007A 		vstr.32	s14, [r9]
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 188              		.loc 1 74 10 is_stmt 1 view .LVU70
+  74:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 189              		.loc 1 74 39 is_stmt 0 view .LVU71
+ 190 00c8 C8ED007A 		vstr.32	s15, [r8]
+  77:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 191              		.loc 1 77 10 is_stmt 1 view .LVU72
+  77:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 192              		.loc 1 77 19 is_stmt 0 view .LVU73
+ 193 00cc 0437     		adds	r7, r7, #4
+ 194 00ce 0744     		add	r7, r7, r0
+  77:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 195              		.loc 1 77 13 view .LVU74
+ 196 00d0 D7F80080 		ldr	r8, [r7]	@ float
+ 197              	.LVL16:
+  78:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U];
+ 198              		.loc 1 78 10 is_stmt 1 view .LVU75
+  79:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U] = in;
+ 199              		.loc 1 79 14 is_stmt 0 view .LVU76
+ 200 00d4 0436     		adds	r6, r6, #4
+ 201 00d6 0644     		add	r6, r6, r0
+ 202 00d8 D6F80090 		ldr	r9, [r6]	@ float
+  78:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U];
+ 203              		.loc 1 78 46 view .LVU77
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 7
+
+
+ 204 00dc C7F80090 		str	r9, [r7]	@ float
+  80:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 205              		.loc 1 80 10 is_stmt 1 view .LVU78
+  80:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 206              		.loc 1 80 46 is_stmt 0 view .LVU79
+ 207 00e0 C6F80080 		str	r8, [r6]	@ float
+ 208 00e4 94E7     		b	.L3
+ 209              	.LVL17:
+ 210              	.L6:
+  99:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    }
+ 100:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** }
+ 211              		.loc 1 100 1 view .LVU80
+ 212 00e6 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 213              		.loc 1 100 1 view .LVU81
+ 214              		.cfi_endproc
+ 215              	.LFE135:
+ 217              		.section	.text.arm_bitreversal_q31,"ax",%progbits
+ 218              		.align	1
+ 219              		.global	arm_bitreversal_q31
+ 220              		.syntax unified
+ 221              		.thumb
+ 222              		.thumb_func
+ 224              	arm_bitreversal_q31:
+ 225              	.LVL18:
+ 226              	.LFB136:
+ 101:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 102:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 103:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 104:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** /*
+ 105:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @brief  In-place bit reversal function.
+ 106:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in, out] *pSrc        points to the in-place buffer of Q31 data type.
+ 107:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in]      fftLen       length of the FFT.
+ 108:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in]      bitRevFactor bit reversal modifier that supports different size FFTs with the sam
+ 109:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @param[in]      *pBitRevTab  points to bit reversal table.
+ 110:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** * @return none.
+ 111:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** */
+ 112:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 113:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** void arm_bitreversal_q31(
+ 114:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** q31_t * pSrc,
+ 115:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint32_t fftLen,
+ 116:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t bitRevFactor,
+ 117:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t * pBitRevTable)
+ 118:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** {
+ 227              		.loc 1 118 1 is_stmt 1 view -0
+ 228              		.cfi_startproc
+ 229              		@ args = 0, pretend = 0, frame = 0
+ 230              		@ frame_needed = 0, uses_anonymous_args = 0
+ 231              		.loc 1 118 1 is_stmt 0 view .LVU83
+ 232 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 233              	.LCFI1:
+ 234              		.cfi_def_cfa_offset 32
+ 235              		.cfi_offset 4, -32
+ 236              		.cfi_offset 5, -28
+ 237              		.cfi_offset 6, -24
+ 238              		.cfi_offset 7, -20
+ 239              		.cfi_offset 8, -16
+ 240              		.cfi_offset 9, -12
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 8
+
+
+ 241              		.cfi_offset 10, -8
+ 242              		.cfi_offset 14, -4
+ 243 0004 9246     		mov	r10, r2
+ 119:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    uint32_t fftLenBy2, fftLenBy2p1, i, j;
+ 244              		.loc 1 119 4 is_stmt 1 view .LVU84
+ 120:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    q31_t in;
+ 245              		.loc 1 120 4 view .LVU85
+ 121:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 122:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    /*  Initializations      */
+ 123:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    j = 0U;
+ 246              		.loc 1 123 4 view .LVU86
+ 247              	.LVL19:
+ 124:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2 = fftLen / 2U;
+ 248              		.loc 1 124 4 view .LVU87
+ 249              		.loc 1 124 14 is_stmt 0 view .LVU88
+ 250 0006 4D08     		lsrs	r5, r1, #1
+ 251              	.LVL20:
+ 125:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2p1 = (fftLen / 2U) + 1U;
+ 252              		.loc 1 125 4 is_stmt 1 view .LVU89
+ 253              		.loc 1 125 16 is_stmt 0 view .LVU90
+ 254 0008 6E1C     		adds	r6, r5, #1
+ 255              	.LVL21:
+ 126:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 127:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    /* Bit Reversal Implementation */
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    for (i = 0U; i <= (fftLenBy2 - 2U); i += 2U)
+ 256              		.loc 1 128 4 is_stmt 1 view .LVU91
+ 123:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2 = fftLen / 2U;
+ 257              		.loc 1 123 6 is_stmt 0 view .LVU92
+ 258 000a 4FF0000C 		mov	ip, #0
+ 259              		.loc 1 128 11 view .LVU93
+ 260 000e 6446     		mov	r4, ip
+ 261              		.loc 1 128 4 view .LVU94
+ 262 0010 1FE0     		b	.L8
+ 263              	.LVL22:
+ 264              	.L9:
+ 129:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 130:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       if (i < j)
+ 131:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 132:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i] <-> pSrc[j]; */
+ 133:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[2U * i];
+ 134:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 135:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 136:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 137:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+1U] <-> pSrc[j+1U] */
+ 138:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[(2U * i) + 1U];
+ 139:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ 141:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 142:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+fftLenBy2p1] <-> pSrc[j+fftLenBy2p1] */
+ 143:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[2U * (i + fftLenBy2p1)];
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 145:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 146:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 147:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+fftLenBy2p1+1U] <-> pSrc[j+fftLenBy2p1+1U] */
+ 148:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[(2U * (i + fftLenBy2p1)) + 1U];
+ 149:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 150:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U];
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 9
+
+
+ 151:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U] = in;
+ 152:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 153:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       }
+ 154:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 155:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  pSrc[i+1U] <-> pSrc[j+1U] */
+ 156:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       in = pSrc[2U * (i + 1U)];
+ 265              		.loc 1 156 7 is_stmt 1 discriminator 2 view .LVU95
+ 266              		.loc 1 156 25 is_stmt 0 discriminator 2 view .LVU96
+ 267 0012 671C     		adds	r7, r4, #1
+ 268              		.loc 1 156 16 discriminator 2 view .LVU97
+ 269 0014 4FEAC70E 		lsl	lr, r7, #3
+ 270              		.loc 1 156 10 discriminator 2 view .LVU98
+ 271 0018 50F83780 		ldr	r8, [r0, r7, lsl #3]
+ 272              	.LVL23:
+ 157:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[2U * (i + 1U)] = pSrc[2U * (j + fftLenBy2)];
+ 273              		.loc 1 157 7 is_stmt 1 discriminator 2 view .LVU99
+ 274              		.loc 1 157 42 is_stmt 0 discriminator 2 view .LVU100
+ 275 001c 0CEB0501 		add	r1, ip, r5
+ 276              		.loc 1 157 33 discriminator 2 view .LVU101
+ 277 0020 4FEAC10C 		lsl	ip, r1, #3
+ 278              	.LVL24:
+ 279              		.loc 1 157 27 discriminator 2 view .LVU102
+ 280 0024 50F83120 		ldr	r2, [r0, r1, lsl #3]
+ 281 0028 40F83720 		str	r2, [r0, r7, lsl #3]
+ 158:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[2U * (j + fftLenBy2)] = in;
+ 282              		.loc 1 158 7 is_stmt 1 discriminator 2 view .LVU103
+ 283              		.loc 1 158 34 is_stmt 0 discriminator 2 view .LVU104
+ 284 002c 40F83180 		str	r8, [r0, r1, lsl #3]
+ 159:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 160:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  pSrc[i+2U] <-> pSrc[j+2U] */
+ 161:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       in = pSrc[(2U * (i + 1U)) + 1U];
+ 285              		.loc 1 161 7 is_stmt 1 discriminator 2 view .LVU105
+ 286              		.loc 1 161 16 is_stmt 0 discriminator 2 view .LVU106
+ 287 0030 0EF1040E 		add	lr, lr, #4
+ 288              		.loc 1 161 10 discriminator 2 view .LVU107
+ 289 0034 50F80E70 		ldr	r7, [r0, lr]
+ 290              	.LVL25:
+ 162:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[(2U * (i + 1U)) + 1U] = pSrc[(2U * (j + fftLenBy2)) + 1U];
+ 291              		.loc 1 162 7 is_stmt 1 discriminator 2 view .LVU108
+ 292              		.loc 1 162 40 is_stmt 0 discriminator 2 view .LVU109
+ 293 0038 0CF1040C 		add	ip, ip, #4
+ 294 003c 50F80C10 		ldr	r1, [r0, ip]
+ 295              		.loc 1 162 34 discriminator 2 view .LVU110
+ 296 0040 40F80E10 		str	r1, [r0, lr]
+ 163:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[(2U * (j + fftLenBy2)) + 1U] = in;
+ 297              		.loc 1 163 7 is_stmt 1 discriminator 2 view .LVU111
+ 298              		.loc 1 163 41 is_stmt 0 discriminator 2 view .LVU112
+ 299 0044 40F80C70 		str	r7, [r0, ip]
+ 164:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 165:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  Reading the index for the bit reversal */
+ 166:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       j = *pBitRevTable;
+ 300              		.loc 1 166 7 is_stmt 1 discriminator 2 view .LVU113
+ 301              		.loc 1 166 11 is_stmt 0 discriminator 2 view .LVU114
+ 302 0048 B3F800C0 		ldrh	ip, [r3]
+ 303              	.LVL26:
+ 167:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 168:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  Updating the bit reversal index depending on the fft length */
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 10
+
+
+ 169:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pBitRevTable += bitRevFactor;
+ 304              		.loc 1 169 7 is_stmt 1 discriminator 2 view .LVU115
+ 305              		.loc 1 169 20 is_stmt 0 discriminator 2 view .LVU116
+ 306 004c 03EB4A03 		add	r3, r3, r10, lsl #1
+ 307              	.LVL27:
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 308              		.loc 1 128 40 is_stmt 1 discriminator 2 view .LVU117
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 309              		.loc 1 128 42 is_stmt 0 discriminator 2 view .LVU118
+ 310 0050 0234     		adds	r4, r4, #2
+ 311              	.LVL28:
+ 312              	.L8:
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 313              		.loc 1 128 17 is_stmt 1 discriminator 1 view .LVU119
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 314              		.loc 1 128 33 is_stmt 0 discriminator 1 view .LVU120
+ 315 0052 A91E     		subs	r1, r5, #2
+ 128:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 316              		.loc 1 128 4 discriminator 1 view .LVU121
+ 317 0054 A142     		cmp	r1, r4
+ 318 0056 30D3     		bcc	.L12
+ 130:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 319              		.loc 1 130 7 is_stmt 1 view .LVU122
+ 130:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 320              		.loc 1 130 10 is_stmt 0 view .LVU123
+ 321 0058 6445     		cmp	r4, ip
+ 322 005a DAD2     		bcs	.L9
+ 133:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 323              		.loc 1 133 10 is_stmt 1 view .LVU124
+ 133:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 324              		.loc 1 133 19 is_stmt 0 view .LVU125
+ 325 005c 4FEAC40E 		lsl	lr, r4, #3
+ 133:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * i] = pSrc[2U * j];
+ 326              		.loc 1 133 13 view .LVU126
+ 327 0060 50F83410 		ldr	r1, [r0, r4, lsl #3]
+ 328              	.LVL29:
+ 134:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 329              		.loc 1 134 10 is_stmt 1 view .LVU127
+ 134:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 330              		.loc 1 134 29 is_stmt 0 view .LVU128
+ 331 0064 4FEACC07 		lsl	r7, ip, #3
+ 134:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * j] = in;
+ 332              		.loc 1 134 23 view .LVU129
+ 333 0068 50F83C20 		ldr	r2, [r0, ip, lsl #3]
+ 334 006c 40F83420 		str	r2, [r0, r4, lsl #3]
+ 135:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 335              		.loc 1 135 10 is_stmt 1 view .LVU130
+ 135:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 336              		.loc 1 135 23 is_stmt 0 view .LVU131
+ 337 0070 40F83C10 		str	r1, [r0, ip, lsl #3]
+ 138:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 338              		.loc 1 138 10 is_stmt 1 view .LVU132
+ 138:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 339              		.loc 1 138 19 is_stmt 0 view .LVU133
+ 340 0074 0EF1040E 		add	lr, lr, #4
+ 138:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * i) + 1U] = pSrc[(2U * j) + 1U];
+ 341              		.loc 1 138 13 view .LVU134
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 11
+
+
+ 342 0078 50F80E10 		ldr	r1, [r0, lr]
+ 343              	.LVL30:
+ 139:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ 344              		.loc 1 139 10 is_stmt 1 view .LVU135
+ 139:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ 345              		.loc 1 139 36 is_stmt 0 view .LVU136
+ 346 007c 0437     		adds	r7, r7, #4
+ 139:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * j) + 1U] = in;
+ 347              		.loc 1 139 30 view .LVU137
+ 348 007e C259     		ldr	r2, [r0, r7]
+ 349 0080 40F80E20 		str	r2, [r0, lr]
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 350              		.loc 1 140 10 is_stmt 1 view .LVU138
+ 140:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 351              		.loc 1 140 30 is_stmt 0 view .LVU139
+ 352 0084 C151     		str	r1, [r0, r7]
+ 143:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 353              		.loc 1 143 10 is_stmt 1 view .LVU140
+ 143:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 354              		.loc 1 143 28 is_stmt 0 view .LVU141
+ 355 0086 04EB0609 		add	r9, r4, r6
+ 143:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 356              		.loc 1 143 19 view .LVU142
+ 357 008a 4FEAC90E 		lsl	lr, r9, #3
+ 143:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (i + fftLenBy2p1)] = pSrc[2U * (j + fftLenBy2p1)];
+ 358              		.loc 1 143 13 view .LVU143
+ 359 008e 50F83910 		ldr	r1, [r0, r9, lsl #3]
+ 360              	.LVL31:
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 361              		.loc 1 144 10 is_stmt 1 view .LVU144
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 362              		.loc 1 144 54 is_stmt 0 view .LVU145
+ 363 0092 0CEB0608 		add	r8, ip, r6
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 364              		.loc 1 144 45 view .LVU146
+ 365 0096 4FEAC807 		lsl	r7, r8, #3
+ 144:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[2U * (j + fftLenBy2p1)] = in;
+ 366              		.loc 1 144 39 view .LVU147
+ 367 009a 50F83820 		ldr	r2, [r0, r8, lsl #3]
+ 368 009e 40F83920 		str	r2, [r0, r9, lsl #3]
+ 145:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 369              		.loc 1 145 10 is_stmt 1 view .LVU148
+ 145:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 370              		.loc 1 145 39 is_stmt 0 view .LVU149
+ 371 00a2 40F83810 		str	r1, [r0, r8, lsl #3]
+ 148:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 372              		.loc 1 148 10 is_stmt 1 view .LVU150
+ 148:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 373              		.loc 1 148 19 is_stmt 0 view .LVU151
+ 374 00a6 0EF1040E 		add	lr, lr, #4
+ 148:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (i + fftLenBy2p1)) + 1U] =
+ 375              		.loc 1 148 13 view .LVU152
+ 376 00aa 50F80E10 		ldr	r1, [r0, lr]
+ 377              	.LVL32:
+ 149:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U];
+ 378              		.loc 1 149 10 is_stmt 1 view .LVU153
+ 150:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U] = in;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 12
+
+
+ 379              		.loc 1 150 14 is_stmt 0 view .LVU154
+ 380 00ae 0437     		adds	r7, r7, #4
+ 149:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[(2U * (j + fftLenBy2p1)) + 1U];
+ 381              		.loc 1 149 46 view .LVU155
+ 382 00b0 C259     		ldr	r2, [r0, r7]
+ 383 00b2 40F80E20 		str	r2, [r0, lr]
+ 151:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 384              		.loc 1 151 10 is_stmt 1 view .LVU156
+ 151:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 385              		.loc 1 151 46 is_stmt 0 view .LVU157
+ 386 00b6 C151     		str	r1, [r0, r7]
+ 387 00b8 ABE7     		b	.L9
+ 388              	.LVL33:
+ 389              	.L12:
+ 170:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    }
+ 171:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** }
+ 390              		.loc 1 171 1 view .LVU158
+ 391 00ba BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 392              		.loc 1 171 1 view .LVU159
+ 393              		.cfi_endproc
+ 394              	.LFE136:
+ 396              		.section	.text.arm_bitreversal_q15,"ax",%progbits
+ 397              		.align	1
+ 398              		.global	arm_bitreversal_q15
+ 399              		.syntax unified
+ 400              		.thumb
+ 401              		.thumb_func
+ 403              	arm_bitreversal_q15:
+ 404              	.LVL34:
+ 405              	.LFB137:
+ 172:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 173:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 174:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 175:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** /*
+ 176:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    * @brief  In-place bit reversal function.
+ 177:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    * @param[in, out] *pSrc        points to the in-place buffer of Q15 data type.
+ 178:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    * @param[in]      fftLen       length of the FFT.
+ 179:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    * @param[in]      bitRevFactor bit reversal modifier that supports different size FFTs with the 
+ 180:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    * @param[in]      *pBitRevTab  points to bit reversal table.
+ 181:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    * @return none.
+ 182:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** */
+ 183:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 184:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** void arm_bitreversal_q15(
+ 185:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** q15_t * pSrc16,
+ 186:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint32_t fftLen,
+ 187:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t bitRevFactor,
+ 188:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** uint16_t * pBitRevTab)
+ 189:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** {
+ 406              		.loc 1 189 1 is_stmt 1 view -0
+ 407              		.cfi_startproc
+ 408              		@ args = 0, pretend = 0, frame = 0
+ 409              		@ frame_needed = 0, uses_anonymous_args = 0
+ 410              		.loc 1 189 1 is_stmt 0 view .LVU161
+ 411 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 412              	.LCFI2:
+ 413              		.cfi_def_cfa_offset 24
+ 414              		.cfi_offset 4, -24
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 13
+
+
+ 415              		.cfi_offset 5, -20
+ 416              		.cfi_offset 6, -16
+ 417              		.cfi_offset 7, -12
+ 418              		.cfi_offset 8, -8
+ 419              		.cfi_offset 14, -4
+ 190:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    q31_t *pSrc = (q31_t *) pSrc16;
+ 420              		.loc 1 190 4 is_stmt 1 view .LVU162
+ 421              	.LVL35:
+ 191:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    q31_t in;
+ 422              		.loc 1 191 4 view .LVU163
+ 192:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    uint32_t fftLenBy2, fftLenBy2p1;
+ 423              		.loc 1 192 4 view .LVU164
+ 193:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    uint32_t i, j;
+ 424              		.loc 1 193 4 view .LVU165
+ 194:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 195:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    /*  Initializations */
+ 196:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    j = 0U;
+ 425              		.loc 1 196 4 view .LVU166
+ 197:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2 = fftLen / 2U;
+ 426              		.loc 1 197 4 view .LVU167
+ 427              		.loc 1 197 14 is_stmt 0 view .LVU168
+ 428 0004 4C08     		lsrs	r4, r1, #1
+ 429              	.LVL36:
+ 198:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2p1 = (fftLen / 2U) + 1U;
+ 430              		.loc 1 198 4 is_stmt 1 view .LVU169
+ 431              		.loc 1 198 16 is_stmt 0 view .LVU170
+ 432 0006 661C     		adds	r6, r4, #1
+ 433              	.LVL37:
+ 199:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 200:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    /* Bit Reversal Implementation */
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    for (i = 0U; i <= (fftLenBy2 - 2U); i += 2U)
+ 434              		.loc 1 201 4 is_stmt 1 view .LVU171
+ 196:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    fftLenBy2 = fftLen / 2U;
+ 435              		.loc 1 196 6 is_stmt 0 view .LVU172
+ 436 0008 4FF0000C 		mov	ip, #0
+ 437              		.loc 1 201 11 view .LVU173
+ 438 000c E646     		mov	lr, ip
+ 439              		.loc 1 201 4 view .LVU174
+ 440 000e 10E0     		b	.L14
+ 441              	.LVL38:
+ 442              	.L15:
+ 202:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 203:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       if (i < j)
+ 204:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 205:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i] <-> pSrc[j]; */
+ 206:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i+1U] <-> pSrc[j+1U] */
+ 207:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[i];
+ 208:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i] = pSrc[j];
+ 209:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j] = in;
+ 210:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 211:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i + fftLenBy2p1] <-> pSrc[j + fftLenBy2p1];  */
+ 212:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          /*  pSrc[i + fftLenBy2p1+1U] <-> pSrc[j + fftLenBy2p1+1U] */
+ 213:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          in = pSrc[i + fftLenBy2p1];
+ 214:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i + fftLenBy2p1] = pSrc[j + fftLenBy2p1];
+ 215:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j + fftLenBy2p1] = in;
+ 216:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       }
+ 217:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 14
+
+
+ 218:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  pSrc[i+1U] <-> pSrc[j+fftLenBy2];         */
+ 219:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  pSrc[i+2] <-> pSrc[j+fftLenBy2+1U]  */
+ 220:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       in = pSrc[i + 1U];
+ 443              		.loc 1 220 7 is_stmt 1 discriminator 2 view .LVU175
+ 444              		.loc 1 220 16 is_stmt 0 discriminator 2 view .LVU176
+ 445 0010 0EF10101 		add	r1, lr, #1
+ 446              		.loc 1 220 10 discriminator 2 view .LVU177
+ 447 0014 50F82150 		ldr	r5, [r0, r1, lsl #2]
+ 448              	.LVL39:
+ 221:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[i + 1U] = pSrc[j + fftLenBy2];
+ 449              		.loc 1 221 7 is_stmt 1 discriminator 2 view .LVU178
+ 450              		.loc 1 221 29 is_stmt 0 discriminator 2 view .LVU179
+ 451 0018 A444     		add	ip, ip, r4
+ 452              	.LVL40:
+ 453              		.loc 1 221 20 discriminator 2 view .LVU180
+ 454 001a 50F82C70 		ldr	r7, [r0, ip, lsl #2]
+ 455 001e 40F82170 		str	r7, [r0, r1, lsl #2]
+ 222:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pSrc[j + fftLenBy2] = in;
+ 456              		.loc 1 222 7 is_stmt 1 discriminator 2 view .LVU181
+ 457              		.loc 1 222 27 is_stmt 0 discriminator 2 view .LVU182
+ 458 0022 40F82C50 		str	r5, [r0, ip, lsl #2]
+ 223:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 224:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  Reading the index for the bit reversal */
+ 225:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       j = *pBitRevTab;
+ 459              		.loc 1 225 7 is_stmt 1 discriminator 2 view .LVU183
+ 460              		.loc 1 225 11 is_stmt 0 discriminator 2 view .LVU184
+ 461 0026 B3F800C0 		ldrh	ip, [r3]
+ 462              	.LVL41:
+ 226:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 227:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       /*  Updating the bit reversal index depending on the fft length  */
+ 228:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       pBitRevTab += bitRevFactor;
+ 463              		.loc 1 228 7 is_stmt 1 discriminator 2 view .LVU185
+ 464              		.loc 1 228 18 is_stmt 0 discriminator 2 view .LVU186
+ 465 002a 03EB4203 		add	r3, r3, r2, lsl #1
+ 466              	.LVL42:
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 467              		.loc 1 201 40 is_stmt 1 discriminator 2 view .LVU187
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 468              		.loc 1 201 42 is_stmt 0 discriminator 2 view .LVU188
+ 469 002e 0EF1020E 		add	lr, lr, #2
+ 470              	.LVL43:
+ 471              	.L14:
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 472              		.loc 1 201 17 is_stmt 1 discriminator 1 view .LVU189
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 473              		.loc 1 201 33 is_stmt 0 discriminator 1 view .LVU190
+ 474 0032 A11E     		subs	r1, r4, #2
+ 201:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    {
+ 475              		.loc 1 201 4 discriminator 1 view .LVU191
+ 476 0034 7145     		cmp	r1, lr
+ 477 0036 16D3     		bcc	.L18
+ 203:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 478              		.loc 1 203 7 is_stmt 1 view .LVU192
+ 203:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       {
+ 479              		.loc 1 203 10 is_stmt 0 view .LVU193
+ 480 0038 E645     		cmp	lr, ip
+ 481 003a E9D2     		bcs	.L15
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 15
+
+
+ 207:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i] = pSrc[j];
+ 482              		.loc 1 207 10 is_stmt 1 view .LVU194
+ 207:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i] = pSrc[j];
+ 483              		.loc 1 207 13 is_stmt 0 view .LVU195
+ 484 003c 50F82E50 		ldr	r5, [r0, lr, lsl #2]
+ 485              	.LVL44:
+ 208:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j] = in;
+ 486              		.loc 1 208 10 is_stmt 1 view .LVU196
+ 208:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j] = in;
+ 487              		.loc 1 208 24 is_stmt 0 view .LVU197
+ 488 0040 50F82C10 		ldr	r1, [r0, ip, lsl #2]
+ 208:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j] = in;
+ 489              		.loc 1 208 18 view .LVU198
+ 490 0044 40F82E10 		str	r1, [r0, lr, lsl #2]
+ 209:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 491              		.loc 1 209 10 is_stmt 1 view .LVU199
+ 209:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** 
+ 492              		.loc 1 209 18 is_stmt 0 view .LVU200
+ 493 0048 40F82C50 		str	r5, [r0, ip, lsl #2]
+ 213:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i + fftLenBy2p1] = pSrc[j + fftLenBy2p1];
+ 494              		.loc 1 213 10 is_stmt 1 view .LVU201
+ 213:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i + fftLenBy2p1] = pSrc[j + fftLenBy2p1];
+ 495              		.loc 1 213 22 is_stmt 0 view .LVU202
+ 496 004c 0EEB0607 		add	r7, lr, r6
+ 213:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[i + fftLenBy2p1] = pSrc[j + fftLenBy2p1];
+ 497              		.loc 1 213 13 view .LVU203
+ 498 0050 50F82780 		ldr	r8, [r0, r7, lsl #2]
+ 499              	.LVL45:
+ 214:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j + fftLenBy2p1] = in;
+ 500              		.loc 1 214 10 is_stmt 1 view .LVU204
+ 214:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j + fftLenBy2p1] = in;
+ 501              		.loc 1 214 41 is_stmt 0 view .LVU205
+ 502 0054 0CEB0601 		add	r1, ip, r6
+ 214:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****          pSrc[j + fftLenBy2p1] = in;
+ 503              		.loc 1 214 32 view .LVU206
+ 504 0058 50F82150 		ldr	r5, [r0, r1, lsl #2]
+ 505 005c 40F82750 		str	r5, [r0, r7, lsl #2]
+ 215:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       }
+ 506              		.loc 1 215 10 is_stmt 1 view .LVU207
+ 215:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****       }
+ 507              		.loc 1 215 32 is_stmt 0 view .LVU208
+ 508 0060 40F82180 		str	r8, [r0, r1, lsl #2]
+ 509 0064 D4E7     		b	.L15
+ 510              	.LVL46:
+ 511              	.L18:
+ 229:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c ****    }
+ 230:Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal.c **** }
+ 512              		.loc 1 230 1 view .LVU209
+ 513 0066 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 514              		.loc 1 230 1 view .LVU210
+ 515              		.cfi_endproc
+ 516              	.LFE137:
+ 518              		.text
+ 519              	.Letext0:
+ 520              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 521              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 522              		.file 4 "Drivers/CMSIS/DSP/Include/arm_math.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 16
+
+
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_bitreversal.c
+C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s:20     .text.arm_bitreversal_f32:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s:26     .text.arm_bitreversal_f32:00000000 arm_bitreversal_f32
+C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s:218    .text.arm_bitreversal_q31:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s:224    .text.arm_bitreversal_q31:00000000 arm_bitreversal_q31
+C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s:397    .text.arm_bitreversal_q15:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccw2YdHj.s:403    .text.arm_bitreversal_q15:00000000 arm_bitreversal_q15
+
+NO UNDEFINED SYMBOLS

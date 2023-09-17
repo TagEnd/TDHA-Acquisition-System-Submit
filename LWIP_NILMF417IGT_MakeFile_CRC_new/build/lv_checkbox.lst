@@ -1,0 +1,2778 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_checkbox.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_checkbox_draw,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	lv_checkbox_draw:
+  26              	.LVL0:
+  27              	.LFB160:
+  28              		.file 1 "Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c"
+   1:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  * @file lv_cb.c
+   3:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /*********************
+   7:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *      INCLUDES
+   8:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *********************/
+   9:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #include "lv_checkbox.h"
+  10:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_CHECKBOX != 0
+  11:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  12:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #include "../misc/lv_assert.h"
+  13:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #include "../misc/lv_txt_ap.h"
+  14:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #include "../core/lv_group.h"
+  15:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #include "../draw/lv_draw.h"
+  16:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  17:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /*********************
+  18:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *      DEFINES
+  19:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *********************/
+  20:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #define MY_CLASS &lv_checkbox_class
+  21:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  22:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**********************
+  23:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *      TYPEDEFS
+  24:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  **********************/
+  25:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  26:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**********************
+  27:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *  STATIC PROTOTYPES
+  28:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  **********************/
+  29:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_constructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
+  30:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_destructor(const lv_obj_class_t * class_p, lv_obj_t * obj);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 2
+
+
+  31:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_event(const lv_obj_class_t * class_p, lv_event_t * e);
+  32:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_draw(lv_event_t * e);
+  33:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  34:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**********************
+  35:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *  STATIC VARIABLES
+  36:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  **********************/
+  37:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** const lv_obj_class_t lv_checkbox_class = {
+  38:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .constructor_cb = lv_checkbox_constructor,
+  39:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .destructor_cb = lv_checkbox_destructor,
+  40:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .event_cb = lv_checkbox_event,
+  41:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .width_def = LV_SIZE_CONTENT,
+  42:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .height_def = LV_SIZE_CONTENT,
+  43:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .group_def = LV_OBJ_CLASS_GROUP_DEF_TRUE,
+  44:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .instance_size = sizeof(lv_checkbox_t),
+  45:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     .base_class = &lv_obj_class
+  46:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** };
+  47:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  48:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**********************
+  49:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *      MACROS
+  50:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  **********************/
+  51:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  52:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**********************
+  53:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *   GLOBAL FUNCTIONS
+  54:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  **********************/
+  55:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  56:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** lv_obj_t * lv_checkbox_create(lv_obj_t * parent)
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_LOG_INFO("begin");
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_obj_class_create_obj(MY_CLASS, parent);
+  60:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_class_init_obj(obj);
+  61:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     return obj;
+  62:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  64:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /*=====================
+  65:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  * Setter functions
+  66:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *====================*/
+  67:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  68:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** void lv_checkbox_set_text(lv_obj_t * obj, const char * txt)
+  69:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+  70:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+  71:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+  72:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     size_t len = _lv_txt_ap_calc_bytes_cnt(txt);
+  73:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #else
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     size_t len = strlen(txt);
+  75:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #endif
+  76:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(!cb->static_txt) cb->txt = lv_mem_realloc(cb->txt, len + 1);
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+  79:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+  80:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     _lv_txt_ap_proc(txt, cb->txt);
+  81:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #else
+  82:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     strcpy(cb->txt, txt);
+  83:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #endif
+  84:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  85:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 0;
+  86:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  87:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_refresh_self_size(obj);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 3
+
+
+  88:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_invalidate(obj);
+  89:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+  90:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** void lv_checkbox_set_text_static(lv_obj_t * obj, const char * txt)
+  92:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(!cb->static_txt) lv_mem_free(cb->txt);
+  96:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->txt = (char *)txt;
+  98:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 1;
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_refresh_self_size(obj);
+ 101:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_invalidate(obj);
+ 102:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 104:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /*=====================
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  * Getter functions
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *====================*/
+ 107:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 108:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** const char * lv_checkbox_get_text(const lv_obj_t * obj)
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+ 110:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     return cb->txt;
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 113:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 114:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** /**********************
+ 115:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  *   STATIC FUNCTIONS
+ 116:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****  **********************/
+ 117:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_constructor(const lv_obj_class_t * class_p, lv_obj_t * obj)
+ 119:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+ 120:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_TRACE_OBJ_CREATE("begin");
+ 122:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 125:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->txt = "Check box";
+ 126:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 1;
+ 127:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
+ 128:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CHECKABLE);
+ 129:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+ 130:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 131:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_TRACE_OBJ_CREATE("finished");
+ 132:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 133:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 134:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_destructor(const lv_obj_class_t * class_p, lv_obj_t * obj)
+ 135:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+ 136:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 137:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_TRACE_OBJ_CREATE("begin");
+ 138:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 139:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 140:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(!cb->static_txt) {
+ 141:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_mem_free(cb->txt);
+ 142:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         cb->txt = NULL;
+ 143:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 144:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_TRACE_OBJ_CREATE("finished");
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 4
+
+
+ 145:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 146:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 147:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_event(const lv_obj_class_t * class_p, lv_event_t * e)
+ 148:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+ 149:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 150:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 151:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_res_t res;
+ 152:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     /*Call the ancestor's event handler*/
+ 153:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     res = lv_obj_event_base(MY_CLASS, e);
+ 154:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(res != LV_RES_OK) return;
+ 155:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 156:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_event_code_t code = lv_event_get_code(e);
+ 157:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_event_get_target(e);
+ 158:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 159:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(code == LV_EVENT_GET_SELF_SIZE) {
+ 160:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_point_t * p = lv_event_get_param(e);
+ 161:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 162:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 163:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         const lv_font_t * font = lv_obj_get_style_text_font(obj, LV_PART_MAIN);
+ 164:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t font_h = lv_font_get_line_height(font);
+ 165:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t line_space = lv_obj_get_style_text_line_space(obj, LV_PART_MAIN);
+ 166:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t letter_space = lv_obj_get_style_text_letter_space(obj, LV_PART_MAIN);
+ 167:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 168:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_point_t txt_size;
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_txt_get_size(&txt_size, cb->txt, font, letter_space, line_space, LV_COORD_MAX, LV_TEXT_F
+ 170:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 171:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t bg_colp = lv_obj_get_style_pad_column(obj, LV_PART_MAIN);
+ 172:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_leftp = lv_obj_get_style_pad_left(obj, LV_PART_INDICATOR);
+ 173:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_rightp = lv_obj_get_style_pad_right(obj, LV_PART_INDICATOR);
+ 174:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_topp = lv_obj_get_style_pad_top(obj, LV_PART_INDICATOR);
+ 175:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_bottomp = lv_obj_get_style_pad_bottom(obj, LV_PART_INDICATOR);
+ 176:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_point_t marker_size;
+ 177:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.x = font_h + marker_leftp + marker_rightp;
+ 178:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.y = font_h + marker_topp + marker_bottomp;
+ 179:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->x = marker_size.x + txt_size.x + bg_colp;
+ 181:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->y = LV_MAX(marker_size.y, txt_size.y);
+ 182:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 183:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else if(code == LV_EVENT_REFR_EXT_DRAW_SIZE) {
+ 184:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t * s = lv_event_get_param(e);
+ 185:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t m = lv_obj_calculate_ext_draw_size(obj, LV_PART_INDICATOR);
+ 186:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         *s = LV_MAX(*s, m);
+ 187:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 188:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else if(code == LV_EVENT_DRAW_MAIN) {
+ 189:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_draw(e);
+ 190:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 191:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 192:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 193:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** static void lv_checkbox_draw(lv_event_t * e)
+ 194:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** {
+  29              		.loc 1 194 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 272
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 194 1 is_stmt 0 view .LVU1
+  34 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  35              	.LCFI0:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 5
+
+
+  36              		.cfi_def_cfa_offset 36
+  37              		.cfi_offset 4, -36
+  38              		.cfi_offset 5, -32
+  39              		.cfi_offset 6, -28
+  40              		.cfi_offset 7, -24
+  41              		.cfi_offset 8, -20
+  42              		.cfi_offset 9, -16
+  43              		.cfi_offset 10, -12
+  44              		.cfi_offset 11, -8
+  45              		.cfi_offset 14, -4
+  46 0004 C9B0     		sub	sp, sp, #292
+  47              	.LCFI1:
+  48              		.cfi_def_cfa_offset 328
+  49 0006 0546     		mov	r5, r0
+ 195:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_event_get_target(e);
+  50              		.loc 1 195 5 is_stmt 1 view .LVU2
+  51              		.loc 1 195 22 is_stmt 0 view .LVU3
+  52 0008 FFF7FEFF 		bl	lv_event_get_target
+  53              	.LVL1:
+  54              		.loc 1 195 22 view .LVU4
+  55 000c 0446     		mov	r4, r0
+  56              	.LVL2:
+ 196:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+  57              		.loc 1 196 5 is_stmt 1 view .LVU5
+ 197:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 198:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_ctx_t * draw_ctx = lv_event_get_draw_ctx(e);
+  58              		.loc 1 198 5 view .LVU6
+  59              		.loc 1 198 32 is_stmt 0 view .LVU7
+  60 000e 2846     		mov	r0, r5
+  61              	.LVL3:
+  62              		.loc 1 198 32 view .LVU8
+  63 0010 FFF7FEFF 		bl	lv_event_get_draw_ctx
+  64              	.LVL4:
+  65 0014 0490     		str	r0, [sp, #16]
+  66              	.LVL5:
+ 199:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     const lv_font_t * font = lv_obj_get_style_text_font(obj, LV_PART_MAIN);
+  67              		.loc 1 199 5 is_stmt 1 view .LVU9
+  68              	.LBB54:
+  69              	.LBI54:
+  70              		.file 2 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h"
+   1:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_width(const struct _lv_obj_t * obj, uint32_t part)
+   2:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+   3:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_WIDTH);
+   4:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+   5:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+   6:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+   7:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_min_width(const struct _lv_obj_t * obj, uint32_t part)
+   8:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+   9:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_MIN_WIDTH);
+  10:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  11:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  12:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_max_width(const struct _lv_obj_t * obj, uint32_t part)
+  14:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  15:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_MAX_WIDTH);
+  16:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  17:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 6
+
+
+  18:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  19:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_height(const struct _lv_obj_t * obj, uint32_t part)
+  20:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  21:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_HEIGHT);
+  22:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  23:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  24:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  25:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_min_height(const struct _lv_obj_t * obj, uint32_t part)
+  26:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  27:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_MIN_HEIGHT);
+  28:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  29:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  30:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  31:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_max_height(const struct _lv_obj_t * obj, uint32_t part)
+  32:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  33:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_MAX_HEIGHT);
+  34:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  35:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  36:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  37:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_x(const struct _lv_obj_t * obj, uint32_t part)
+  38:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  39:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_X);
+  40:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  41:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  42:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  43:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_y(const struct _lv_obj_t * obj, uint32_t part)
+  44:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  45:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_Y);
+  46:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  47:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  48:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  49:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_align_t lv_obj_get_style_align(const struct _lv_obj_t * obj, uint32_t part)
+  50:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  51:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ALIGN);
+  52:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_align_t)v.num;
+  53:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  54:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  55:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_transform_width(const struct _lv_obj_t * obj, uint32_t pa
+  56:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TRANSFORM_WIDTH);
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  60:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  61:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_transform_height(const struct _lv_obj_t * obj, uint32_t p
+  62:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TRANSFORM_HEIGHT);
+  64:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  65:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  66:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  67:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_translate_x(const struct _lv_obj_t * obj, uint32_t part)
+  68:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  69:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TRANSLATE_X);
+  70:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  71:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  72:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  73:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_translate_y(const struct _lv_obj_t * obj, uint32_t part)
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 7
+
+
+  75:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TRANSLATE_Y);
+  76:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  79:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_transform_zoom(const struct _lv_obj_t * obj, uint32_t par
+  80:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  81:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TRANSFORM_ZOOM);
+  82:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  83:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  84:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  85:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_transform_angle(const struct _lv_obj_t * obj, uint32_t pa
+  86:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  87:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TRANSFORM_ANGLE);
+  88:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  89:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  90:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_pad_top(const struct _lv_obj_t * obj, uint32_t part)
+  92:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_PAD_TOP);
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+  96:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_pad_bottom(const struct _lv_obj_t * obj, uint32_t part)
+  98:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_PAD_BOTTOM);
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 101:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 102:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_pad_left(const struct _lv_obj_t * obj, uint32_t part)
+ 104:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_PAD_LEFT);
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 107:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 108:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_pad_right(const struct _lv_obj_t * obj, uint32_t part)
+ 110:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_PAD_RIGHT);
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 113:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 114:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 115:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_pad_row(const struct _lv_obj_t * obj, uint32_t part)
+ 116:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 117:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_PAD_ROW);
+ 118:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 119:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 120:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_pad_column(const struct _lv_obj_t * obj, uint32_t part)
+ 122:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_PAD_COLUMN);
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 125:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 126:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 127:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_bg_color(const struct _lv_obj_t * obj, uint32_t part)
+ 128:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 129:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_COLOR);
+ 130:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 131:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 8
+
+
+ 132:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 133:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_bg_color_filtered(const struct _lv_obj_t * obj, uint32_t 
+ 134:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 135:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_COLOR_FILTERED);
+ 136:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 137:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 138:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 139:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_bg_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 140:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 141:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_OPA);
+ 142:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 143:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 144:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 145:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_bg_grad_color(const struct _lv_obj_t * obj, uint32_t part
+ 146:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 147:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_GRAD_COLOR);
+ 148:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 149:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 150:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 151:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_bg_grad_color_filtered(const struct _lv_obj_t * obj, uint
+ 152:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 153:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_GRAD_COLOR_FILTERED);
+ 154:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 155:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 156:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 157:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_grad_dir_t lv_obj_get_style_bg_grad_dir(const struct _lv_obj_t * obj, uint32_t par
+ 158:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 159:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_GRAD_DIR);
+ 160:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_grad_dir_t)v.num;
+ 161:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 162:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 163:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_bg_main_stop(const struct _lv_obj_t * obj, uint32_t part)
+ 164:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 165:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_MAIN_STOP);
+ 166:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 167:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 168:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_bg_grad_stop(const struct _lv_obj_t * obj, uint32_t part)
+ 170:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 171:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_GRAD_STOP);
+ 172:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 173:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 174:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 175:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline const lv_grad_dsc_t * lv_obj_get_style_bg_grad(const struct _lv_obj_t * obj, uint32_t
+ 176:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 177:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_GRAD);
+ 178:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const lv_grad_dsc_t *)v.ptr;
+ 179:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 181:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_dither_mode_t lv_obj_get_style_bg_dither_mode(const struct _lv_obj_t * obj, uint32
+ 182:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 183:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_DITHER_MODE);
+ 184:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_dither_mode_t)v.num;
+ 185:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 186:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 187:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline const void * lv_obj_get_style_bg_img_src(const struct _lv_obj_t * obj, uint32_t part)
+ 188:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 9
+
+
+ 189:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_IMG_SRC);
+ 190:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const void *)v.ptr;
+ 191:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 192:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 193:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_bg_img_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 194:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 195:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_IMG_OPA);
+ 196:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 197:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 198:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 199:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_bg_img_recolor(const struct _lv_obj_t * obj, uint32_t par
+ 200:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 201:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_IMG_RECOLOR);
+ 202:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 203:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 204:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 205:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_bg_img_recolor_filtered(const struct _lv_obj_t * obj, uin
+ 206:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 207:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_IMG_RECOLOR_FILTERED);
+ 208:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 209:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 210:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 211:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_bg_img_recolor_opa(const struct _lv_obj_t * obj, uint32_t p
+ 212:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 213:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_IMG_RECOLOR_OPA);
+ 214:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 215:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 216:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 217:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline bool lv_obj_get_style_bg_img_tiled(const struct _lv_obj_t * obj, uint32_t part)
+ 218:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 219:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_IMG_TILED);
+ 220:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (bool)v.num;
+ 221:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 222:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 223:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_border_color(const struct _lv_obj_t * obj, uint32_t part)
+ 224:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 225:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BORDER_COLOR);
+ 226:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 227:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 228:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 229:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_border_color_filtered(const struct _lv_obj_t * obj, uint3
+ 230:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 231:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BORDER_COLOR_FILTERED);
+ 232:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 233:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 234:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 235:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_border_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 236:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 237:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BORDER_OPA);
+ 238:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 239:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 240:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 241:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_border_width(const struct _lv_obj_t * obj, uint32_t part)
+ 242:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 243:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BORDER_WIDTH);
+ 244:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 245:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 10
+
+
+ 246:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 247:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_border_side_t lv_obj_get_style_border_side(const struct _lv_obj_t * obj, uint32_t 
+ 248:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 249:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BORDER_SIDE);
+ 250:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_border_side_t)v.num;
+ 251:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 252:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 253:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline bool lv_obj_get_style_border_post(const struct _lv_obj_t * obj, uint32_t part)
+ 254:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 255:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BORDER_POST);
+ 256:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (bool)v.num;
+ 257:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 258:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 259:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_outline_width(const struct _lv_obj_t * obj, uint32_t part
+ 260:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 261:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_OUTLINE_WIDTH);
+ 262:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 263:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 264:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 265:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_outline_color(const struct _lv_obj_t * obj, uint32_t part
+ 266:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 267:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_OUTLINE_COLOR);
+ 268:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 269:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 270:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 271:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_outline_color_filtered(const struct _lv_obj_t * obj, uint
+ 272:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 273:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_OUTLINE_COLOR_FILTERED);
+ 274:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 275:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 276:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 277:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_outline_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 278:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 279:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_OUTLINE_OPA);
+ 280:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 281:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 282:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 283:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_outline_pad(const struct _lv_obj_t * obj, uint32_t part)
+ 284:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 285:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_OUTLINE_PAD);
+ 286:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 287:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 288:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 289:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_shadow_width(const struct _lv_obj_t * obj, uint32_t part)
+ 290:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 291:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_WIDTH);
+ 292:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 293:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 294:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 295:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_shadow_ofs_x(const struct _lv_obj_t * obj, uint32_t part)
+ 296:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 297:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_OFS_X);
+ 298:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 299:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 300:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 301:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_shadow_ofs_y(const struct _lv_obj_t * obj, uint32_t part)
+ 302:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 11
+
+
+ 303:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_OFS_Y);
+ 304:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 305:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 306:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 307:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_shadow_spread(const struct _lv_obj_t * obj, uint32_t part
+ 308:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 309:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_SPREAD);
+ 310:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 311:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 312:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 313:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_shadow_color(const struct _lv_obj_t * obj, uint32_t part)
+ 314:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 315:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_COLOR);
+ 316:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 317:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 318:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 319:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_shadow_color_filtered(const struct _lv_obj_t * obj, uint3
+ 320:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 321:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_COLOR_FILTERED);
+ 322:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 323:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 324:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 325:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_shadow_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 326:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 327:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_OPA);
+ 328:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 329:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 330:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 331:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_img_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 332:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 333:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_IMG_OPA);
+ 334:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 335:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 336:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 337:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_img_recolor(const struct _lv_obj_t * obj, uint32_t part)
+ 338:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 339:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_IMG_RECOLOR);
+ 340:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 341:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 342:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 343:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_img_recolor_filtered(const struct _lv_obj_t * obj, uint32
+ 344:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 345:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_IMG_RECOLOR_FILTERED);
+ 346:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 347:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 348:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 349:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_img_recolor_opa(const struct _lv_obj_t * obj, uint32_t part
+ 350:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 351:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_IMG_RECOLOR_OPA);
+ 352:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 353:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 354:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 355:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_line_width(const struct _lv_obj_t * obj, uint32_t part)
+ 356:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 357:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_WIDTH);
+ 358:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 359:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 12
+
+
+ 360:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 361:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_line_dash_width(const struct _lv_obj_t * obj, uint32_t pa
+ 362:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 363:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_DASH_WIDTH);
+ 364:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 365:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 366:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 367:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_line_dash_gap(const struct _lv_obj_t * obj, uint32_t part
+ 368:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 369:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_DASH_GAP);
+ 370:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 371:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 372:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 373:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline bool lv_obj_get_style_line_rounded(const struct _lv_obj_t * obj, uint32_t part)
+ 374:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 375:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_ROUNDED);
+ 376:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (bool)v.num;
+ 377:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 378:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 379:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_line_color(const struct _lv_obj_t * obj, uint32_t part)
+ 380:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 381:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_COLOR);
+ 382:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 383:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 384:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 385:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_line_color_filtered(const struct _lv_obj_t * obj, uint32_
+ 386:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 387:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_COLOR_FILTERED);
+ 388:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 389:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 390:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 391:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_line_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 392:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 393:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_LINE_OPA);
+ 394:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 395:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 396:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 397:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_arc_width(const struct _lv_obj_t * obj, uint32_t part)
+ 398:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 399:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ARC_WIDTH);
+ 400:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 401:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 402:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 403:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline bool lv_obj_get_style_arc_rounded(const struct _lv_obj_t * obj, uint32_t part)
+ 404:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 405:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ARC_ROUNDED);
+ 406:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (bool)v.num;
+ 407:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 408:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 409:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_arc_color(const struct _lv_obj_t * obj, uint32_t part)
+ 410:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 411:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ARC_COLOR);
+ 412:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 413:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 414:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 415:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_arc_color_filtered(const struct _lv_obj_t * obj, uint32_t
+ 416:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 13
+
+
+ 417:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ARC_COLOR_FILTERED);
+ 418:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 419:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 420:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 421:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_arc_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 422:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 423:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ARC_OPA);
+ 424:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 425:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 426:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 427:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline const void * lv_obj_get_style_arc_img_src(const struct _lv_obj_t * obj, uint32_t part
+ 428:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 429:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_ARC_IMG_SRC);
+ 430:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const void *)v.ptr;
+ 431:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 432:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 433:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_text_color(const struct _lv_obj_t * obj, uint32_t part)
+ 434:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 435:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TEXT_COLOR);
+ 436:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 437:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 438:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 439:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_color_t lv_obj_get_style_text_color_filtered(const struct _lv_obj_t * obj, uint32_
+ 440:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 441:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TEXT_COLOR_FILTERED);
+ 442:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return v.color;
+ 443:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 444:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 445:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_opa_t lv_obj_get_style_text_opa(const struct _lv_obj_t * obj, uint32_t part)
+ 446:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 447:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TEXT_OPA);
+ 448:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_opa_t)v.num;
+ 449:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 450:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 451:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline const lv_font_t * lv_obj_get_style_text_font(const struct _lv_obj_t * obj, uint32_t p
+  71              		.loc 2 451 33 view .LVU10
+  72              	.LBB55:
+ 452:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 453:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TEXT_FONT);
+  73              		.loc 2 453 5 view .LVU11
+  74              		.loc 2 453 26 is_stmt 0 view .LVU12
+  75 0016 41F25942 		movw	r2, #5209
+  76 001a 0021     		movs	r1, #0
+  77 001c 2046     		mov	r0, r4
+  78              	.LVL6:
+  79              		.loc 2 453 26 view .LVU13
+  80 001e FFF7FEFF 		bl	lv_obj_get_style_prop
+  81              	.LVL7:
+ 454:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const lv_font_t *)v.ptr;
+  82              		.loc 2 454 5 is_stmt 1 view .LVU14
+  83              		.loc 2 454 5 is_stmt 0 view .LVU15
+  84              	.LBE55:
+  85              	.LBE54:
+ 200:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t font_h = lv_font_get_line_height(font);
+  86              		.loc 1 200 5 is_stmt 1 view .LVU16
+  87              	.LBB56:
+  88              	.LBI56:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 14
+
+
+  89              		.file 3 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h"
+   1:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @file lv_font.h
+   3:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #ifndef LV_FONT_H
+   7:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #define LV_FONT_H
+   8:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+   9:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #ifdef __cplusplus
+  10:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** extern "C" {
+  11:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #endif
+  12:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *      INCLUDES
+  15:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #include "../lv_conf_internal.h"
+  17:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #include <stdint.h>
+  18:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #include <stddef.h>
+  19:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #include <stdbool.h>
+  20:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  21:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #include "lv_symbol_def.h"
+  22:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #include "../misc/lv_area.h"
+  23:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  24:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /*********************
+  25:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *      DEFINES
+  26:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *********************/
+  27:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  28:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**********************
+  29:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *      TYPEDEFS
+  30:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  **********************/
+  31:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  32:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /*------------------
+  33:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * General types
+  34:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *-----------------*/
+  35:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  36:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** struct _lv_font_t;
+  37:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /** Describes the properties of a glyph.*/
+  38:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** typedef struct {
+  39:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     const struct _lv_font_t *
+  40:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****         resolved_font; /**< Pointer to a font where the gylph was actually found after handling fal
+  41:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     uint16_t adv_w; /**< The glyph needs this space. Draw the next glyph after this width.*/
+  42:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     uint16_t box_w; /**< Width of the glyph's bounding box*/
+  43:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     uint16_t box_h; /**< Height of the glyph's bounding box*/
+  44:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     int16_t ofs_x;  /**< x offset of the bounding box*/
+  45:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     int16_t ofs_y;  /**< y offset of the bounding box*/
+  46:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     uint8_t bpp: 4;  /**< Bit-per-pixel: 1, 2, 4, 8*/
+  47:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     uint8_t is_placeholder: 1; /** Glyph is missing. But placeholder will still be displayed */
+  48:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** } lv_font_glyph_dsc_t;
+  49:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  50:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /** The bitmaps might be upscaled by 3 to achieve subpixel rendering.*/
+  51:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** enum {
+  52:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     LV_FONT_SUBPX_NONE,
+  53:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     LV_FONT_SUBPX_HOR,
+  54:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     LV_FONT_SUBPX_VER,
+  55:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     LV_FONT_SUBPX_BOTH,
+  56:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** };
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 15
+
+
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** typedef uint8_t lv_font_subpx_t;
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  60:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /** Describe the properties of a font*/
+  61:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** typedef struct _lv_font_t {
+  62:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     /** Get a glyph's descriptor from a font*/
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     bool (*get_glyph_dsc)(const struct _lv_font_t *, lv_font_glyph_dsc_t *, uint32_t letter, uint32
+  64:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  65:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     /** Get a glyph's bitmap from a font*/
+  66:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     const uint8_t * (*get_glyph_bitmap)(const struct _lv_font_t *, uint32_t);
+  67:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  68:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     /*Pointer to the font in a font pack (must have the same line height)*/
+  69:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     lv_coord_t line_height;         /**< The real line height where any text fits*/
+  70:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     lv_coord_t base_line;           /**< Base line measured from the top of the line_height*/
+  71:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     uint8_t subpx  : 2;             /**< An element of `lv_font_subpx_t`*/
+  72:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  73:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     int8_t underline_position;      /**< Distance between the top of the underline and base line (<
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     int8_t underline_thickness;     /**< Thickness of the underline*/
+  75:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  76:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     const void * dsc;               /**< Store implementation specific or run_time data or caching 
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     const struct _lv_font_t * fallback;   /**< Fallback font for missing glyph. Resolved recursivel
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #if LV_USE_USER_DATA
+  79:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     void * user_data;               /**< Custom user data for font.*/
+  80:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** #endif
+  81:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** } lv_font_t;
+  82:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  83:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**********************
+  84:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * GLOBAL PROTOTYPES
+  85:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  **********************/
+  86:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  87:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**
+  88:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * Return with the bitmap of a font.
+  89:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param font_p pointer to a font
+  90:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param letter an UNICODE character code
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @return pointer to the bitmap of the letter
+  92:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  */
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** const uint8_t * lv_font_get_glyph_bitmap(const lv_font_t * font_p, uint32_t letter);
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**
+  96:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * Get the descriptor of a glyph
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param font_p pointer to font
+  98:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param dsc_out store the result descriptor here
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param letter an UNICODE letter code
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param letter_next the next letter after `letter`. Used for kerning
+ 101:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @return true: descriptor is successfully loaded into `dsc_out`.
+ 102:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  *         false: the letter was not found, no data is loaded to `dsc_out`
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  */
+ 104:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** bool lv_font_get_glyph_dsc(const lv_font_t * font_p, lv_font_glyph_dsc_t * dsc_out, uint32_t letter
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****                            uint32_t letter_next);
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+ 107:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**
+ 108:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * Get the width of a glyph with kerning
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param font pointer to a font
+ 110:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param letter an UNICODE letter
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param letter_next the next letter after `letter`. Used for kerning
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @return the width of the glyph
+ 113:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  */
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 16
+
+
+ 114:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** uint16_t lv_font_get_glyph_width(const lv_font_t * font, uint32_t letter, uint32_t letter_next);
+ 115:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** 
+ 116:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** /**
+ 117:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * Get the line height of a font. All characters fit into this height
+ 118:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @param font_p pointer to a font
+ 119:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  * @return the height of a font
+ 120:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****  */
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** static inline lv_coord_t lv_font_get_line_height(const lv_font_t * font_p)
+  90              		.loc 3 121 26 view .LVU17
+  91              	.LBB57:
+ 122:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** {
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h ****     return font_p->line_height;
+  92              		.loc 3 123 5 view .LVU18
+  93              		.loc 3 123 18 is_stmt 0 view .LVU19
+  94 0022 0690     		str	r0, [sp, #24]
+  95 0024 D0F808A0 		ldr	r10, [r0, #8]
+  96              	.LVL8:
+  97              		.loc 3 123 18 view .LVU20
+  98              	.LBE57:
+  99              	.LBE56:
+ 201:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 202:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t bg_border = lv_obj_get_style_border_width(obj, LV_PART_MAIN);
+ 100              		.loc 1 202 5 is_stmt 1 view .LVU21
+ 101              	.LBB58:
+ 102              	.LBI58:
+ 241:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 103              		.loc 2 241 26 view .LVU22
+ 104              	.LBB59:
+ 243:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 105              		.loc 2 243 5 view .LVU23
+ 243:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 106              		.loc 2 243 26 is_stmt 0 view .LVU24
+ 107 0028 41F23202 		movw	r2, #4146
+ 108 002c 0021     		movs	r1, #0
+ 109 002e 2046     		mov	r0, r4
+ 110              	.LVL9:
+ 243:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 111              		.loc 2 243 26 view .LVU25
+ 112 0030 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 113              	.LVL10:
+ 114 0034 0746     		mov	r7, r0
+ 115              	.LVL11:
+ 244:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 116              		.loc 2 244 5 is_stmt 1 view .LVU26
+ 244:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 117              		.loc 2 244 5 is_stmt 0 view .LVU27
+ 118              	.LBE59:
+ 119              	.LBE58:
+ 203:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t bg_topp = lv_obj_get_style_pad_top(obj, LV_PART_MAIN) + bg_border;
+ 120              		.loc 1 203 5 is_stmt 1 view .LVU28
+ 121              	.LBB60:
+ 122              	.LBI60:
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 123              		.loc 2 91 26 view .LVU29
+ 124              	.LBB61:
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 125              		.loc 2 93 5 view .LVU30
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 17
+
+
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 126              		.loc 2 93 26 is_stmt 0 view .LVU31
+ 127 0036 41F61002 		movw	r2, #6160
+ 128 003a 0021     		movs	r1, #0
+ 129 003c 2046     		mov	r0, r4
+ 130              	.LVL12:
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 131              		.loc 2 93 26 view .LVU32
+ 132 003e FFF7FEFF 		bl	lv_obj_get_style_prop
+ 133              	.LVL13:
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 134              		.loc 2 94 5 is_stmt 1 view .LVU33
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 135              		.loc 2 94 5 is_stmt 0 view .LVU34
+ 136              	.LBE61:
+ 137              	.LBE60:
+ 138              		.loc 1 203 16 view .LVU35
+ 139 0042 C119     		adds	r1, r0, r7
+ 140 0044 0591     		str	r1, [sp, #20]
+ 141              	.LVL14:
+ 204:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t bg_leftp = lv_obj_get_style_pad_left(obj, LV_PART_MAIN) + bg_border;
+ 142              		.loc 1 204 5 is_stmt 1 view .LVU36
+ 143              	.LBB62:
+ 144              	.LBI62:
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 145              		.loc 2 103 26 view .LVU37
+ 146              	.LBB63:
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 147              		.loc 2 105 5 view .LVU38
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 148              		.loc 2 105 26 is_stmt 0 view .LVU39
+ 149 0046 41F61202 		movw	r2, #6162
+ 150 004a 0021     		movs	r1, #0
+ 151              	.LVL15:
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 152              		.loc 2 105 26 view .LVU40
+ 153 004c 2046     		mov	r0, r4
+ 154 004e FFF7FEFF 		bl	lv_obj_get_style_prop
+ 155              	.LVL16:
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 156              		.loc 2 106 5 is_stmt 1 view .LVU41
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 157              		.loc 2 106 5 is_stmt 0 view .LVU42
+ 158              	.LBE63:
+ 159              	.LBE62:
+ 160              		.loc 1 204 16 view .LVU43
+ 161 0052 0744     		add	r7, r7, r0
+ 162              	.LVL17:
+ 205:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t bg_colp = lv_obj_get_style_pad_column(obj, LV_PART_MAIN);
+ 163              		.loc 1 205 5 is_stmt 1 view .LVU44
+ 164              	.LBB64:
+ 165              	.LBI64:
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 166              		.loc 2 121 26 view .LVU45
+ 167              	.LBB65:
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 168              		.loc 2 123 5 view .LVU46
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 18
+
+
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 169              		.loc 2 123 26 is_stmt 0 view .LVU47
+ 170 0054 41F61502 		movw	r2, #6165
+ 171 0058 0021     		movs	r1, #0
+ 172 005a 2046     		mov	r0, r4
+ 173 005c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 174              	.LVL18:
+ 175 0060 0790     		str	r0, [sp, #28]
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 176              		.loc 2 124 5 is_stmt 1 view .LVU48
+ 177              	.LVL19:
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 178              		.loc 2 124 5 is_stmt 0 view .LVU49
+ 179              	.LBE65:
+ 180              	.LBE64:
+ 206:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 207:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t marker_leftp = lv_obj_get_style_pad_left(obj, LV_PART_INDICATOR);
+ 181              		.loc 1 207 5 is_stmt 1 view .LVU50
+ 182              	.LBB66:
+ 183              	.LBI66:
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 184              		.loc 2 103 26 view .LVU51
+ 185              	.LBB67:
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 186              		.loc 2 105 5 view .LVU52
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 187              		.loc 2 105 26 is_stmt 0 view .LVU53
+ 188 0062 41F61202 		movw	r2, #6162
+ 189 0066 4FF40031 		mov	r1, #131072
+ 190 006a 2046     		mov	r0, r4
+ 191              	.LVL20:
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 192              		.loc 2 105 26 view .LVU54
+ 193 006c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 194              	.LVL21:
+ 195 0070 0646     		mov	r6, r0
+ 196              	.LVL22:
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 197              		.loc 2 106 5 is_stmt 1 view .LVU55
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 198              		.loc 2 106 5 is_stmt 0 view .LVU56
+ 199              	.LBE67:
+ 200              	.LBE66:
+ 208:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t marker_rightp = lv_obj_get_style_pad_right(obj, LV_PART_INDICATOR);
+ 201              		.loc 1 208 5 is_stmt 1 view .LVU57
+ 202              	.LBB68:
+ 203              	.LBI68:
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 204              		.loc 2 109 26 view .LVU58
+ 205              	.LBB69:
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 206              		.loc 2 111 5 view .LVU59
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 207              		.loc 2 111 26 is_stmt 0 view .LVU60
+ 208 0072 41F61302 		movw	r2, #6163
+ 209 0076 4FF40031 		mov	r1, #131072
+ 210 007a 2046     		mov	r0, r4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 19
+
+
+ 211              	.LVL23:
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 212              		.loc 2 111 26 view .LVU61
+ 213 007c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 214              	.LVL24:
+ 215 0080 0546     		mov	r5, r0
+ 216              	.LVL25:
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 217              		.loc 2 112 5 is_stmt 1 view .LVU62
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 218              		.loc 2 112 5 is_stmt 0 view .LVU63
+ 219              	.LBE69:
+ 220              	.LBE68:
+ 209:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t marker_topp = lv_obj_get_style_pad_top(obj, LV_PART_INDICATOR);
+ 221              		.loc 1 209 5 is_stmt 1 view .LVU64
+ 222              	.LBB70:
+ 223              	.LBI70:
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 224              		.loc 2 91 26 view .LVU65
+ 225              	.LBB71:
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 226              		.loc 2 93 5 view .LVU66
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 227              		.loc 2 93 26 is_stmt 0 view .LVU67
+ 228 0082 41F61002 		movw	r2, #6160
+ 229 0086 4FF40031 		mov	r1, #131072
+ 230 008a 2046     		mov	r0, r4
+ 231              	.LVL26:
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 232              		.loc 2 93 26 view .LVU68
+ 233 008c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 234              	.LVL27:
+ 235 0090 0890     		str	r0, [sp, #32]
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 236              		.loc 2 94 5 is_stmt 1 view .LVU69
+ 237              	.LVL28:
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 238              		.loc 2 94 5 is_stmt 0 view .LVU70
+ 239              	.LBE71:
+ 240              	.LBE70:
+ 210:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t marker_bottomp = lv_obj_get_style_pad_bottom(obj, LV_PART_INDICATOR);
+ 241              		.loc 1 210 5 is_stmt 1 view .LVU71
+ 242              	.LBB72:
+ 243              	.LBI72:
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 244              		.loc 2 97 26 view .LVU72
+ 245              	.LBB73:
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 246              		.loc 2 99 5 view .LVU73
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 247              		.loc 2 99 26 is_stmt 0 view .LVU74
+ 248 0092 41F61102 		movw	r2, #6161
+ 249 0096 4FF40031 		mov	r1, #131072
+ 250 009a 2046     		mov	r0, r4
+ 251              	.LVL29:
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 252              		.loc 2 99 26 view .LVU75
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 20
+
+
+ 253 009c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 254              	.LVL30:
+ 255 00a0 0990     		str	r0, [sp, #36]
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 256              		.loc 2 100 5 is_stmt 1 view .LVU76
+ 257              	.LVL31:
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 258              		.loc 2 100 5 is_stmt 0 view .LVU77
+ 259              	.LBE73:
+ 260              	.LBE72:
+ 211:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 212:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t transf_w = lv_obj_get_style_transform_width(obj, LV_PART_INDICATOR);
+ 261              		.loc 1 212 5 is_stmt 1 view .LVU78
+ 262              	.LBB74:
+ 263              	.LBI74:
+  55:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 264              		.loc 2 55 26 view .LVU79
+ 265              	.LBB75:
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 266              		.loc 2 57 5 view .LVU80
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 267              		.loc 2 57 26 is_stmt 0 view .LVU81
+ 268 00a2 40F60A02 		movw	r2, #2058
+ 269 00a6 4FF40031 		mov	r1, #131072
+ 270 00aa 2046     		mov	r0, r4
+ 271              	.LVL32:
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 272              		.loc 2 57 26 view .LVU82
+ 273 00ac FFF7FEFF 		bl	lv_obj_get_style_prop
+ 274              	.LVL33:
+ 275 00b0 8346     		mov	fp, r0
+ 276              	.LVL34:
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 277              		.loc 2 58 5 is_stmt 1 view .LVU83
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 278              		.loc 2 58 5 is_stmt 0 view .LVU84
+ 279              	.LBE75:
+ 280              	.LBE74:
+ 213:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t transf_h = lv_obj_get_style_transform_height(obj, LV_PART_INDICATOR);
+ 281              		.loc 1 213 5 is_stmt 1 view .LVU85
+ 282              	.LBB76:
+ 283              	.LBI76:
+  61:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 284              		.loc 2 61 26 view .LVU86
+ 285              	.LBB77:
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 286              		.loc 2 63 5 view .LVU87
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 287              		.loc 2 63 26 is_stmt 0 view .LVU88
+ 288 00b2 40F60B02 		movw	r2, #2059
+ 289 00b6 4FF40031 		mov	r1, #131072
+ 290 00ba 2046     		mov	r0, r4
+ 291              	.LVL35:
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 292              		.loc 2 63 26 view .LVU89
+ 293 00bc FFF7FEFF 		bl	lv_obj_get_style_prop
+ 294              	.LVL36:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 21
+
+
+ 295 00c0 8046     		mov	r8, r0
+ 296              	.LVL37:
+  64:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 297              		.loc 2 64 5 is_stmt 1 view .LVU90
+  64:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 298              		.loc 2 64 5 is_stmt 0 view .LVU91
+ 299              	.LBE77:
+ 300              	.LBE76:
+ 214:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 215:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_rect_dsc_t indic_dsc;
+ 301              		.loc 1 215 5 is_stmt 1 view .LVU92
+ 216:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_rect_dsc_init(&indic_dsc);
+ 302              		.loc 1 216 5 view .LVU93
+ 303 00c2 0DF1D809 		add	r9, sp, #216
+ 304 00c6 4846     		mov	r0, r9
+ 305              	.LVL38:
+ 306              		.loc 1 216 5 is_stmt 0 view .LVU94
+ 307 00c8 FFF7FEFF 		bl	lv_draw_rect_dsc_init
+ 308              	.LVL39:
+ 217:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_init_draw_rect_dsc(obj, LV_PART_INDICATOR, &indic_dsc);
+ 309              		.loc 1 217 5 is_stmt 1 view .LVU95
+ 310 00cc 4A46     		mov	r2, r9
+ 311 00ce 4FF40031 		mov	r1, #131072
+ 312 00d2 2046     		mov	r0, r4
+ 313 00d4 FFF7FEFF 		bl	lv_obj_init_draw_rect_dsc
+ 314              	.LVL40:
+ 218:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_area_t marker_area;
+ 315              		.loc 1 218 5 view .LVU96
+ 219:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area.x1 = obj->coords.x1 + bg_leftp;
+ 316              		.loc 1 219 5 view .LVU97
+ 317              		.loc 1 219 33 is_stmt 0 view .LVU98
+ 318 00d8 6069     		ldr	r0, [r4, #20]
+ 319              		.loc 1 219 37 view .LVU99
+ 320 00da 3844     		add	r0, r0, r7
+ 321              		.loc 1 219 20 view .LVU100
+ 322 00dc 3290     		str	r0, [sp, #200]
+ 220:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area.x2 = marker_area.x1 + font_h + marker_leftp + marker_rightp - 1;
+ 323              		.loc 1 220 5 is_stmt 1 view .LVU101
+ 324              		.loc 1 220 37 is_stmt 0 view .LVU102
+ 325 00de 00EB0A03 		add	r3, r0, r10
+ 326              		.loc 1 220 46 view .LVU103
+ 327 00e2 1E44     		add	r6, r6, r3
+ 328              	.LVL41:
+ 329              		.loc 1 220 61 view .LVU104
+ 330 00e4 2E44     		add	r6, r6, r5
+ 331              		.loc 1 220 77 view .LVU105
+ 332 00e6 013E     		subs	r6, r6, #1
+ 333              		.loc 1 220 20 view .LVU106
+ 334 00e8 3496     		str	r6, [sp, #208]
+ 221:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area.y1 = obj->coords.y1 + bg_topp;
+ 335              		.loc 1 221 5 is_stmt 1 view .LVU107
+ 336              		.loc 1 221 33 is_stmt 0 view .LVU108
+ 337 00ea A769     		ldr	r7, [r4, #24]
+ 338              	.LVL42:
+ 339              		.loc 1 221 37 view .LVU109
+ 340 00ec 0599     		ldr	r1, [sp, #20]
+ 341 00ee 0F44     		add	r7, r7, r1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 22
+
+
+ 342              		.loc 1 221 20 view .LVU110
+ 343 00f0 3397     		str	r7, [sp, #204]
+ 222:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area.y2 = marker_area.y1 + font_h + marker_topp + marker_bottomp - 1;
+ 344              		.loc 1 222 5 is_stmt 1 view .LVU111
+ 345              		.loc 1 222 37 is_stmt 0 view .LVU112
+ 346 00f2 07EB0A05 		add	r5, r7, r10
+ 347              	.LVL43:
+ 348              		.loc 1 222 46 view .LVU113
+ 349 00f6 089B     		ldr	r3, [sp, #32]
+ 350              	.LVL44:
+ 351              		.loc 1 222 46 view .LVU114
+ 352 00f8 1D44     		add	r5, r5, r3
+ 353              		.loc 1 222 60 view .LVU115
+ 354 00fa 099B     		ldr	r3, [sp, #36]
+ 355              	.LVL45:
+ 356              		.loc 1 222 60 view .LVU116
+ 357 00fc 1D44     		add	r5, r5, r3
+ 358              		.loc 1 222 77 view .LVU117
+ 359 00fe 013D     		subs	r5, r5, #1
+ 360              		.loc 1 222 20 view .LVU118
+ 361 0100 3595     		str	r5, [sp, #212]
+ 223:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 224:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_area_t marker_area_transf;
+ 362              		.loc 1 224 5 is_stmt 1 view .LVU119
+ 225:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_area_copy(&marker_area_transf, &marker_area);
+ 363              		.loc 1 225 5 view .LVU120
+ 364              	.LVL46:
+ 365              	.LBB78:
+ 366              	.LBI78:
+ 367              		.file 4 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h"
+   1:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**
+   2:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @file lv_area.h
+   3:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  *
+   4:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  */
+   5:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+   6:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #ifndef LV_AREA_H
+   7:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #define LV_AREA_H
+   8:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+   9:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #ifdef __cplusplus
+  10:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** extern "C" {
+  11:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #endif
+  12:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  13:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /*********************
+  14:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  *      INCLUDES
+  15:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  *********************/
+  16:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #include "../lv_conf_internal.h"
+  17:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #include <stdbool.h>
+  18:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #include <stdint.h>
+  19:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  20:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /*********************
+  21:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  *      DEFINES
+  22:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  *********************/
+  23:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  24:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #if LV_USE_LARGE_COORD
+  25:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** typedef int32_t lv_coord_t;
+  26:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #else
+  27:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** typedef int16_t lv_coord_t;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 23
+
+
+  28:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** #endif
+  29:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  30:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**********************
+  31:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  *      TYPEDEFS
+  32:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  **********************/
+  33:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  34:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**
+  35:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * Represents a point on the screen.
+  36:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  */
+  37:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** typedef struct {
+  38:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     lv_coord_t x;
+  39:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     lv_coord_t y;
+  40:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** } lv_point_t;
+  41:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  42:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /** Represents an area of the screen.*/
+  43:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** typedef struct {
+  44:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     lv_coord_t x1;
+  45:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     lv_coord_t y1;
+  46:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     lv_coord_t x2;
+  47:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     lv_coord_t y2;
+  48:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** } lv_area_t;
+  49:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  50:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /** Alignments*/
+  51:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** enum {
+  52:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_DEFAULT = 0,
+  53:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_TOP_LEFT,
+  54:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_TOP_MID,
+  55:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_TOP_RIGHT,
+  56:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_BOTTOM_LEFT,
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_BOTTOM_MID,
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_BOTTOM_RIGHT,
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_LEFT_MID,
+  60:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_RIGHT_MID,
+  61:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_CENTER,
+  62:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  63:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_TOP_LEFT,
+  64:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_TOP_MID,
+  65:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_TOP_RIGHT,
+  66:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_BOTTOM_LEFT,
+  67:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_BOTTOM_MID,
+  68:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_BOTTOM_RIGHT,
+  69:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_LEFT_TOP,
+  70:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_LEFT_MID,
+  71:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_LEFT_BOTTOM,
+  72:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_RIGHT_TOP,
+  73:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_RIGHT_MID,
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_ALIGN_OUT_RIGHT_BOTTOM,
+  75:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** };
+  76:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** typedef uint8_t lv_align_t;
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** enum {
+  79:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_NONE     = 0x00,
+  80:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_LEFT     = (1 << 0),
+  81:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_RIGHT    = (1 << 1),
+  82:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_TOP      = (1 << 2),
+  83:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_BOTTOM   = (1 << 3),
+  84:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_HOR      = LV_DIR_LEFT | LV_DIR_RIGHT,
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 24
+
+
+  85:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_VER      = LV_DIR_TOP | LV_DIR_BOTTOM,
+  86:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     LV_DIR_ALL      = LV_DIR_HOR | LV_DIR_VER,
+  87:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** };
+  88:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  89:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** typedef uint8_t lv_dir_t;
+  90:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**********************
+  92:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * GLOBAL PROTOTYPES
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  **********************/
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**
+  96:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * Initialize an area
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param area_p pointer to an area
+  98:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param x1 left coordinate of the area
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param y1 top coordinate of the area
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param x2 right coordinate of the area
+ 101:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param y2 bottom coordinate of the area
+ 102:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  */
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** void lv_area_set(lv_area_t * area_p, lv_coord_t x1, lv_coord_t y1, lv_coord_t x2, lv_coord_t y2);
+ 104:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * Copy an area
+ 107:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param dest pointer to the destination area
+ 108:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param src pointer to the source area
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  */
+ 110:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** inline static void lv_area_copy(lv_area_t * dest, const lv_area_t * src)
+ 368              		.loc 4 110 20 view .LVU121
+ 369              	.LBB79:
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** {
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     dest->x1 = src->x1;
+ 370              		.loc 4 112 5 view .LVU122
+ 371              		.loc 4 112 14 is_stmt 0 view .LVU123
+ 372 0102 2E90     		str	r0, [sp, #184]
+ 113:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     dest->y1 = src->y1;
+ 373              		.loc 4 113 5 is_stmt 1 view .LVU124
+ 374              		.loc 4 113 14 is_stmt 0 view .LVU125
+ 375 0104 2F97     		str	r7, [sp, #188]
+ 114:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     dest->x2 = src->x2;
+ 376              		.loc 4 114 5 is_stmt 1 view .LVU126
+ 377              		.loc 4 114 14 is_stmt 0 view .LVU127
+ 378 0106 3096     		str	r6, [sp, #192]
+ 115:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     dest->y2 = src->y2;
+ 379              		.loc 4 115 5 is_stmt 1 view .LVU128
+ 380              		.loc 4 115 14 is_stmt 0 view .LVU129
+ 381 0108 3195     		str	r5, [sp, #196]
+ 382              	.LVL47:
+ 383              		.loc 4 115 14 view .LVU130
+ 384              	.LBE79:
+ 385              	.LBE78:
+ 226:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area_transf.x1 -= transf_w;
+ 386              		.loc 1 226 5 is_stmt 1 view .LVU131
+ 387              		.loc 1 226 27 is_stmt 0 view .LVU132
+ 388 010a A0EB0B00 		sub	r0, r0, fp
+ 389 010e 2E90     		str	r0, [sp, #184]
+ 227:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area_transf.x2 += transf_w;
+ 390              		.loc 1 227 5 is_stmt 1 view .LVU133
+ 391              		.loc 1 227 27 is_stmt 0 view .LVU134
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 25
+
+
+ 392 0110 06EB0B00 		add	r0, r6, fp
+ 393 0114 3090     		str	r0, [sp, #192]
+ 228:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area_transf.y1 -= transf_h;
+ 394              		.loc 1 228 5 is_stmt 1 view .LVU135
+ 395              		.loc 1 228 27 is_stmt 0 view .LVU136
+ 396 0116 A7EB0803 		sub	r3, r7, r8
+ 397              	.LVL48:
+ 398              		.loc 1 228 27 view .LVU137
+ 399 011a 2F93     		str	r3, [sp, #188]
+ 229:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     marker_area_transf.y2 += transf_h;
+ 400              		.loc 1 229 5 is_stmt 1 view .LVU138
+ 401              		.loc 1 229 27 is_stmt 0 view .LVU139
+ 402 011c 05EB0800 		add	r0, r5, r8
+ 403 0120 3190     		str	r0, [sp, #196]
+ 230:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 231:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_draw_part_dsc_t part_draw_dsc;
+ 404              		.loc 1 231 5 is_stmt 1 view .LVU140
+ 232:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_draw_dsc_init(&part_draw_dsc, draw_ctx);
+ 405              		.loc 1 232 5 view .LVU141
+ 406 0122 0499     		ldr	r1, [sp, #16]
+ 407 0124 1CA8     		add	r0, sp, #112
+ 408 0126 FFF7FEFF 		bl	lv_obj_draw_dsc_init
+ 409              	.LVL49:
+ 233:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     part_draw_dsc.rect_dsc = &indic_dsc;
+ 410              		.loc 1 233 5 view .LVU142
+ 411              		.loc 1 233 28 is_stmt 0 view .LVU143
+ 412 012a CDF88090 		str	r9, [sp, #128]
+ 234:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     part_draw_dsc.class_p = MY_CLASS;
+ 413              		.loc 1 234 5 is_stmt 1 view .LVU144
+ 414              		.loc 1 234 27 is_stmt 0 view .LVU145
+ 415 012e 304B     		ldr	r3, .L3
+ 416 0130 1D93     		str	r3, [sp, #116]
+ 235:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     part_draw_dsc.type = LV_CHECKBOX_DRAW_PART_BOX;
+ 417              		.loc 1 235 5 is_stmt 1 view .LVU146
+ 418              		.loc 1 235 24 is_stmt 0 view .LVU147
+ 419 0132 4FF00008 		mov	r8, #0
+ 420              	.LVL50:
+ 421              		.loc 1 235 24 view .LVU148
+ 422 0136 CDF87880 		str	r8, [sp, #120]
+ 236:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     part_draw_dsc.draw_area = &marker_area_transf;
+ 423              		.loc 1 236 5 is_stmt 1 view .LVU149
+ 424              		.loc 1 236 29 is_stmt 0 view .LVU150
+ 425 013a 0DF1B80B 		add	fp, sp, #184
+ 426              	.LVL51:
+ 427              		.loc 1 236 29 view .LVU151
+ 428 013e CDF87CB0 		str	fp, [sp, #124]
+ 237:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     part_draw_dsc.part = LV_PART_INDICATOR;
+ 429              		.loc 1 237 5 is_stmt 1 view .LVU152
+ 430              		.loc 1 237 24 is_stmt 0 view .LVU153
+ 431 0142 4FF40033 		mov	r3, #131072
+ 432 0146 2993     		str	r3, [sp, #164]
+ 238:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 239:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_event_send(obj, LV_EVENT_DRAW_PART_BEGIN, &part_draw_dsc);
+ 433              		.loc 1 239 5 is_stmt 1 view .LVU154
+ 434 0148 1CAA     		add	r2, sp, #112
+ 435 014a 1A21     		movs	r1, #26
+ 436 014c 2046     		mov	r0, r4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 26
+
+
+ 437 014e FFF7FEFF 		bl	lv_event_send
+ 438              	.LVL52:
+ 240:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_rect(draw_ctx, &indic_dsc, &marker_area_transf);
+ 439              		.loc 1 240 5 view .LVU155
+ 440 0152 5A46     		mov	r2, fp
+ 441 0154 4946     		mov	r1, r9
+ 442 0156 DDF810B0 		ldr	fp, [sp, #16]
+ 443 015a 5846     		mov	r0, fp
+ 444 015c FFF7FEFF 		bl	lv_draw_rect
+ 445              	.LVL53:
+ 241:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_event_send(obj, LV_EVENT_DRAW_PART_END, &part_draw_dsc);
+ 446              		.loc 1 241 5 view .LVU156
+ 447 0160 1CAA     		add	r2, sp, #112
+ 448 0162 1B21     		movs	r1, #27
+ 449 0164 2046     		mov	r0, r4
+ 450 0166 FFF7FEFF 		bl	lv_event_send
+ 451              	.LVL54:
+ 242:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 243:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t line_space = lv_obj_get_style_text_line_space(obj, LV_PART_MAIN);
+ 452              		.loc 1 243 5 view .LVU157
+ 453              	.LBB80:
+ 454              	.LBI80:
+ 455:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 456:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 457:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_text_letter_space(const struct _lv_obj_t * obj, uint32_t 
+ 458:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TEXT_LETTER_SPACE);
+ 460:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 461:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 462:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** 
+ 463:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** static inline lv_coord_t lv_obj_get_style_text_line_space(const struct _lv_obj_t * obj, uint32_t pa
+ 455              		.loc 2 463 26 view .LVU158
+ 456              	.LBB81:
+ 464:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 465:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_TEXT_LINE_SPACE);
+ 457              		.loc 2 465 5 view .LVU159
+ 458              		.loc 2 465 26 is_stmt 0 view .LVU160
+ 459 016a 41F25B42 		movw	r2, #5211
+ 460 016e 4146     		mov	r1, r8
+ 461 0170 2046     		mov	r0, r4
+ 462 0172 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 463              	.LVL55:
+ 464 0176 8146     		mov	r9, r0
+ 465              	.LVL56:
+ 466:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 466              		.loc 2 466 5 is_stmt 1 view .LVU161
+ 467              		.loc 2 466 5 is_stmt 0 view .LVU162
+ 468              	.LBE81:
+ 469              	.LBE80:
+ 244:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t letter_space = lv_obj_get_style_text_letter_space(obj, LV_PART_MAIN);
+ 470              		.loc 1 244 5 is_stmt 1 view .LVU163
+ 471              	.LBB82:
+ 472              	.LBI82:
+ 457:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 473              		.loc 2 457 26 view .LVU164
+ 474              	.LBB83:
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 27
+
+
+ 475              		.loc 2 459 5 view .LVU165
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 476              		.loc 2 459 26 is_stmt 0 view .LVU166
+ 477 0178 41F25A42 		movw	r2, #5210
+ 478 017c 4146     		mov	r1, r8
+ 479 017e 2046     		mov	r0, r4
+ 480              	.LVL57:
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 481              		.loc 2 459 26 view .LVU167
+ 482 0180 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 483              	.LVL58:
+ 484 0184 0346     		mov	r3, r0
+ 460:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 485              		.loc 2 460 5 is_stmt 1 view .LVU168
+ 486              	.LVL59:
+ 460:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 487              		.loc 2 460 5 is_stmt 0 view .LVU169
+ 488              	.LBE83:
+ 489              	.LBE82:
+ 245:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 246:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_point_t txt_size;
+ 490              		.loc 1 246 5 is_stmt 1 view .LVU170
+ 247:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_txt_get_size(&txt_size, cb->txt, font, letter_space, line_space, LV_COORD_MAX, LV_TEXT_FLAG_
+ 491              		.loc 1 247 5 view .LVU171
+ 492              		.loc 1 247 34 is_stmt 0 view .LVU172
+ 493 0186 E16A     		ldr	r1, [r4, #44]
+ 494              		.loc 1 247 5 view .LVU173
+ 495 0188 CDF80880 		str	r8, [sp, #8]
+ 496 018c 6FF06042 		mvn	r2, #-536870912
+ 497 0190 0192     		str	r2, [sp, #4]
+ 498 0192 CDF80090 		str	r9, [sp]
+ 499 0196 069A     		ldr	r2, [sp, #24]
+ 500 0198 1AA8     		add	r0, sp, #104
+ 501              	.LVL60:
+ 502              		.loc 1 247 5 view .LVU174
+ 503 019a FFF7FEFF 		bl	lv_txt_get_size
+ 504              	.LVL61:
+ 248:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 249:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_label_dsc_t txt_dsc;
+ 505              		.loc 1 249 5 is_stmt 1 view .LVU175
+ 250:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_label_dsc_init(&txt_dsc);
+ 506              		.loc 1 250 5 view .LVU176
+ 507 019e 0FAA     		add	r2, sp, #60
+ 508 01a0 1046     		mov	r0, r2
+ 509 01a2 FFF7FEFF 		bl	lv_draw_label_dsc_init
+ 510              	.LVL62:
+ 251:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_init_draw_label_dsc(obj, LV_PART_MAIN, &txt_dsc);
+ 511              		.loc 1 251 5 view .LVU177
+ 512 01a6 0FAA     		add	r2, sp, #60
+ 513 01a8 4146     		mov	r1, r8
+ 514 01aa 2046     		mov	r0, r4
+ 515 01ac FFF7FEFF 		bl	lv_obj_init_draw_label_dsc
+ 516              	.LVL63:
+ 252:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 253:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_coord_t y_ofs = (lv_area_get_height(&marker_area) - font_h) / 2;
+ 517              		.loc 1 253 5 view .LVU178
+ 518              	.LBB84:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 28
+
+
+ 519              	.LBI84:
+ 116:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** }
+ 117:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+ 118:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**
+ 119:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * Get the width of an area
+ 120:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param area_p pointer to an area
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @return the width of the area (if x1 == x2 -> width = 1)
+ 122:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  */
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** static inline lv_coord_t lv_area_get_width(const lv_area_t * area_p)
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** {
+ 125:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     return (lv_coord_t)(area_p->x2 - area_p->x1 + 1);
+ 126:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** }
+ 127:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** 
+ 128:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** /**
+ 129:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * Get the height of an area
+ 130:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @param area_p pointer to an area
+ 131:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  * @return the height of the area (if y1 == y2 -> height = 1)
+ 132:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****  */
+ 133:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** static inline lv_coord_t lv_area_get_height(const lv_area_t * area_p)
+ 520              		.loc 4 133 26 view .LVU179
+ 521              	.LBB85:
+ 134:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h **** {
+ 135:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/../misc/lv_area.h ****     return (lv_coord_t)(area_p->y2 - area_p->y1 + 1);
+ 522              		.loc 4 135 5 view .LVU180
+ 523              		.loc 4 135 36 is_stmt 0 view .LVU181
+ 524 01b0 ED1B     		subs	r5, r5, r7
+ 525              		.loc 4 135 12 view .LVU182
+ 526 01b2 0135     		adds	r5, r5, #1
+ 527              	.LVL64:
+ 528              		.loc 4 135 12 view .LVU183
+ 529              	.LBE85:
+ 530              	.LBE84:
+ 531              		.loc 1 253 58 view .LVU184
+ 532 01b4 A5EB0A0A 		sub	r10, r5, r10
+ 533              	.LVL65:
+ 534              		.loc 1 253 16 view .LVU185
+ 535 01b8 0AEBDA7A 		add	r10, r10, r10, lsr #31
+ 536              	.LVL66:
+ 254:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_area_t txt_area;
+ 537              		.loc 1 254 5 is_stmt 1 view .LVU186
+ 255:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     txt_area.x1 = marker_area.x2 + bg_colp;
+ 538              		.loc 1 255 5 view .LVU187
+ 539              		.loc 1 255 34 is_stmt 0 view .LVU188
+ 540 01bc 079B     		ldr	r3, [sp, #28]
+ 541              	.LVL67:
+ 542              		.loc 1 255 34 view .LVU189
+ 543 01be 1E44     		add	r6, r6, r3
+ 544              		.loc 1 255 17 view .LVU190
+ 545 01c0 0B96     		str	r6, [sp, #44]
+ 256:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     txt_area.x2 = txt_area.x1 + txt_size.x;
+ 546              		.loc 1 256 5 is_stmt 1 view .LVU191
+ 547              		.loc 1 256 41 is_stmt 0 view .LVU192
+ 548 01c2 1A98     		ldr	r0, [sp, #104]
+ 549              		.loc 1 256 31 view .LVU193
+ 550 01c4 0644     		add	r6, r6, r0
+ 551              		.loc 1 256 17 view .LVU194
+ 552 01c6 0D96     		str	r6, [sp, #52]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 29
+
+
+ 257:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     txt_area.y1 = obj->coords.y1 + bg_topp + y_ofs;
+ 553              		.loc 1 257 5 is_stmt 1 view .LVU195
+ 554              		.loc 1 257 30 is_stmt 0 view .LVU196
+ 555 01c8 A069     		ldr	r0, [r4, #24]
+ 556              		.loc 1 257 34 view .LVU197
+ 557 01ca 0599     		ldr	r1, [sp, #20]
+ 558 01cc 0844     		add	r0, r0, r1
+ 559              		.loc 1 257 44 view .LVU198
+ 560 01ce 00EB6A00 		add	r0, r0, r10, asr #1
+ 561              		.loc 1 257 17 view .LVU199
+ 562 01d2 0C90     		str	r0, [sp, #48]
+ 258:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     txt_area.y2 = txt_area.y1 + txt_size.y;
+ 563              		.loc 1 258 5 is_stmt 1 view .LVU200
+ 564              		.loc 1 258 41 is_stmt 0 view .LVU201
+ 565 01d4 1B9B     		ldr	r3, [sp, #108]
+ 566              	.LVL68:
+ 567              		.loc 1 258 31 view .LVU202
+ 568 01d6 1844     		add	r0, r0, r3
+ 569              		.loc 1 258 17 view .LVU203
+ 570 01d8 0E90     		str	r0, [sp, #56]
+ 259:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 260:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_draw_label(draw_ctx, &txt_dsc, &txt_area, cb->txt, NULL);
+ 571              		.loc 1 260 5 is_stmt 1 view .LVU204
+ 572              		.loc 1 260 52 is_stmt 0 view .LVU205
+ 573 01da E36A     		ldr	r3, [r4, #44]
+ 574              		.loc 1 260 5 view .LVU206
+ 575 01dc CDF80080 		str	r8, [sp]
+ 576 01e0 0BAA     		add	r2, sp, #44
+ 577 01e2 0FA9     		add	r1, sp, #60
+ 578 01e4 5846     		mov	r0, fp
+ 579 01e6 FFF7FEFF 		bl	lv_draw_label
+ 580              	.LVL69:
+ 261:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 581              		.loc 1 261 1 view .LVU207
+ 582 01ea 49B0     		add	sp, sp, #292
+ 583              	.LCFI2:
+ 584              		.cfi_def_cfa_offset 36
+ 585              		@ sp needed
+ 586 01ec BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 587              	.LVL70:
+ 588              	.L4:
+ 589              		.loc 1 261 1 view .LVU208
+ 590              		.align	2
+ 591              	.L3:
+ 592 01f0 00000000 		.word	.LANCHOR0
+ 593              		.cfi_endproc
+ 594              	.LFE160:
+ 596              		.section	.text.lv_checkbox_event,"ax",%progbits
+ 597              		.align	1
+ 598              		.syntax unified
+ 599              		.thumb
+ 600              		.thumb_func
+ 602              	lv_checkbox_event:
+ 603              	.LVL71:
+ 604              	.LFB159:
+ 148:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 605              		.loc 1 148 1 is_stmt 1 view -0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 30
+
+
+ 606              		.cfi_startproc
+ 607              		@ args = 0, pretend = 0, frame = 16
+ 608              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 609              		.loc 1 148 1 is_stmt 0 view .LVU210
+ 610 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 611              	.LCFI3:
+ 612              		.cfi_def_cfa_offset 32
+ 613              		.cfi_offset 4, -32
+ 614              		.cfi_offset 5, -28
+ 615              		.cfi_offset 6, -24
+ 616              		.cfi_offset 7, -20
+ 617              		.cfi_offset 8, -16
+ 618              		.cfi_offset 9, -12
+ 619              		.cfi_offset 10, -8
+ 620              		.cfi_offset 14, -4
+ 621 0004 88B0     		sub	sp, sp, #32
+ 622              	.LCFI4:
+ 623              		.cfi_def_cfa_offset 64
+ 624 0006 0C46     		mov	r4, r1
+ 149:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 625              		.loc 1 149 5 is_stmt 1 view .LVU211
+ 151:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     /*Call the ancestor's event handler*/
+ 626              		.loc 1 151 5 view .LVU212
+ 153:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(res != LV_RES_OK) return;
+ 627              		.loc 1 153 5 view .LVU213
+ 153:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(res != LV_RES_OK) return;
+ 628              		.loc 1 153 11 is_stmt 0 view .LVU214
+ 629 0008 4448     		ldr	r0, .L13
+ 630              	.LVL72:
+ 153:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(res != LV_RES_OK) return;
+ 631              		.loc 1 153 11 view .LVU215
+ 632 000a FFF7FEFF 		bl	lv_obj_event_base
+ 633              	.LVL73:
+ 154:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 634              		.loc 1 154 5 is_stmt 1 view .LVU216
+ 154:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 635              		.loc 1 154 7 is_stmt 0 view .LVU217
+ 636 000e 0128     		cmp	r0, #1
+ 637 0010 02D0     		beq	.L10
+ 638              	.LVL74:
+ 639              	.L5:
+ 191:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 640              		.loc 1 191 1 view .LVU218
+ 641 0012 08B0     		add	sp, sp, #32
+ 642              	.LCFI5:
+ 643              		.cfi_remember_state
+ 644              		.cfi_def_cfa_offset 32
+ 645              		@ sp needed
+ 646 0014 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 647              	.LVL75:
+ 648              	.L10:
+ 649              	.LCFI6:
+ 650              		.cfi_restore_state
+ 156:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_event_get_target(e);
+ 651              		.loc 1 156 5 is_stmt 1 view .LVU219
+ 156:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_event_get_target(e);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 31
+
+
+ 652              		.loc 1 156 28 is_stmt 0 view .LVU220
+ 653 0018 2046     		mov	r0, r4
+ 654              	.LVL76:
+ 156:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_event_get_target(e);
+ 655              		.loc 1 156 28 view .LVU221
+ 656 001a FFF7FEFF 		bl	lv_event_get_code
+ 657              	.LVL77:
+ 658 001e 0546     		mov	r5, r0
+ 659              	.LVL78:
+ 157:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 660              		.loc 1 157 5 is_stmt 1 view .LVU222
+ 157:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 661              		.loc 1 157 22 is_stmt 0 view .LVU223
+ 662 0020 2046     		mov	r0, r4
+ 663 0022 FFF7FEFF 		bl	lv_event_get_target
+ 664              	.LVL79:
+ 665 0026 0646     		mov	r6, r0
+ 666              	.LVL80:
+ 159:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_point_t * p = lv_event_get_param(e);
+ 667              		.loc 1 159 5 is_stmt 1 view .LVU224
+ 159:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_point_t * p = lv_event_get_param(e);
+ 668              		.loc 1 159 7 is_stmt 0 view .LVU225
+ 669 0028 2C2D     		cmp	r5, #44
+ 670 002a 07D0     		beq	.L11
+ 183:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t * s = lv_event_get_param(e);
+ 671              		.loc 1 183 10 is_stmt 1 view .LVU226
+ 183:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t * s = lv_event_get_param(e);
+ 672              		.loc 1 183 12 is_stmt 0 view .LVU227
+ 673 002c 132D     		cmp	r5, #19
+ 674 002e 65D0     		beq	.L12
+ 188:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_draw(e);
+ 675              		.loc 1 188 10 is_stmt 1 view .LVU228
+ 188:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_draw(e);
+ 676              		.loc 1 188 12 is_stmt 0 view .LVU229
+ 677 0030 152D     		cmp	r5, #21
+ 678 0032 EED1     		bne	.L5
+ 189:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 679              		.loc 1 189 9 is_stmt 1 view .LVU230
+ 680 0034 2046     		mov	r0, r4
+ 681              	.LVL81:
+ 189:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 682              		.loc 1 189 9 is_stmt 0 view .LVU231
+ 683 0036 FFF7FEFF 		bl	lv_checkbox_draw
+ 684              	.LVL82:
+ 685 003a EAE7     		b	.L5
+ 686              	.LVL83:
+ 687              	.L11:
+ 688              	.LBB86:
+ 160:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 689              		.loc 1 160 9 is_stmt 1 view .LVU232
+ 160:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 690              		.loc 1 160 26 is_stmt 0 view .LVU233
+ 691 003c 2046     		mov	r0, r4
+ 692              	.LVL84:
+ 160:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 693              		.loc 1 160 26 view .LVU234
+ 694 003e FFF7FEFF 		bl	lv_event_get_param
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 32
+
+
+ 695              	.LVL85:
+ 696 0042 0546     		mov	r5, r0
+ 697              	.LVL86:
+ 161:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 698              		.loc 1 161 9 is_stmt 1 view .LVU235
+ 163:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t font_h = lv_font_get_line_height(font);
+ 699              		.loc 1 163 9 view .LVU236
+ 700              	.LBB87:
+ 701              	.LBI87:
+ 451:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 702              		.loc 2 451 33 view .LVU237
+ 703              	.LBB88:
+ 453:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const lv_font_t *)v.ptr;
+ 704              		.loc 2 453 5 view .LVU238
+ 453:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const lv_font_t *)v.ptr;
+ 705              		.loc 2 453 26 is_stmt 0 view .LVU239
+ 706 0044 41F25942 		movw	r2, #5209
+ 707 0048 0021     		movs	r1, #0
+ 708 004a 3046     		mov	r0, r6
+ 709              	.LVL87:
+ 453:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (const lv_font_t *)v.ptr;
+ 710              		.loc 2 453 26 view .LVU240
+ 711 004c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 712              	.LVL88:
+ 713 0050 0446     		mov	r4, r0
+ 714              	.LVL89:
+ 454:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 715              		.loc 2 454 5 is_stmt 1 view .LVU241
+ 454:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 716              		.loc 2 454 5 is_stmt 0 view .LVU242
+ 717              	.LBE88:
+ 718              	.LBE87:
+ 164:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t line_space = lv_obj_get_style_text_line_space(obj, LV_PART_MAIN);
+ 719              		.loc 1 164 9 is_stmt 1 view .LVU243
+ 720              	.LBB89:
+ 721              	.LBI89:
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/../font/lv_font.h **** {
+ 722              		.loc 3 121 26 view .LVU244
+ 723              	.LBB90:
+ 724              		.loc 3 123 5 view .LVU245
+ 725              		.loc 3 123 18 is_stmt 0 view .LVU246
+ 726 0052 D0F80890 		ldr	r9, [r0, #8]
+ 727              	.LVL90:
+ 728              		.loc 3 123 18 view .LVU247
+ 729              	.LBE90:
+ 730              	.LBE89:
+ 165:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t letter_space = lv_obj_get_style_text_letter_space(obj, LV_PART_MAIN);
+ 731              		.loc 1 165 9 is_stmt 1 view .LVU248
+ 732              	.LBB91:
+ 733              	.LBI91:
+ 463:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 734              		.loc 2 463 26 view .LVU249
+ 735              	.LBB92:
+ 465:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 736              		.loc 2 465 5 view .LVU250
+ 465:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 737              		.loc 2 465 26 is_stmt 0 view .LVU251
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 33
+
+
+ 738 0056 41F25B42 		movw	r2, #5211
+ 739 005a 0021     		movs	r1, #0
+ 740 005c 3046     		mov	r0, r6
+ 741              	.LVL91:
+ 465:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 742              		.loc 2 465 26 view .LVU252
+ 743 005e FFF7FEFF 		bl	lv_obj_get_style_prop
+ 744              	.LVL92:
+ 745 0062 0746     		mov	r7, r0
+ 746              	.LVL93:
+ 747              		.loc 2 466 5 is_stmt 1 view .LVU253
+ 748              		.loc 2 466 5 is_stmt 0 view .LVU254
+ 749              	.LBE92:
+ 750              	.LBE91:
+ 166:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 751              		.loc 1 166 9 is_stmt 1 view .LVU255
+ 752              	.LBB93:
+ 753              	.LBI93:
+ 457:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 754              		.loc 2 457 26 view .LVU256
+ 755              	.LBB94:
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 756              		.loc 2 459 5 view .LVU257
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 757              		.loc 2 459 26 is_stmt 0 view .LVU258
+ 758 0064 41F25A42 		movw	r2, #5210
+ 759 0068 0021     		movs	r1, #0
+ 760 006a 3046     		mov	r0, r6
+ 761              	.LVL94:
+ 459:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 762              		.loc 2 459 26 view .LVU259
+ 763 006c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 764              	.LVL95:
+ 765 0070 0346     		mov	r3, r0
+ 460:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 766              		.loc 2 460 5 is_stmt 1 view .LVU260
+ 767              	.LVL96:
+ 460:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 768              		.loc 2 460 5 is_stmt 0 view .LVU261
+ 769              	.LBE94:
+ 770              	.LBE93:
+ 168:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_txt_get_size(&txt_size, cb->txt, font, letter_space, line_space, LV_COORD_MAX, LV_TEXT_F
+ 771              		.loc 1 168 9 is_stmt 1 view .LVU262
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 772              		.loc 1 169 9 view .LVU263
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 773              		.loc 1 169 38 is_stmt 0 view .LVU264
+ 774 0072 F16A     		ldr	r1, [r6, #44]
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 775              		.loc 1 169 9 view .LVU265
+ 776 0074 4FF00008 		mov	r8, #0
+ 777 0078 CDF80880 		str	r8, [sp, #8]
+ 778 007c 6FF06042 		mvn	r2, #-536870912
+ 779 0080 0192     		str	r2, [sp, #4]
+ 780 0082 0097     		str	r7, [sp]
+ 781              	.LVL97:
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 34
+
+
+ 782              		.loc 1 169 9 view .LVU266
+ 783 0084 2246     		mov	r2, r4
+ 784 0086 04A8     		add	r0, sp, #16
+ 785              	.LVL98:
+ 169:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 786              		.loc 1 169 9 view .LVU267
+ 787 0088 FFF7FEFF 		bl	lv_txt_get_size
+ 788              	.LVL99:
+ 171:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_leftp = lv_obj_get_style_pad_left(obj, LV_PART_INDICATOR);
+ 789              		.loc 1 171 9 is_stmt 1 view .LVU268
+ 790              	.LBB95:
+ 791              	.LBI95:
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 792              		.loc 2 121 26 view .LVU269
+ 793              	.LBB96:
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 794              		.loc 2 123 5 view .LVU270
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 795              		.loc 2 123 26 is_stmt 0 view .LVU271
+ 796 008c 41F61502 		movw	r2, #6165
+ 797 0090 4146     		mov	r1, r8
+ 798 0092 3046     		mov	r0, r6
+ 799 0094 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 800              	.LVL100:
+ 801 0098 0746     		mov	r7, r0
+ 802              	.LVL101:
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 803              		.loc 2 124 5 is_stmt 1 view .LVU272
+ 124:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 804              		.loc 2 124 5 is_stmt 0 view .LVU273
+ 805              	.LBE96:
+ 806              	.LBE95:
+ 172:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_rightp = lv_obj_get_style_pad_right(obj, LV_PART_INDICATOR);
+ 807              		.loc 1 172 9 is_stmt 1 view .LVU274
+ 808              	.LBB97:
+ 809              	.LBI97:
+ 103:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 810              		.loc 2 103 26 view .LVU275
+ 811              	.LBB98:
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 812              		.loc 2 105 5 view .LVU276
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 813              		.loc 2 105 26 is_stmt 0 view .LVU277
+ 814 009a 41F61202 		movw	r2, #6162
+ 815 009e 4FF40031 		mov	r1, #131072
+ 816 00a2 3046     		mov	r0, r6
+ 817              	.LVL102:
+ 105:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 818              		.loc 2 105 26 view .LVU278
+ 819 00a4 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 820              	.LVL103:
+ 821 00a8 0446     		mov	r4, r0
+ 822              	.LVL104:
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 823              		.loc 2 106 5 is_stmt 1 view .LVU279
+ 106:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 824              		.loc 2 106 5 is_stmt 0 view .LVU280
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 35
+
+
+ 825              	.LBE98:
+ 826              	.LBE97:
+ 173:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_topp = lv_obj_get_style_pad_top(obj, LV_PART_INDICATOR);
+ 827              		.loc 1 173 9 is_stmt 1 view .LVU281
+ 828              	.LBB99:
+ 829              	.LBI99:
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 830              		.loc 2 109 26 view .LVU282
+ 831              	.LBB100:
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 832              		.loc 2 111 5 view .LVU283
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 833              		.loc 2 111 26 is_stmt 0 view .LVU284
+ 834 00aa 41F61302 		movw	r2, #6163
+ 835 00ae 4FF40031 		mov	r1, #131072
+ 836 00b2 3046     		mov	r0, r6
+ 837              	.LVL105:
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 838              		.loc 2 111 26 view .LVU285
+ 839 00b4 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 840              	.LVL106:
+ 841 00b8 8246     		mov	r10, r0
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 842              		.loc 2 112 5 is_stmt 1 view .LVU286
+ 843              	.LVL107:
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 844              		.loc 2 112 5 is_stmt 0 view .LVU287
+ 845              	.LBE100:
+ 846              	.LBE99:
+ 174:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t marker_bottomp = lv_obj_get_style_pad_bottom(obj, LV_PART_INDICATOR);
+ 847              		.loc 1 174 9 is_stmt 1 view .LVU288
+ 848              	.LBB101:
+ 849              	.LBI101:
+  91:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 850              		.loc 2 91 26 view .LVU289
+ 851              	.LBB102:
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 852              		.loc 2 93 5 view .LVU290
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 853              		.loc 2 93 26 is_stmt 0 view .LVU291
+ 854 00ba 41F61002 		movw	r2, #6160
+ 855 00be 4FF40031 		mov	r1, #131072
+ 856 00c2 3046     		mov	r0, r6
+ 857              	.LVL108:
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 858              		.loc 2 93 26 view .LVU292
+ 859 00c4 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 860              	.LVL109:
+ 861 00c8 8046     		mov	r8, r0
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 862              		.loc 2 94 5 is_stmt 1 view .LVU293
+ 863              	.LVL110:
+  94:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 864              		.loc 2 94 5 is_stmt 0 view .LVU294
+ 865              	.LBE102:
+ 866              	.LBE101:
+ 175:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_point_t marker_size;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 36
+
+
+ 867              		.loc 1 175 9 is_stmt 1 view .LVU295
+ 868              	.LBB103:
+ 869              	.LBI103:
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** {
+ 870              		.loc 2 97 26 view .LVU296
+ 871              	.LBB104:
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 872              		.loc 2 99 5 view .LVU297
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 873              		.loc 2 99 26 is_stmt 0 view .LVU298
+ 874 00ca 41F61102 		movw	r2, #6161
+ 875 00ce 4FF40031 		mov	r1, #131072
+ 876 00d2 3046     		mov	r0, r6
+ 877              	.LVL111:
+  99:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h ****     return (lv_coord_t)v.num;
+ 878              		.loc 2 99 26 view .LVU299
+ 879 00d4 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 880              	.LVL112:
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 881              		.loc 2 100 5 is_stmt 1 view .LVU300
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style_gen.h **** }
+ 882              		.loc 2 100 5 is_stmt 0 view .LVU301
+ 883              	.LBE104:
+ 884              	.LBE103:
+ 176:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.x = font_h + marker_leftp + marker_rightp;
+ 885              		.loc 1 176 9 is_stmt 1 view .LVU302
+ 177:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.y = font_h + marker_topp + marker_bottomp;
+ 886              		.loc 1 177 9 view .LVU303
+ 177:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.y = font_h + marker_topp + marker_bottomp;
+ 887              		.loc 1 177 32 is_stmt 0 view .LVU304
+ 888 00d8 04EB0903 		add	r3, r4, r9
+ 177:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.y = font_h + marker_topp + marker_bottomp;
+ 889              		.loc 1 177 47 view .LVU305
+ 890 00dc 5344     		add	r3, r3, r10
+ 177:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         marker_size.y = font_h + marker_topp + marker_bottomp;
+ 891              		.loc 1 177 23 view .LVU306
+ 892 00de 0693     		str	r3, [sp, #24]
+ 178:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 893              		.loc 1 178 9 is_stmt 1 view .LVU307
+ 178:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 894              		.loc 1 178 32 is_stmt 0 view .LVU308
+ 895 00e0 08EB0902 		add	r2, r8, r9
+ 178:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 896              		.loc 1 178 46 view .LVU309
+ 897 00e4 0244     		add	r2, r2, r0
+ 178:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 898              		.loc 1 178 23 view .LVU310
+ 899 00e6 0792     		str	r2, [sp, #28]
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->y = LV_MAX(marker_size.y, txt_size.y);
+ 900              		.loc 1 180 9 is_stmt 1 view .LVU311
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->y = LV_MAX(marker_size.y, txt_size.y);
+ 901              		.loc 1 180 40 is_stmt 0 view .LVU312
+ 902 00e8 0499     		ldr	r1, [sp, #16]
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->y = LV_MAX(marker_size.y, txt_size.y);
+ 903              		.loc 1 180 30 view .LVU313
+ 904 00ea 0B44     		add	r3, r3, r1
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->y = LV_MAX(marker_size.y, txt_size.y);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 37
+
+
+ 905              		.loc 1 180 43 view .LVU314
+ 906 00ec 3B44     		add	r3, r3, r7
+ 180:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         p->y = LV_MAX(marker_size.y, txt_size.y);
+ 907              		.loc 1 180 14 view .LVU315
+ 908 00ee 2B60     		str	r3, [r5]
+ 181:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 909              		.loc 1 181 9 is_stmt 1 view .LVU316
+ 181:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 910              		.loc 1 181 16 is_stmt 0 view .LVU317
+ 911 00f0 0598     		ldr	r0, [sp, #20]
+ 912              	.LVL113:
+ 181:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 913              		.loc 1 181 16 view .LVU318
+ 914 00f2 8242     		cmp	r2, r0
+ 915 00f4 B8BF     		it	lt
+ 916 00f6 0246     		movlt	r2, r0
+ 181:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 917              		.loc 1 181 14 view .LVU319
+ 918 00f8 6A60     		str	r2, [r5, #4]
+ 919              	.LBE86:
+ 920 00fa 8AE7     		b	.L5
+ 921              	.LVL114:
+ 922              	.L12:
+ 923              	.LBB105:
+ 184:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t m = lv_obj_calculate_ext_draw_size(obj, LV_PART_INDICATOR);
+ 924              		.loc 1 184 9 is_stmt 1 view .LVU320
+ 184:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t m = lv_obj_calculate_ext_draw_size(obj, LV_PART_INDICATOR);
+ 925              		.loc 1 184 26 is_stmt 0 view .LVU321
+ 926 00fc 2046     		mov	r0, r4
+ 927              	.LVL115:
+ 184:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_coord_t m = lv_obj_calculate_ext_draw_size(obj, LV_PART_INDICATOR);
+ 928              		.loc 1 184 26 view .LVU322
+ 929 00fe FFF7FEFF 		bl	lv_event_get_param
+ 930              	.LVL116:
+ 931 0102 0446     		mov	r4, r0
+ 932              	.LVL117:
+ 185:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         *s = LV_MAX(*s, m);
+ 933              		.loc 1 185 9 is_stmt 1 view .LVU323
+ 185:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         *s = LV_MAX(*s, m);
+ 934              		.loc 1 185 24 is_stmt 0 view .LVU324
+ 935 0104 4FF40031 		mov	r1, #131072
+ 936 0108 3046     		mov	r0, r6
+ 937              	.LVL118:
+ 185:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         *s = LV_MAX(*s, m);
+ 938              		.loc 1 185 24 view .LVU325
+ 939 010a FFF7FEFF 		bl	lv_obj_calculate_ext_draw_size
+ 940              	.LVL119:
+ 186:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 941              		.loc 1 186 9 is_stmt 1 view .LVU326
+ 186:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 942              		.loc 1 186 14 is_stmt 0 view .LVU327
+ 943 010e 2368     		ldr	r3, [r4]
+ 944 0110 8342     		cmp	r3, r0
+ 945 0112 B8BF     		it	lt
+ 946 0114 0346     		movlt	r3, r0
+ 186:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 947              		.loc 1 186 12 view .LVU328
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 38
+
+
+ 948 0116 2360     		str	r3, [r4]
+ 949              	.LBE105:
+ 950 0118 7BE7     		b	.L5
+ 951              	.L14:
+ 952 011a 00BF     		.align	2
+ 953              	.L13:
+ 954 011c 00000000 		.word	.LANCHOR0
+ 955              		.cfi_endproc
+ 956              	.LFE159:
+ 958              		.section	.text.lv_checkbox_destructor,"ax",%progbits
+ 959              		.align	1
+ 960              		.syntax unified
+ 961              		.thumb
+ 962              		.thumb_func
+ 964              	lv_checkbox_destructor:
+ 965              	.LVL120:
+ 966              	.LFB158:
+ 135:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 967              		.loc 1 135 1 is_stmt 1 view -0
+ 968              		.cfi_startproc
+ 969              		@ args = 0, pretend = 0, frame = 0
+ 970              		@ frame_needed = 0, uses_anonymous_args = 0
+ 136:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_TRACE_OBJ_CREATE("begin");
+ 971              		.loc 1 136 5 view .LVU330
+ 137:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 972              		.loc 1 137 33 view .LVU331
+ 139:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     if(!cb->static_txt) {
+ 973              		.loc 1 139 5 view .LVU332
+ 140:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_mem_free(cb->txt);
+ 974              		.loc 1 140 5 view .LVU333
+ 140:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_mem_free(cb->txt);
+ 975              		.loc 1 140 8 is_stmt 0 view .LVU334
+ 976 0000 91F83030 		ldrb	r3, [r1, #48]	@ zero_extendqisi2
+ 140:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         lv_mem_free(cb->txt);
+ 977              		.loc 1 140 7 view .LVU335
+ 978 0004 13F0010F 		tst	r3, #1
+ 979 0008 00D0     		beq	.L21
+ 980 000a 7047     		bx	lr
+ 981              	.L21:
+ 135:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 982              		.loc 1 135 1 view .LVU336
+ 983 000c 10B5     		push	{r4, lr}
+ 984              	.LCFI7:
+ 985              		.cfi_def_cfa_offset 8
+ 986              		.cfi_offset 4, -8
+ 987              		.cfi_offset 14, -4
+ 988 000e 0C46     		mov	r4, r1
+ 141:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         cb->txt = NULL;
+ 989              		.loc 1 141 9 is_stmt 1 view .LVU337
+ 990 0010 C86A     		ldr	r0, [r1, #44]
+ 991              	.LVL121:
+ 141:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****         cb->txt = NULL;
+ 992              		.loc 1 141 9 is_stmt 0 view .LVU338
+ 993 0012 FFF7FEFF 		bl	lv_mem_free
+ 994              	.LVL122:
+ 142:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 995              		.loc 1 142 9 is_stmt 1 view .LVU339
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 39
+
+
+ 142:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     }
+ 996              		.loc 1 142 17 is_stmt 0 view .LVU340
+ 997 0016 0023     		movs	r3, #0
+ 998 0018 E362     		str	r3, [r4, #44]
+ 144:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 999              		.loc 1 144 36 is_stmt 1 view .LVU341
+ 145:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1000              		.loc 1 145 1 is_stmt 0 view .LVU342
+ 1001 001a 10BD     		pop	{r4, pc}
+ 145:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1002              		.loc 1 145 1 view .LVU343
+ 1003              		.cfi_endproc
+ 1004              	.LFE158:
+ 1006              		.section	.rodata.lv_checkbox_constructor.str1.4,"aMS",%progbits,1
+ 1007              		.align	2
+ 1008              	.LC0:
+ 1009 0000 43686563 		.ascii	"Check box\000"
+ 1009      6B20626F 
+ 1009      7800
+ 1010              		.section	.text.lv_checkbox_constructor,"ax",%progbits
+ 1011              		.align	1
+ 1012              		.syntax unified
+ 1013              		.thumb
+ 1014              		.thumb_func
+ 1016              	lv_checkbox_constructor:
+ 1017              	.LVL123:
+ 1018              	.LFB157:
+ 119:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 1019              		.loc 1 119 1 is_stmt 1 view -0
+ 1020              		.cfi_startproc
+ 1021              		@ args = 0, pretend = 0, frame = 0
+ 1022              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_UNUSED(class_p);
+ 1023              		.loc 1 119 1 is_stmt 0 view .LVU345
+ 1024 0000 10B5     		push	{r4, lr}
+ 1025              	.LCFI8:
+ 1026              		.cfi_def_cfa_offset 8
+ 1027              		.cfi_offset 4, -8
+ 1028              		.cfi_offset 14, -4
+ 1029 0002 0C46     		mov	r4, r1
+ 120:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_TRACE_OBJ_CREATE("begin");
+ 1030              		.loc 1 120 5 is_stmt 1 view .LVU346
+ 121:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1031              		.loc 1 121 33 view .LVU347
+ 123:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1032              		.loc 1 123 5 view .LVU348
+ 1033              	.LVL124:
+ 125:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 1;
+ 1034              		.loc 1 125 5 view .LVU349
+ 125:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 1;
+ 1035              		.loc 1 125 13 is_stmt 0 view .LVU350
+ 1036 0004 0A4B     		ldr	r3, .L24
+ 1037 0006 CB62     		str	r3, [r1, #44]
+ 126:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
+ 1038              		.loc 1 126 5 is_stmt 1 view .LVU351
+ 126:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
+ 1039              		.loc 1 126 20 is_stmt 0 view .LVU352
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 40
+
+
+ 1040 0008 91F83030 		ldrb	r3, [r1, #48]	@ zero_extendqisi2
+ 1041 000c 43F00103 		orr	r3, r3, #1
+ 1042 0010 81F83030 		strb	r3, [r1, #48]
+ 127:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CHECKABLE);
+ 1043              		.loc 1 127 5 is_stmt 1 view .LVU353
+ 1044 0014 0221     		movs	r1, #2
+ 1045              	.LVL125:
+ 127:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CHECKABLE);
+ 1046              		.loc 1 127 5 is_stmt 0 view .LVU354
+ 1047 0016 2046     		mov	r0, r4
+ 1048              	.LVL126:
+ 127:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_CHECKABLE);
+ 1049              		.loc 1 127 5 view .LVU355
+ 1050 0018 FFF7FEFF 		bl	lv_obj_add_flag
+ 1051              	.LVL127:
+ 128:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_add_flag(obj, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+ 1052              		.loc 1 128 5 is_stmt 1 view .LVU356
+ 1053 001c 0821     		movs	r1, #8
+ 1054 001e 2046     		mov	r0, r4
+ 1055 0020 FFF7FEFF 		bl	lv_obj_add_flag
+ 1056              	.LVL128:
+ 129:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1057              		.loc 1 129 5 view .LVU357
+ 1058 0024 4FF48061 		mov	r1, #1024
+ 1059 0028 2046     		mov	r0, r4
+ 1060 002a FFF7FEFF 		bl	lv_obj_add_flag
+ 1061              	.LVL129:
+ 131:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 1062              		.loc 1 131 36 view .LVU358
+ 132:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1063              		.loc 1 132 1 is_stmt 0 view .LVU359
+ 1064 002e 10BD     		pop	{r4, pc}
+ 1065              	.LVL130:
+ 1066              	.L25:
+ 132:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1067              		.loc 1 132 1 view .LVU360
+ 1068              		.align	2
+ 1069              	.L24:
+ 1070 0030 00000000 		.word	.LC0
+ 1071              		.cfi_endproc
+ 1072              	.LFE157:
+ 1074              		.section	.text.lv_checkbox_create,"ax",%progbits
+ 1075              		.align	1
+ 1076              		.global	lv_checkbox_create
+ 1077              		.syntax unified
+ 1078              		.thumb
+ 1079              		.thumb_func
+ 1081              	lv_checkbox_create:
+ 1082              	.LVL131:
+ 1083              	.LFB153:
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_LOG_INFO("begin");
+ 1084              		.loc 1 57 1 is_stmt 1 view -0
+ 1085              		.cfi_startproc
+ 1086              		@ args = 0, pretend = 0, frame = 0
+ 1087              		@ frame_needed = 0, uses_anonymous_args = 0
+  57:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     LV_LOG_INFO("begin");
+ 1088              		.loc 1 57 1 is_stmt 0 view .LVU362
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 41
+
+
+ 1089 0000 10B5     		push	{r4, lr}
+ 1090              	.LCFI9:
+ 1091              		.cfi_def_cfa_offset 8
+ 1092              		.cfi_offset 4, -8
+ 1093              		.cfi_offset 14, -4
+ 1094 0002 0146     		mov	r1, r0
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_obj_class_create_obj(MY_CLASS, parent);
+ 1095              		.loc 1 58 5 is_stmt 1 view .LVU363
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_obj_class_create_obj(MY_CLASS, parent);
+ 1096              		.loc 1 58 5 view .LVU364
+  58:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_t * obj = lv_obj_class_create_obj(MY_CLASS, parent);
+ 1097              		.loc 1 58 5 view .LVU365
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_class_init_obj(obj);
+ 1098              		.loc 1 59 5 view .LVU366
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_class_init_obj(obj);
+ 1099              		.loc 1 59 22 is_stmt 0 view .LVU367
+ 1100 0004 0348     		ldr	r0, .L28
+ 1101              	.LVL132:
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_class_init_obj(obj);
+ 1102              		.loc 1 59 22 view .LVU368
+ 1103 0006 FFF7FEFF 		bl	lv_obj_class_create_obj
+ 1104              	.LVL133:
+  59:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_class_init_obj(obj);
+ 1105              		.loc 1 59 22 view .LVU369
+ 1106 000a 0446     		mov	r4, r0
+ 1107              	.LVL134:
+  60:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     return obj;
+ 1108              		.loc 1 60 5 is_stmt 1 view .LVU370
+ 1109 000c FFF7FEFF 		bl	lv_obj_class_init_obj
+ 1110              	.LVL135:
+  61:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 1111              		.loc 1 61 5 view .LVU371
+  62:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1112              		.loc 1 62 1 is_stmt 0 view .LVU372
+ 1113 0010 2046     		mov	r0, r4
+ 1114 0012 10BD     		pop	{r4, pc}
+ 1115              	.LVL136:
+ 1116              	.L29:
+  62:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1117              		.loc 1 62 1 view .LVU373
+ 1118              		.align	2
+ 1119              	.L28:
+ 1120 0014 00000000 		.word	.LANCHOR0
+ 1121              		.cfi_endproc
+ 1122              	.LFE153:
+ 1124              		.section	.text.lv_checkbox_set_text,"ax",%progbits
+ 1125              		.align	1
+ 1126              		.global	lv_checkbox_set_text
+ 1127              		.syntax unified
+ 1128              		.thumb
+ 1129              		.thumb_func
+ 1131              	lv_checkbox_set_text:
+ 1132              	.LVL137:
+ 1133              	.LFB154:
+  69:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 1134              		.loc 1 69 1 is_stmt 1 view -0
+ 1135              		.cfi_startproc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 42
+
+
+ 1136              		@ args = 0, pretend = 0, frame = 0
+ 1137              		@ frame_needed = 0, uses_anonymous_args = 0
+  69:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 1138              		.loc 1 69 1 is_stmt 0 view .LVU375
+ 1139 0000 38B5     		push	{r3, r4, r5, lr}
+ 1140              	.LCFI10:
+ 1141              		.cfi_def_cfa_offset 16
+ 1142              		.cfi_offset 3, -16
+ 1143              		.cfi_offset 4, -12
+ 1144              		.cfi_offset 5, -8
+ 1145              		.cfi_offset 14, -4
+ 1146 0002 0446     		mov	r4, r0
+ 1147 0004 0D46     		mov	r5, r1
+  70:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+ 1148              		.loc 1 70 5 is_stmt 1 view .LVU376
+ 1149              	.LVL138:
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #endif
+ 1150              		.loc 1 74 5 view .LVU377
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #endif
+ 1151              		.loc 1 74 18 is_stmt 0 view .LVU378
+ 1152 0006 0846     		mov	r0, r1
+ 1153              	.LVL139:
+  74:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #endif
+ 1154              		.loc 1 74 18 view .LVU379
+ 1155 0008 FFF7FEFF 		bl	strlen
+ 1156              	.LVL140:
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1157              		.loc 1 77 5 is_stmt 1 view .LVU380
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1158              		.loc 1 77 8 is_stmt 0 view .LVU381
+ 1159 000c 94F83030 		ldrb	r3, [r4, #48]	@ zero_extendqisi2
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1160              		.loc 1 77 7 view .LVU382
+ 1161 0010 13F0010F 		tst	r3, #1
+ 1162 0014 15D1     		bne	.L31
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1163              		.loc 1 77 25 is_stmt 1 discriminator 1 view .LVU383
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1164              		.loc 1 77 35 is_stmt 0 discriminator 1 view .LVU384
+ 1165 0016 411C     		adds	r1, r0, #1
+ 1166 0018 E06A     		ldr	r0, [r4, #44]
+ 1167              	.LVL141:
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1168              		.loc 1 77 35 discriminator 1 view .LVU385
+ 1169 001a FFF7FEFF 		bl	lv_mem_realloc
+ 1170              	.LVL142:
+  77:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     else  cb->txt = lv_mem_alloc(len + 1);
+ 1171              		.loc 1 77 33 discriminator 1 view .LVU386
+ 1172 001e E062     		str	r0, [r4, #44]
+ 1173              	.L32:
+  82:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #endif
+ 1174              		.loc 1 82 5 is_stmt 1 view .LVU387
+ 1175 0020 2946     		mov	r1, r5
+ 1176 0022 E06A     		ldr	r0, [r4, #44]
+ 1177 0024 FFF7FEFF 		bl	strcpy
+ 1178              	.LVL143:
+  85:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 43
+
+
+ 1179              		.loc 1 85 5 view .LVU388
+  85:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1180              		.loc 1 85 20 is_stmt 0 view .LVU389
+ 1181 0028 94F83030 		ldrb	r3, [r4, #48]	@ zero_extendqisi2
+ 1182 002c 6FF30003 		bfc	r3, #0, #1
+ 1183 0030 84F83030 		strb	r3, [r4, #48]
+  87:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_invalidate(obj);
+ 1184              		.loc 1 87 5 is_stmt 1 view .LVU390
+ 1185 0034 2046     		mov	r0, r4
+ 1186 0036 FFF7FEFF 		bl	lv_obj_refresh_self_size
+ 1187              	.LVL144:
+  88:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 1188              		.loc 1 88 5 view .LVU391
+ 1189 003a 2046     		mov	r0, r4
+ 1190 003c FFF7FEFF 		bl	lv_obj_invalidate
+ 1191              	.LVL145:
+  89:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1192              		.loc 1 89 1 is_stmt 0 view .LVU392
+ 1193 0040 38BD     		pop	{r3, r4, r5, pc}
+ 1194              	.LVL146:
+ 1195              	.L31:
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+ 1196              		.loc 1 78 11 is_stmt 1 view .LVU393
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+ 1197              		.loc 1 78 21 is_stmt 0 view .LVU394
+ 1198 0042 0130     		adds	r0, r0, #1
+ 1199              	.LVL147:
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+ 1200              		.loc 1 78 21 view .LVU395
+ 1201 0044 FFF7FEFF 		bl	lv_mem_alloc
+ 1202              	.LVL148:
+  78:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** #if LV_USE_ARABIC_PERSIAN_CHARS
+ 1203              		.loc 1 78 19 view .LVU396
+ 1204 0048 E062     		str	r0, [r4, #44]
+ 1205 004a E9E7     		b	.L32
+ 1206              		.cfi_endproc
+ 1207              	.LFE154:
+ 1209              		.section	.text.lv_checkbox_set_text_static,"ax",%progbits
+ 1210              		.align	1
+ 1211              		.global	lv_checkbox_set_text_static
+ 1212              		.syntax unified
+ 1213              		.thumb
+ 1214              		.thumb_func
+ 1216              	lv_checkbox_set_text_static:
+ 1217              	.LVL149:
+ 1218              	.LFB155:
+  92:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 1219              		.loc 1 92 1 is_stmt 1 view -0
+ 1220              		.cfi_startproc
+ 1221              		@ args = 0, pretend = 0, frame = 0
+ 1222              		@ frame_needed = 0, uses_anonymous_args = 0
+  92:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 1223              		.loc 1 92 1 is_stmt 0 view .LVU398
+ 1224 0000 38B5     		push	{r3, r4, r5, lr}
+ 1225              	.LCFI11:
+ 1226              		.cfi_def_cfa_offset 16
+ 1227              		.cfi_offset 3, -16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 44
+
+
+ 1228              		.cfi_offset 4, -12
+ 1229              		.cfi_offset 5, -8
+ 1230              		.cfi_offset 14, -4
+ 1231 0002 0446     		mov	r4, r0
+ 1232 0004 0D46     		mov	r5, r1
+  93:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1233              		.loc 1 93 5 is_stmt 1 view .LVU399
+ 1234              	.LVL150:
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1235              		.loc 1 95 5 view .LVU400
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1236              		.loc 1 95 8 is_stmt 0 view .LVU401
+ 1237 0006 90F83030 		ldrb	r3, [r0, #48]	@ zero_extendqisi2
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1238              		.loc 1 95 7 view .LVU402
+ 1239 000a 13F0010F 		tst	r3, #1
+ 1240 000e 0DD0     		beq	.L37
+ 1241              	.LVL151:
+ 1242              	.L35:
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 1;
+ 1243              		.loc 1 97 5 is_stmt 1 view .LVU403
+  97:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     cb->static_txt = 1;
+ 1244              		.loc 1 97 13 is_stmt 0 view .LVU404
+ 1245 0010 E562     		str	r5, [r4, #44]
+  98:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1246              		.loc 1 98 5 is_stmt 1 view .LVU405
+  98:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1247              		.loc 1 98 20 is_stmt 0 view .LVU406
+ 1248 0012 94F83030 		ldrb	r3, [r4, #48]	@ zero_extendqisi2
+ 1249 0016 43F00103 		orr	r3, r3, #1
+ 1250 001a 84F83030 		strb	r3, [r4, #48]
+ 100:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_obj_invalidate(obj);
+ 1251              		.loc 1 100 5 is_stmt 1 view .LVU407
+ 1252 001e 2046     		mov	r0, r4
+ 1253 0020 FFF7FEFF 		bl	lv_obj_refresh_self_size
+ 1254              	.LVL152:
+ 101:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 1255              		.loc 1 101 5 view .LVU408
+ 1256 0024 2046     		mov	r0, r4
+ 1257 0026 FFF7FEFF 		bl	lv_obj_invalidate
+ 1258              	.LVL153:
+ 102:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1259              		.loc 1 102 1 is_stmt 0 view .LVU409
+ 1260 002a 38BD     		pop	{r3, r4, r5, pc}
+ 1261              	.LVL154:
+ 1262              	.L37:
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1263              		.loc 1 95 25 is_stmt 1 discriminator 1 view .LVU410
+ 1264 002c C06A     		ldr	r0, [r0, #44]
+ 1265              	.LVL155:
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1266              		.loc 1 95 25 is_stmt 0 discriminator 1 view .LVU411
+ 1267 002e FFF7FEFF 		bl	lv_mem_free
+ 1268              	.LVL156:
+  95:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1269              		.loc 1 95 25 discriminator 1 view .LVU412
+ 1270 0032 EDE7     		b	.L35
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 45
+
+
+ 1271              		.cfi_endproc
+ 1272              	.LFE155:
+ 1274              		.section	.text.lv_checkbox_get_text,"ax",%progbits
+ 1275              		.align	1
+ 1276              		.global	lv_checkbox_get_text
+ 1277              		.syntax unified
+ 1278              		.thumb
+ 1279              		.thumb_func
+ 1281              	lv_checkbox_get_text:
+ 1282              	.LVL157:
+ 1283              	.LFB156:
+ 109:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     lv_checkbox_t * cb = (lv_checkbox_t *)obj;
+ 1284              		.loc 1 109 1 is_stmt 1 view -0
+ 1285              		.cfi_startproc
+ 1286              		@ args = 0, pretend = 0, frame = 0
+ 1287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1288              		@ link register save eliminated.
+ 110:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c ****     return cb->txt;
+ 1289              		.loc 1 110 5 view .LVU414
+ 111:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** }
+ 1290              		.loc 1 111 5 view .LVU415
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1291              		.loc 1 112 1 is_stmt 0 view .LVU416
+ 1292 0000 C06A     		ldr	r0, [r0, #44]
+ 1293              	.LVL158:
+ 112:Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.c **** 
+ 1294              		.loc 1 112 1 view .LVU417
+ 1295 0002 7047     		bx	lr
+ 1296              		.cfi_endproc
+ 1297              	.LFE156:
+ 1299              		.global	lv_checkbox_class
+ 1300              		.section	.rodata.lv_checkbox_class,"a"
+ 1301              		.align	2
+ 1302              		.set	.LANCHOR0,. + 0
+ 1305              	lv_checkbox_class:
+ 1306 0000 00000000 		.word	lv_obj_class
+ 1307 0004 00000000 		.word	lv_checkbox_constructor
+ 1308 0008 00000000 		.word	lv_checkbox_destructor
+ 1309 000c 00000000 		.space	4
+ 1310 0010 00000000 		.word	lv_checkbox_event
+ 1311 0014 D1070020 		.word	536872913
+ 1312 0018 D1070020 		.word	536872913
+ 1313 001c 44       		.byte	68
+ 1314 001d 03       		.byte	3
+ 1315 001e 00       		.byte	0
+ 1316 001f 00       		.space	1
+ 1317              		.text
+ 1318              	.Letext0:
+ 1319              		.file 5 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 1320              		.file 6 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1321              		.file 7 "c:\\gnu arm embedded toolchain\\10 2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\std
+ 1322              		.file 8 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/lv_types.h"
+ 1323              		.file 9 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/lv_color.h"
+ 1324              		.file 10 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/lv_txt.h"
+ 1325              		.file 11 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/lv_bidi.h"
+ 1326              		.file 12 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/lv_style.h"
+ 1327              		.file 13 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_img_buf.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 46
+
+
+ 1328              		.file 14 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj.h"
+ 1329              		.file 15 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_draw_rect.h"
+ 1330              		.file 16 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_draw_label.h"
+ 1331              		.file 17 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_draw_img.h"
+ 1332              		.file 18 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_draw_line.h"
+ 1333              		.file 19 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_draw_arc.h"
+ 1334              		.file 20 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/lv_draw.h"
+ 1335              		.file 21 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../misc/lv_ll.h"
+ 1336              		.file 22 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_group.h"
+ 1337              		.file 23 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_scroll.h"
+ 1338              		.file 24 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_style.h"
+ 1339              		.file 25 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_draw.h"
+ 1340              		.file 26 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_obj_class.h"
+ 1341              		.file 27 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/lv_event.h"
+ 1342              		.file 28 "Middlewares/LVGL/GUI/lvgl/src/widgets/lv_checkbox.h"
+ 1343              		.file 29 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../misc/lv_mem.h"
+ 1344              		.file 30 "Middlewares/LVGL/GUI/lvgl/src/widgets/../core/../hal/../draw/sw/../../core/lv_obj_pos.h"
+ 1345              		.file 31 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\string.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s 			page 47
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_checkbox.c
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:20     .text.lv_checkbox_draw:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:25     .text.lv_checkbox_draw:00000000 lv_checkbox_draw
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:592    .text.lv_checkbox_draw:000001f0 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:597    .text.lv_checkbox_event:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:602    .text.lv_checkbox_event:00000000 lv_checkbox_event
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:954    .text.lv_checkbox_event:0000011c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:959    .text.lv_checkbox_destructor:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:964    .text.lv_checkbox_destructor:00000000 lv_checkbox_destructor
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1007   .rodata.lv_checkbox_constructor.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1011   .text.lv_checkbox_constructor:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1016   .text.lv_checkbox_constructor:00000000 lv_checkbox_constructor
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1070   .text.lv_checkbox_constructor:00000030 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1075   .text.lv_checkbox_create:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1081   .text.lv_checkbox_create:00000000 lv_checkbox_create
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1120   .text.lv_checkbox_create:00000014 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1125   .text.lv_checkbox_set_text:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1131   .text.lv_checkbox_set_text:00000000 lv_checkbox_set_text
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1210   .text.lv_checkbox_set_text_static:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1216   .text.lv_checkbox_set_text_static:00000000 lv_checkbox_set_text_static
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1275   .text.lv_checkbox_get_text:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1281   .text.lv_checkbox_get_text:00000000 lv_checkbox_get_text
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1305   .rodata.lv_checkbox_class:00000000 lv_checkbox_class
+C:\Users\ADMINI~1\AppData\Local\Temp\cc5F7yyu.s:1301   .rodata.lv_checkbox_class:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_event_get_target
+lv_event_get_draw_ctx
+lv_obj_get_style_prop
+lv_draw_rect_dsc_init
+lv_obj_init_draw_rect_dsc
+lv_obj_draw_dsc_init
+lv_event_send
+lv_draw_rect
+lv_txt_get_size
+lv_draw_label_dsc_init
+lv_obj_init_draw_label_dsc
+lv_draw_label
+lv_obj_event_base
+lv_event_get_code
+lv_event_get_param
+lv_obj_calculate_ext_draw_size
+lv_mem_free
+lv_obj_add_flag
+lv_obj_class_create_obj
+lv_obj_class_init_obj
+strlen
+lv_mem_realloc
+strcpy
+lv_obj_refresh_self_size
+lv_obj_invalidate
+lv_mem_alloc
+lv_obj_class

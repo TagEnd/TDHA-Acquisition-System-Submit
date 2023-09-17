@@ -1,0 +1,778 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"FFT_MATH.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.global	__aeabi_i2d
+  20              		.global	__aeabi_d2uiz
+  21              		.global	__aeabi_dadd
+  22              		.global	__aeabi_dcmplt
+  23              		.global	__aeabi_d2iz
+  24              		.global	__aeabi_f2d
+  25              		.global	__aeabi_dmul
+  26              		.global	__aeabi_ddiv
+  27              		.global	__aeabi_d2f
+  28              		.global	__aeabi_dsub
+  29              		.section	.text.FFT,"ax",%progbits
+  30              		.align	1
+  31              		.global	FFT
+  32              		.syntax unified
+  33              		.thumb
+  34              		.thumb_func
+  36              	FFT:
+  37              	.LVL0:
+  38              	.LFB3:
+  39              		.file 1 "Core/Src/FFT_MATH.c"
+   1:Core/Src/FFT_MATH.c **** #include "FFT_MATH.h"
+   2:Core/Src/FFT_MATH.c **** #include <stdio.h>
+   3:Core/Src/FFT_MATH.c **** #include <math.h>
+   4:Core/Src/FFT_MATH.c **** #include <stdlib.h>
+   5:Core/Src/FFT_MATH.c **** #define PI 3.1415926535
+   6:Core/Src/FFT_MATH.c **** 
+   7:Core/Src/FFT_MATH.c **** void FFT(float dataR[],float dataI[],float dataA[],int N,int M)
+   8:Core/Src/FFT_MATH.c **** {
+  40              		.loc 1 8 1 view -0
+  41              		.cfi_startproc
+  42              		@ args = 4, pretend = 0, frame = 64
+  43              		@ frame_needed = 0, uses_anonymous_args = 0
+  44              		.loc 1 8 1 is_stmt 0 view .LVU1
+  45 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  46              	.LCFI0:
+  47              		.cfi_def_cfa_offset 36
+  48              		.cfi_offset 4, -36
+  49              		.cfi_offset 5, -32
+  50              		.cfi_offset 6, -28
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 2
+
+
+  51              		.cfi_offset 7, -24
+  52              		.cfi_offset 8, -20
+  53              		.cfi_offset 9, -16
+  54              		.cfi_offset 10, -12
+  55              		.cfi_offset 11, -8
+  56              		.cfi_offset 14, -4
+  57 0004 2DED028B 		vpush.64	{d8}
+  58              	.LCFI1:
+  59              		.cfi_def_cfa_offset 44
+  60              		.cfi_offset 80, -44
+  61              		.cfi_offset 81, -40
+  62 0008 91B0     		sub	sp, sp, #68
+  63              	.LCFI2:
+  64              		.cfi_def_cfa_offset 112
+  65 000a 0391     		str	r1, [sp, #12]
+  66 000c 0F92     		str	r2, [sp, #60]
+  67 000e 0D93     		str	r3, [sp, #52]
+   9:Core/Src/FFT_MATH.c **** 
+  10:Core/Src/FFT_MATH.c **** 	int i,j,k,r;
+  68              		.loc 1 10 2 is_stmt 1 view .LVU2
+  11:Core/Src/FFT_MATH.c **** 	int p,L,B;
+  69              		.loc 1 11 2 view .LVU3
+  12:Core/Src/FFT_MATH.c **** 	unsigned int I,J,K,F0,F1,m,n;
+  70              		.loc 1 12 2 view .LVU4
+  13:Core/Src/FFT_MATH.c **** 	float Tr,Ti,temp;
+  71              		.loc 1 13 2 view .LVU5
+  14:Core/Src/FFT_MATH.c **** 	//输入序列倒序
+  15:Core/Src/FFT_MATH.c **** /*
+  16:Core/Src/FFT_MATH.c **** J=N/2;
+  17:Core/Src/FFT_MATH.c **** for(I = 1; I < N - 2; I++)
+  18:Core/Src/FFT_MATH.c **** {
+  19:Core/Src/FFT_MATH.c **** 	//数组元素互换
+  20:Core/Src/FFT_MATH.c **** 	if(I<J)
+  21:Core/Src/FFT_MATH.c **** 	{
+  22:Core/Src/FFT_MATH.c **** 		temp = dataR[I];
+  23:Core/Src/FFT_MATH.c **** 		dataR[I] = dataR[J];
+  24:Core/Src/FFT_MATH.c **** 		dataR[J] = temp;
+  25:Core/Src/FFT_MATH.c **** 	}
+  26:Core/Src/FFT_MATH.c **** 	//求取下一个反序数
+  27:Core/Src/FFT_MATH.c **** 	K=N/2;//K是N的权值变量，从最高位权值开始判断。
+  28:Core/Src/FFT_MATH.c **** 	while(1)
+  29:Core/Src/FFT_MATH.c **** 	{
+  30:Core/Src/FFT_MATH.c **** 		//从左到右循环判断该位是否为1
+  31:Core/Src/FFT_MATH.c ****  		if(J< K)	
+  32:Core/Src/FFT_MATH.c **** 		{
+  33:Core/Src/FFT_MATH.c **** 			J=J+K;//判断结果为该位为0，加上该位权值，0变成1。
+  34:Core/Src/FFT_MATH.c **** 			break;//循环结束
+  35:Core/Src/FFT_MATH.c ****  		}
+  36:Core/Src/FFT_MATH.c **** 		else 
+  37:Core/Src/FFT_MATH.c **** 		{
+  38:Core/Src/FFT_MATH.c **** 			J=J-K;//判断结果为该位为1，减去该位权值，1变成0。
+  39:Core/Src/FFT_MATH.c **** 			K=K/2;//得到下一位的权值，继续下一位0或1的判断。
+  40:Core/Src/FFT_MATH.c **** 		 }
+  41:Core/Src/FFT_MATH.c **** 	}
+  42:Core/Src/FFT_MATH.c **** }*/
+  43:Core/Src/FFT_MATH.c **** 
+  44:Core/Src/FFT_MATH.c **** //倒序
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 3
+
+
+  45:Core/Src/FFT_MATH.c **** 	for(I=0;I< N;I++)   //根据规律四，需要对数组元素执行码间倒序
+  72              		.loc 1 45 2 view .LVU6
+  73              	.LVL1:
+  74              		.loc 1 45 7 is_stmt 0 view .LVU7
+  75 0010 4FF00008 		mov	r8, #0
+  76 0014 8346     		mov	fp, r0
+  77 0016 9A46     		mov	r10, r3
+  78 0018 1C9D     		ldr	r5, [sp, #112]
+  79              		.loc 1 45 2 view .LVU8
+  80 001a 48E0     		b	.L2
+  81              	.LVL2:
+  82              	.L4:
+  46:Core/Src/FFT_MATH.c **** 	{  
+  47:Core/Src/FFT_MATH.c **** 		/*获取下标I的反序J的数值*/ 
+  48:Core/Src/FFT_MATH.c **** 		J=0;
+  49:Core/Src/FFT_MATH.c **** 		for(k=0;k<(M/2+0.5);k++)     //k表示操作
+  83              		.loc 1 49 23 is_stmt 1 discriminator 2 view .LVU9
+  84              		.loc 1 49 24 is_stmt 0 discriminator 2 view .LVU10
+  85 001c 0134     		adds	r4, r4, #1
+  86              	.LVL3:
+  87              	.L7:
+  88              		.loc 1 49 11 is_stmt 1 discriminator 1 view .LVU11
+  89              		.loc 1 49 12 is_stmt 0 discriminator 1 view .LVU12
+  90 001e 2046     		mov	r0, r4
+  91 0020 FFF7FEFF 		bl	__aeabi_i2d
+  92              	.LVL4:
+  93 0024 0646     		mov	r6, r0
+  94 0026 0F46     		mov	r7, r1
+  95              		.loc 1 49 15 discriminator 1 view .LVU13
+  96 0028 05EBD570 		add	r0, r5, r5, lsr #31
+  97              		.loc 1 49 17 discriminator 1 view .LVU14
+  98 002c 4010     		asrs	r0, r0, #1
+  99 002e FFF7FEFF 		bl	__aeabi_i2d
+ 100              	.LVL5:
+ 101 0032 0022     		movs	r2, #0
+ 102 0034 A44B     		ldr	r3, .L22+16
+ 103 0036 FFF7FEFF 		bl	__aeabi_dadd
+ 104              	.LVL6:
+ 105 003a 0246     		mov	r2, r0
+ 106 003c 0B46     		mov	r3, r1
+ 107              		.loc 1 49 3 discriminator 1 view .LVU15
+ 108 003e 3046     		mov	r0, r6
+ 109 0040 3946     		mov	r1, r7
+ 110 0042 FFF7FEFF 		bl	__aeabi_dcmplt
+ 111              	.LVL7:
+ 112 0046 D8B1     		cbz	r0, .L18
+  50:Core/Src/FFT_MATH.c **** 	     {
+  51:Core/Src/FFT_MATH.c **** 	         //*反序操作*/
+  52:Core/Src/FFT_MATH.c **** 	         m=1;//m是最低位为1的二进制数
+ 113              		.loc 1 52 11 is_stmt 1 view .LVU16
+ 114              	.LVL8:
+  53:Core/Src/FFT_MATH.c **** 			 n=(unsigned int)pow(2,M-1);//n是第M位为1的二进制数
+ 115              		.loc 1 53 5 view .LVU17
+ 116              		.loc 1 53 21 is_stmt 0 view .LVU18
+ 117 0048 681E     		subs	r0, r5, #1
+ 118 004a FFF7FEFF 		bl	__aeabi_i2d
+ 119              	.LVL9:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 4
+
+
+ 120 004e 41EC110B 		vmov	d1, r0, r1
+ 121 0052 9FED990B 		vldr.64	d0, .L22
+ 122 0056 FFF7FEFF 		bl	pow
+ 123              	.LVL10:
+ 124 005a 51EC100B 		vmov	r0, r1, d0
+ 125              		.loc 1 53 6 view .LVU19
+ 126 005e FFF7FEFF 		bl	__aeabi_d2uiz
+ 127              	.LVL11:
+  54:Core/Src/FFT_MATH.c **** 			 m <<= k; //对m左移k位
+ 128              		.loc 1 54 5 is_stmt 1 view .LVU20
+ 129              		.loc 1 54 7 is_stmt 0 view .LVU21
+ 130 0062 0123     		movs	r3, #1
+ 131 0064 A340     		lsls	r3, r3, r4
+ 132              	.LVL12:
+  55:Core/Src/FFT_MATH.c **** 	         n >>= k; //对n右移k位
+ 133              		.loc 1 55 11 is_stmt 1 view .LVU22
+ 134              		.loc 1 55 13 is_stmt 0 view .LVU23
+ 135 0066 E040     		lsrs	r0, r0, r4
+ 136              	.LVL13:
+  56:Core/Src/FFT_MATH.c **** 	         F0=I & n;//I与n按位与提取出前半部分第k位
+ 137              		.loc 1 56 11 is_stmt 1 view .LVU24
+  57:Core/Src/FFT_MATH.c **** 			 F1=I & m;//I与m按位与提取出F0对应的后半部分的低位
+ 138              		.loc 1 57 5 view .LVU25
+ 139              		.loc 1 57 7 is_stmt 0 view .LVU26
+ 140 0068 08EA0302 		and	r2, r8, r3
+ 141              	.LVL14:
+  58:Core/Src/FFT_MATH.c **** 	         if(F0) J=J | m; //J与m按位或使F0对应低位为1
+ 142              		.loc 1 58 11 is_stmt 1 view .LVU27
+ 143              		.loc 1 58 13 is_stmt 0 view .LVU28
+ 144 006c 18EA000F 		tst	r8, r0
+ 145 0070 01D0     		beq	.L3
+ 146              		.loc 1 58 18 is_stmt 1 discriminator 1 view .LVU29
+ 147              		.loc 1 58 19 is_stmt 0 discriminator 1 view .LVU30
+ 148 0072 49EA0309 		orr	r9, r9, r3
+ 149              	.LVL15:
+ 150              	.L3:
+  59:Core/Src/FFT_MATH.c **** 	         if(F1) J=J | n; //J与n按位或使F1对应高位为1 
+ 151              		.loc 1 59 11 is_stmt 1 view .LVU31
+ 152              		.loc 1 59 13 is_stmt 0 view .LVU32
+ 153 0076 002A     		cmp	r2, #0
+ 154 0078 D0D0     		beq	.L4
+ 155              		.loc 1 59 18 is_stmt 1 discriminator 1 view .LVU33
+ 156              		.loc 1 59 19 is_stmt 0 discriminator 1 view .LVU34
+ 157 007a 49EA0009 		orr	r9, r9, r0
+ 158              	.LVL16:
+ 159              		.loc 1 59 19 discriminator 1 view .LVU35
+ 160 007e CDE7     		b	.L4
+ 161              	.LVL17:
+ 162              	.L18:
+  60:Core/Src/FFT_MATH.c **** 	     }
+  61:Core/Src/FFT_MATH.c **** 	 		//printf("I为：");printBin(I,M);printf(" %d\n",I);
+  62:Core/Src/FFT_MATH.c **** 	 		//printf("J为：");printBin(J,M);printf(" %d\n\n",J);
+  63:Core/Src/FFT_MATH.c **** 	 		
+  64:Core/Src/FFT_MATH.c **** 	 	 if(I<J)
+ 163              		.loc 1 64 5 is_stmt 1 view .LVU36
+ 164              		.loc 1 64 7 is_stmt 0 view .LVU37
+ 165 0080 C845     		cmp	r8, r9
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 5
+
+
+ 166 0082 12D2     		bcs	.L6
+  65:Core/Src/FFT_MATH.c **** 			{
+  66:Core/Src/FFT_MATH.c **** 				temp = dataR[I];
+ 167              		.loc 1 66 5 is_stmt 1 view .LVU38
+ 168              		.loc 1 66 17 is_stmt 0 view .LVU39
+ 169 0084 0BEB8802 		add	r2, fp, r8, lsl #2
+ 170              		.loc 1 66 10 view .LVU40
+ 171 0088 1168     		ldr	r1, [r2]	@ float
+ 172              	.LVL18:
+  67:Core/Src/FFT_MATH.c **** 				dataR[I] = dataR[J];
+ 173              		.loc 1 67 5 is_stmt 1 view .LVU41
+ 174              		.loc 1 67 21 is_stmt 0 view .LVU42
+ 175 008a 0BEB8903 		add	r3, fp, r9, lsl #2
+ 176 008e 1868     		ldr	r0, [r3]	@ float
+ 177              		.loc 1 67 14 view .LVU43
+ 178 0090 1060     		str	r0, [r2]	@ float
+  68:Core/Src/FFT_MATH.c **** 				dataR[J] = temp;
+ 179              		.loc 1 68 5 is_stmt 1 view .LVU44
+ 180              		.loc 1 68 14 is_stmt 0 view .LVU45
+ 181 0092 1960     		str	r1, [r3]	@ float
+  69:Core/Src/FFT_MATH.c **** 				//补充虚数部分交换： 
+  70:Core/Src/FFT_MATH.c **** 				temp = dataI[I];
+ 182              		.loc 1 70 5 is_stmt 1 view .LVU46
+ 183              		.loc 1 70 17 is_stmt 0 view .LVU47
+ 184 0094 0399     		ldr	r1, [sp, #12]
+ 185              	.LVL19:
+ 186              		.loc 1 70 17 view .LVU48
+ 187 0096 01EB8803 		add	r3, r1, r8, lsl #2
+ 188              	.LVL20:
+ 189              		.loc 1 70 10 view .LVU49
+ 190 009a 1A68     		ldr	r2, [r3]	@ float
+ 191              	.LVL21:
+  71:Core/Src/FFT_MATH.c **** 				dataI[I] = dataI[J];
+ 192              		.loc 1 71 5 is_stmt 1 view .LVU50
+ 193              		.loc 1 71 21 is_stmt 0 view .LVU51
+ 194 009c 01EB8909 		add	r9, r1, r9, lsl #2
+ 195              	.LVL22:
+ 196              		.loc 1 71 21 view .LVU52
+ 197 00a0 D9F80010 		ldr	r1, [r9]	@ float
+ 198              		.loc 1 71 14 view .LVU53
+ 199 00a4 1960     		str	r1, [r3]	@ float
+  72:Core/Src/FFT_MATH.c **** 				dataI[J] = temp;
+ 200              		.loc 1 72 5 is_stmt 1 view .LVU54
+ 201              		.loc 1 72 14 is_stmt 0 view .LVU55
+ 202 00a6 C9F80020 		str	r2, [r9]	@ float
+ 203              	.LVL23:
+ 204              	.L6:
+  45:Core/Src/FFT_MATH.c **** 	{  
+ 205              		.loc 1 45 15 is_stmt 1 discriminator 2 view .LVU56
+  45:Core/Src/FFT_MATH.c **** 	{  
+ 206              		.loc 1 45 16 is_stmt 0 discriminator 2 view .LVU57
+ 207 00aa 08F10108 		add	r8, r8, #1
+ 208              	.LVL24:
+ 209              	.L2:
+  45:Core/Src/FFT_MATH.c **** 	{  
+ 210              		.loc 1 45 10 is_stmt 1 discriminator 1 view .LVU58
+  45:Core/Src/FFT_MATH.c **** 	{  
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 6
+
+
+ 211              		.loc 1 45 2 is_stmt 0 discriminator 1 view .LVU59
+ 212 00ae C245     		cmp	r10, r8
+ 213 00b0 03D9     		bls	.L19
+  48:Core/Src/FFT_MATH.c **** 		for(k=0;k<(M/2+0.5);k++)     //k表示操作
+ 214              		.loc 1 48 4 view .LVU60
+ 215 00b2 4FF00009 		mov	r9, #0
+  49:Core/Src/FFT_MATH.c **** 	     {
+ 216              		.loc 1 49 8 view .LVU61
+ 217 00b6 4C46     		mov	r4, r9
+ 218 00b8 B1E7     		b	.L7
+ 219              	.L19:
+  73:Core/Src/FFT_MATH.c **** 			}                                
+  74:Core/Src/FFT_MATH.c **** 	} 
+  75:Core/Src/FFT_MATH.c **** 
+  76:Core/Src/FFT_MATH.c **** //进行FFT
+  77:Core/Src/FFT_MATH.c **** 	/*	Tr = Xr(J+B)cos(2.0*PI*p/N) + Xi(J+B)sin(2.0*PI*p/N)
+  78:Core/Src/FFT_MATH.c **** 	    Ti = Xi(J+B)cos(2.0*PI*p/N) - Xr(J+B)sin(2.0*PI*p/N)
+  79:Core/Src/FFT_MATH.c **** 		Ar[J] = Xr(J) + Tr
+  80:Core/Src/FFT_MATH.c **** 	    Ai[J] = Xi(J) + Ti
+  81:Core/Src/FFT_MATH.c **** 	    Ar[J+B] = Xr(J) - Tr
+  82:Core/Src/FFT_MATH.c **** 	    Ai[J+B] = Xi(J) - Ti
+  83:Core/Src/FFT_MATH.c **** 	   (其中 Xr为上一级的Ar, Xi为上一级的Ai)*/
+  84:Core/Src/FFT_MATH.c **** 	for(L=1; L<=M;L++)	//FFT蝶形级数L从1--M
+ 220              		.loc 1 84 7 view .LVU62
+ 221 00ba 0123     		movs	r3, #1
+ 222 00bc 0E93     		str	r3, [sp, #56]
+ 223 00be 5E46     		mov	r6, fp
+ 224 00c0 B5E0     		b	.L8
+ 225              	.LVL25:
+ 226              	.L11:
+  85:Core/Src/FFT_MATH.c **** 	{		
+  86:Core/Src/FFT_MATH.c **** 		/*第L级的运算:
+  87:Core/Src/FFT_MATH.c **** 		然后对于第L级，我们在问题五种提到，蝶形运算的种类数目等于间隔B:有�
+  88:Core/Src/FFT_MATH.c **** 		随着循环的不同，旋转指数P也不同，P的增量为k=2^(M-L)*/	
+  89:Core/Src/FFT_MATH.c **** 		//先计算一下间隔 B = 2^(L-1);
+  90:Core/Src/FFT_MATH.c **** 		B = 1;
+  91:Core/Src/FFT_MATH.c **** 		B = (int)pow(2,L-1);	
+  92:Core/Src/FFT_MATH.c **** 		for(j=0;j<=B-1;j++)		
+  93:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+  94:Core/Src/FFT_MATH.c **** 		{	/*同种蝶形运算*/	
+  95:Core/Src/FFT_MATH.c **** 			//先计算增量k=2^(M-L)
+  96:Core/Src/FFT_MATH.c **** 			k=1;
+  97:Core/Src/FFT_MATH.c **** 			k = (int)pow(2,M-L);
+  98:Core/Src/FFT_MATH.c **** 			//计算旋转指数p，增量为k时，则P=j*k
+  99:Core/Src/FFT_MATH.c **** 			p=1;
+ 100:Core/Src/FFT_MATH.c **** 			p=j*k;
+ 101:Core/Src/FFT_MATH.c **** 			/*接下来，由问题六我们可以知道同种蝶形运算的次数刚好为增量k=2^(M-L)�
+ 102:Core/Src/FFT_MATH.c **** 			同种蝶形的运算次数即为蝶形运算的次数*/
+ 103:Core/Src/FFT_MATH.c **** 			for(i=0; i<=k-1;i++) 
+ 104:Core/Src/FFT_MATH.c **** 				{
+ 105:Core/Src/FFT_MATH.c **** 					//数组下标定为r
+ 106:Core/Src/FFT_MATH.c **** 					r=1;
+ 227              		.loc 1 106 6 is_stmt 1 discriminator 3 view .LVU63
+ 107:Core/Src/FFT_MATH.c **** 					r=j+2*B*i;
+ 228              		.loc 1 107 6 discriminator 3 view .LVU64
+ 229              		.loc 1 107 13 is_stmt 0 discriminator 3 view .LVU65
+ 230 00c2 09FB0BF4 		mul	r4, r9, fp
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 7
+
+
+ 231              		.loc 1 107 7 discriminator 3 view .LVU66
+ 232 00c6 0A9B     		ldr	r3, [sp, #40]
+ 233 00c8 03EB4404 		add	r4, r3, r4, lsl #1
+ 234              	.LVL26:
+ 108:Core/Src/FFT_MATH.c **** 					Tr=dataR[r+B]*cos(2.0*PI*p/N) + dataI[r+B]*sin(2.0*PI*p/N);
+ 235              		.loc 1 108 6 is_stmt 1 discriminator 3 view .LVU67
+ 236              		.loc 1 108 16 is_stmt 0 discriminator 3 view .LVU68
+ 237 00cc 09EB0405 		add	r5, r9, r4
+ 238              		.loc 1 108 14 discriminator 3 view .LVU69
+ 239 00d0 4FEA850A 		lsl	r10, r5, #2
+ 240 00d4 08EB8505 		add	r5, r8, r5, lsl #2
+ 241 00d8 2868     		ldr	r0, [r5]	@ float
+ 242 00da FFF7FEFF 		bl	__aeabi_f2d
+ 243              	.LVL27:
+ 244 00de CDE90001 		strd	r0, [sp]
+ 245              		.loc 1 108 30 discriminator 3 view .LVU70
+ 246 00e2 0C98     		ldr	r0, [sp, #48]
+ 247 00e4 FFF7FEFF 		bl	__aeabi_i2d
+ 248              	.LVL28:
+ 249 00e8 75A3     		adr	r3, .L22+8
+ 250 00ea D3E90023 		ldrd	r2, [r3]
+ 251 00ee FFF7FEFF 		bl	__aeabi_dmul
+ 252              	.LVL29:
+ 253 00f2 0646     		mov	r6, r0
+ 254 00f4 0F46     		mov	r7, r1
+ 255              		.loc 1 108 20 discriminator 3 view .LVU71
+ 256 00f6 0D98     		ldr	r0, [sp, #52]
+ 257 00f8 FFF7FEFF 		bl	__aeabi_i2d
+ 258              	.LVL30:
+ 259 00fc 0246     		mov	r2, r0
+ 260 00fe 0B46     		mov	r3, r1
+ 261 0100 3046     		mov	r0, r6
+ 262 0102 3946     		mov	r1, r7
+ 263 0104 FFF7FEFF 		bl	__aeabi_ddiv
+ 264              	.LVL31:
+ 265 0108 41EC180B 		vmov	d8, r0, r1
+ 266 010c 41EC100B 		vmov	d0, r0, r1
+ 267 0110 FFF7FEFF 		bl	cos
+ 268              	.LVL32:
+ 269 0114 53EC102B 		vmov	r2, r3, d0
+ 270              		.loc 1 108 19 discriminator 3 view .LVU72
+ 271 0118 8DED040B 		vstr.64	d0, [sp, #16]
+ 272 011c DDE90001 		ldrd	r0, [sp]
+ 273 0120 FFF7FEFF 		bl	__aeabi_dmul
+ 274              	.LVL33:
+ 275 0124 CDE90801 		strd	r0, [sp, #32]
+ 276              		.loc 1 108 43 discriminator 3 view .LVU73
+ 277 0128 039B     		ldr	r3, [sp, #12]
+ 278 012a 9A44     		add	r10, r10, r3
+ 279 012c DAF80000 		ldr	r0, [r10]	@ float
+ 280 0130 FFF7FEFF 		bl	__aeabi_f2d
+ 281              	.LVL34:
+ 282 0134 0646     		mov	r6, r0
+ 283 0136 0F46     		mov	r7, r1
+ 284              		.loc 1 108 49 discriminator 3 view .LVU74
+ 285 0138 B0EE480A 		vmov.f32	s0, s16
+ 286 013c F0EE680A 		vmov.f32	s1, s17
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 8
+
+
+ 287 0140 FFF7FEFF 		bl	sin
+ 288              	.LVL35:
+ 289 0144 52EC101B 		vmov	r1, r2, d0
+ 290              		.loc 1 108 48 discriminator 3 view .LVU75
+ 291 0148 8DED060B 		vstr.64	d0, [sp, #24]
+ 292 014c 1346     		mov	r3, r2
+ 293 014e 10EE102A 		vmov	r2, s0	@ int
+ 294 0152 3046     		mov	r0, r6
+ 295 0154 3946     		mov	r1, r7
+ 296 0156 FFF7FEFF 		bl	__aeabi_dmul
+ 297              	.LVL36:
+ 298 015a 0246     		mov	r2, r0
+ 299 015c 0B46     		mov	r3, r1
+ 300              		.loc 1 108 36 discriminator 3 view .LVU76
+ 301 015e DDE90801 		ldrd	r0, [sp, #32]
+ 302 0162 FFF7FEFF 		bl	__aeabi_dadd
+ 303              	.LVL37:
+ 304              		.loc 1 108 8 discriminator 3 view .LVU77
+ 305 0166 FFF7FEFF 		bl	__aeabi_d2f
+ 306              	.LVL38:
+ 307 016a 08EE100A 		vmov	s16, r0
+ 308              	.LVL39:
+ 109:Core/Src/FFT_MATH.c **** 					Ti=dataI[r+B]*cos(2.0*PI*p/N) - dataR[r+B]*sin(2.0*PI*p/N);
+ 309              		.loc 1 109 6 is_stmt 1 discriminator 3 view .LVU78
+ 310              		.loc 1 109 19 is_stmt 0 discriminator 3 view .LVU79
+ 311 016e 3246     		mov	r2, r6
+ 312 0170 3B46     		mov	r3, r7
+ 313 0172 DDE90401 		ldrd	r0, [sp, #16]
+ 314              	.LVL40:
+ 315              		.loc 1 109 19 discriminator 3 view .LVU80
+ 316 0176 FFF7FEFF 		bl	__aeabi_dmul
+ 317              	.LVL41:
+ 318 017a 0646     		mov	r6, r0
+ 319 017c 0F46     		mov	r7, r1
+ 320              		.loc 1 109 48 discriminator 3 view .LVU81
+ 321 017e DDE90623 		ldrd	r2, [sp, #24]
+ 322 0182 DDE90001 		ldrd	r0, [sp]
+ 323 0186 FFF7FEFF 		bl	__aeabi_dmul
+ 324              	.LVL42:
+ 325 018a 0246     		mov	r2, r0
+ 326 018c 0B46     		mov	r3, r1
+ 327              		.loc 1 109 36 discriminator 3 view .LVU82
+ 328 018e 3046     		mov	r0, r6
+ 329 0190 3946     		mov	r1, r7
+ 330 0192 FFF7FEFF 		bl	__aeabi_dsub
+ 331              	.LVL43:
+ 332              		.loc 1 109 8 discriminator 3 view .LVU83
+ 333 0196 FFF7FEFF 		bl	__aeabi_d2f
+ 334              	.LVL44:
+ 335 019a 07EE900A 		vmov	s15, r0
+ 336              	.LVL45:
+ 110:Core/Src/FFT_MATH.c **** 					dataR[r+B]=dataR[r]-Tr;
+ 337              		.loc 1 110 6 is_stmt 1 discriminator 3 view .LVU84
+ 338              		.loc 1 110 22 is_stmt 0 discriminator 3 view .LVU85
+ 339 019e 08EB8403 		add	r3, r8, r4, lsl #2
+ 340 01a2 93ED007A 		vldr.32	s14, [r3]
+ 341              		.loc 1 110 25 discriminator 3 view .LVU86
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 9
+
+
+ 342 01a6 37EE487A 		vsub.f32	s14, s14, s16
+ 343              		.loc 1 110 16 discriminator 3 view .LVU87
+ 344 01aa 85ED007A 		vstr.32	s14, [r5]
+ 111:Core/Src/FFT_MATH.c **** 					dataI[r+B]=dataI[r]-Ti;
+ 345              		.loc 1 111 6 is_stmt 1 discriminator 3 view .LVU88
+ 346              		.loc 1 111 22 is_stmt 0 discriminator 3 view .LVU89
+ 347 01ae 039A     		ldr	r2, [sp, #12]
+ 348 01b0 02EB8404 		add	r4, r2, r4, lsl #2
+ 349              	.LVL46:
+ 350              		.loc 1 111 22 discriminator 3 view .LVU90
+ 351 01b4 94ED007A 		vldr.32	s14, [r4]
+ 352              		.loc 1 111 25 discriminator 3 view .LVU91
+ 353 01b8 37EE677A 		vsub.f32	s14, s14, s15
+ 354              		.loc 1 111 16 discriminator 3 view .LVU92
+ 355 01bc 8AED007A 		vstr.32	s14, [r10]
+ 112:Core/Src/FFT_MATH.c **** 					dataR[r]=dataR[r]+Tr;
+ 356              		.loc 1 112 6 is_stmt 1 discriminator 3 view .LVU93
+ 357              		.loc 1 112 20 is_stmt 0 discriminator 3 view .LVU94
+ 358 01c0 93ED007A 		vldr.32	s14, [r3]
+ 359              		.loc 1 112 23 discriminator 3 view .LVU95
+ 360 01c4 37EE088A 		vadd.f32	s16, s14, s16
+ 361              	.LVL47:
+ 362              		.loc 1 112 14 discriminator 3 view .LVU96
+ 363 01c8 83ED008A 		vstr.32	s16, [r3]
+ 113:Core/Src/FFT_MATH.c **** 					dataI[r]=dataI[r]+Ti;
+ 364              		.loc 1 113 6 is_stmt 1 discriminator 3 view .LVU97
+ 365              		.loc 1 113 20 is_stmt 0 discriminator 3 view .LVU98
+ 366 01cc 94ED007A 		vldr.32	s14, [r4]
+ 367              		.loc 1 113 23 discriminator 3 view .LVU99
+ 368 01d0 77EE277A 		vadd.f32	s15, s14, s15
+ 369              		.loc 1 113 14 discriminator 3 view .LVU100
+ 370 01d4 C4ED007A 		vstr.32	s15, [r4]
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 371              		.loc 1 103 20 is_stmt 1 discriminator 3 view .LVU101
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 372              		.loc 1 103 21 is_stmt 0 discriminator 3 view .LVU102
+ 373 01d8 0BF1010B 		add	fp, fp, #1
+ 374              	.LVL48:
+ 375              	.L10:
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 376              		.loc 1 103 13 is_stmt 1 discriminator 1 view .LVU103
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 377              		.loc 1 103 4 is_stmt 0 discriminator 1 view .LVU104
+ 378 01dc 0B9B     		ldr	r3, [sp, #44]
+ 379 01de 9B45     		cmp	fp, r3
+ 380 01e0 FFF66FAF 		blt	.L11
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 381              		.loc 1 92 19 discriminator 2 view .LVU105
+ 382 01e4 4E46     		mov	r6, r9
+ 383 01e6 4746     		mov	r7, r8
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 384              		.loc 1 92 18 is_stmt 1 discriminator 2 view .LVU106
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 385              		.loc 1 92 19 is_stmt 0 discriminator 2 view .LVU107
+ 386 01e8 0A9B     		ldr	r3, [sp, #40]
+ 387 01ea 0133     		adds	r3, r3, #1
+ 388 01ec 0A93     		str	r3, [sp, #40]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 10
+
+
+ 389              	.LVL49:
+ 390              	.L9:
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 391              		.loc 1 92 11 is_stmt 1 discriminator 1 view .LVU108
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 392              		.loc 1 92 3 is_stmt 0 discriminator 1 view .LVU109
+ 393 01ee 0A9B     		ldr	r3, [sp, #40]
+ 394 01f0 B342     		cmp	r3, r6
+ 395 01f2 18DA     		bge	.L20
+  96:Core/Src/FFT_MATH.c **** 			k = (int)pow(2,M-L);
+ 396              		.loc 1 96 4 is_stmt 1 view .LVU110
+ 397              	.LVL50:
+  97:Core/Src/FFT_MATH.c **** 			//计算旋转指数p，增量为k时，则P=j*k
+ 398              		.loc 1 97 4 view .LVU111
+  97:Core/Src/FFT_MATH.c **** 			//计算旋转指数p，增量为k时，则P=j*k
+ 399              		.loc 1 97 13 is_stmt 0 view .LVU112
+ 400 01f4 1C9B     		ldr	r3, [sp, #112]
+ 401 01f6 0E9A     		ldr	r2, [sp, #56]
+ 402 01f8 981A     		subs	r0, r3, r2
+ 403 01fa FFF7FEFF 		bl	__aeabi_i2d
+ 404              	.LVL51:
+ 405 01fe 41EC110B 		vmov	d1, r0, r1
+ 406 0202 9FED2D0B 		vldr.64	d0, .L22
+ 407 0206 FFF7FEFF 		bl	pow
+ 408              	.LVL52:
+ 409 020a 51EC100B 		vmov	r0, r1, d0
+  97:Core/Src/FFT_MATH.c **** 			//计算旋转指数p，增量为k时，则P=j*k
+ 410              		.loc 1 97 6 view .LVU113
+ 411 020e FFF7FEFF 		bl	__aeabi_d2iz
+ 412              	.LVL53:
+ 413 0212 0B90     		str	r0, [sp, #44]
+ 414              	.LVL54:
+  99:Core/Src/FFT_MATH.c **** 			p=j*k;
+ 415              		.loc 1 99 4 is_stmt 1 view .LVU114
+ 100:Core/Src/FFT_MATH.c **** 			/*接下来，由问题六我们可以知道同种蝶形运算的次数刚好为增量k=2^(M-L)�
+ 416              		.loc 1 100 4 view .LVU115
+ 100:Core/Src/FFT_MATH.c **** 			/*接下来，由问题六我们可以知道同种蝶形运算的次数刚好为增量k=2^(M-L)�
+ 417              		.loc 1 100 5 is_stmt 0 view .LVU116
+ 418 0214 0A9B     		ldr	r3, [sp, #40]
+ 419 0216 00FB03F3 		mul	r3, r0, r3
+ 420 021a 0C93     		str	r3, [sp, #48]
+ 421              	.LVL55:
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 422              		.loc 1 103 4 is_stmt 1 view .LVU117
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 423              		.loc 1 103 9 is_stmt 0 view .LVU118
+ 424 021c 4FF0000B 		mov	fp, #0
+ 425 0220 B146     		mov	r9, r6
+ 426 0222 B846     		mov	r8, r7
+ 103:Core/Src/FFT_MATH.c **** 				{
+ 427              		.loc 1 103 4 view .LVU119
+ 428 0224 DAE7     		b	.L10
+ 429              	.LVL56:
+ 430              	.L20:
+  84:Core/Src/FFT_MATH.c **** 	{		
+ 431              		.loc 1 84 17 discriminator 2 view .LVU120
+ 432 0226 3E46     		mov	r6, r7
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 11
+
+
+ 433              	.LVL57:
+  84:Core/Src/FFT_MATH.c **** 	{		
+ 434              		.loc 1 84 16 is_stmt 1 discriminator 2 view .LVU121
+  84:Core/Src/FFT_MATH.c **** 	{		
+ 435              		.loc 1 84 17 is_stmt 0 discriminator 2 view .LVU122
+ 436 0228 0E9B     		ldr	r3, [sp, #56]
+ 437              	.LVL58:
+  84:Core/Src/FFT_MATH.c **** 	{		
+ 438              		.loc 1 84 17 discriminator 2 view .LVU123
+ 439 022a 0133     		adds	r3, r3, #1
+ 440 022c 0E93     		str	r3, [sp, #56]
+ 441              	.LVL59:
+ 442              	.L8:
+  84:Core/Src/FFT_MATH.c **** 	{		
+ 443              		.loc 1 84 11 is_stmt 1 discriminator 1 view .LVU124
+  84:Core/Src/FFT_MATH.c **** 	{		
+ 444              		.loc 1 84 2 is_stmt 0 discriminator 1 view .LVU125
+ 445 022e 0E9B     		ldr	r3, [sp, #56]
+ 446 0230 1C9A     		ldr	r2, [sp, #112]
+ 447 0232 9342     		cmp	r3, r2
+ 448 0234 13DC     		bgt	.L21
+  90:Core/Src/FFT_MATH.c **** 		B = (int)pow(2,L-1);	
+ 449              		.loc 1 90 3 is_stmt 1 view .LVU126
+ 450              	.LVL60:
+  91:Core/Src/FFT_MATH.c **** 		for(j=0;j<=B-1;j++)		
+ 451              		.loc 1 91 3 view .LVU127
+  91:Core/Src/FFT_MATH.c **** 		for(j=0;j<=B-1;j++)		
+ 452              		.loc 1 91 12 is_stmt 0 view .LVU128
+ 453 0236 0E9B     		ldr	r3, [sp, #56]
+ 454 0238 581E     		subs	r0, r3, #1
+ 455 023a FFF7FEFF 		bl	__aeabi_i2d
+ 456              	.LVL61:
+ 457 023e 41EC110B 		vmov	d1, r0, r1
+ 458 0242 9FED1D0B 		vldr.64	d0, .L22
+ 459 0246 FFF7FEFF 		bl	pow
+ 460              	.LVL62:
+ 461 024a 51EC100B 		vmov	r0, r1, d0
+  91:Core/Src/FFT_MATH.c **** 		for(j=0;j<=B-1;j++)		
+ 462              		.loc 1 91 5 view .LVU129
+ 463 024e FFF7FEFF 		bl	__aeabi_d2iz
+ 464              	.LVL63:
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 465              		.loc 1 92 3 is_stmt 1 view .LVU130
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 466              		.loc 1 92 8 is_stmt 0 view .LVU131
+ 467 0252 0023     		movs	r3, #0
+ 468 0254 0A93     		str	r3, [sp, #40]
+ 469 0256 3346     		mov	r3, r6
+ 470 0258 0646     		mov	r6, r0
+ 471              	.LVL64:
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 472              		.loc 1 92 8 view .LVU132
+ 473 025a 1F46     		mov	r7, r3
+  92:Core/Src/FFT_MATH.c **** 		//j = 0,1,2,...,2^(L-1) - 1
+ 474              		.loc 1 92 3 view .LVU133
+ 475 025c C7E7     		b	.L9
+ 476              	.LVL65:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 12
+
+
+ 477              	.L21:
+ 114:Core/Src/FFT_MATH.c **** 				}	
+ 115:Core/Src/FFT_MATH.c **** 			}
+ 116:Core/Src/FFT_MATH.c **** 	}
+ 117:Core/Src/FFT_MATH.c **** 	//计算幅值 
+ 118:Core/Src/FFT_MATH.c **** 	for ( i=0;i<N;i++ )
+ 478              		.loc 1 118 9 view .LVU134
+ 479 025e 3746     		mov	r7, r6
+ 480 0260 0024     		movs	r4, #0
+ 481 0262 DDF80C80 		ldr	r8, [sp, #12]
+ 482 0266 DDF83C90 		ldr	r9, [sp, #60]
+ 483 026a 0D9E     		ldr	r6, [sp, #52]
+ 484              	.LVL66:
+ 485              		.loc 1 118 9 view .LVU135
+ 486 026c 1DE0     		b	.L14
+ 487              	.LVL67:
+ 488              	.L15:
+ 119:Core/Src/FFT_MATH.c **** 	{ 		
+ 120:Core/Src/FFT_MATH.c **** 	 	dataA[i]=sqrt(dataR[i]*dataR[i]+dataI[i]*dataI[i]);
+ 489              		.loc 1 120 4 is_stmt 1 discriminator 3 view .LVU136
+ 490              		.loc 1 120 23 is_stmt 0 discriminator 3 view .LVU137
+ 491 026e A500     		lsls	r5, r4, #2
+ 492 0270 07EB8403 		add	r3, r7, r4, lsl #2
+ 493 0274 D3ED007A 		vldr.32	s15, [r3]
+ 494              		.loc 1 120 26 discriminator 3 view .LVU138
+ 495 0278 27EEA77A 		vmul.f32	s14, s15, s15
+ 496              		.loc 1 120 41 discriminator 3 view .LVU139
+ 497 027c 08EB8403 		add	r3, r8, r4, lsl #2
+ 498 0280 D3ED007A 		vldr.32	s15, [r3]
+ 499              		.loc 1 120 44 discriminator 3 view .LVU140
+ 500 0284 67EEA77A 		vmul.f32	s15, s15, s15
+ 501              		.loc 1 120 13 discriminator 3 view .LVU141
+ 502 0288 77EE277A 		vadd.f32	s15, s14, s15
+ 503 028c 17EE900A 		vmov	r0, s15
+ 504 0290 FFF7FEFF 		bl	__aeabi_f2d
+ 505              	.LVL68:
+ 506 0294 41EC100B 		vmov	d0, r0, r1
+ 507 0298 FFF7FEFF 		bl	sqrt
+ 508              	.LVL69:
+ 509 029c 51EC100B 		vmov	r0, r1, d0
+ 510              		.loc 1 120 9 discriminator 3 view .LVU142
+ 511 02a0 4D44     		add	r5, r5, r9
+ 512              		.loc 1 120 13 discriminator 3 view .LVU143
+ 513 02a2 FFF7FEFF 		bl	__aeabi_d2f
+ 514              	.LVL70:
+ 515              		.loc 1 120 12 discriminator 3 view .LVU144
+ 516 02a6 2860     		str	r0, [r5]	@ float
+ 118:Core/Src/FFT_MATH.c **** 	{ 		
+ 517              		.loc 1 118 16 is_stmt 1 discriminator 3 view .LVU145
+ 118:Core/Src/FFT_MATH.c **** 	{ 		
+ 518              		.loc 1 118 17 is_stmt 0 discriminator 3 view .LVU146
+ 519 02a8 0134     		adds	r4, r4, #1
+ 520              	.LVL71:
+ 521              	.L14:
+ 118:Core/Src/FFT_MATH.c **** 	{ 		
+ 522              		.loc 1 118 12 is_stmt 1 discriminator 1 view .LVU147
+ 118:Core/Src/FFT_MATH.c **** 	{ 		
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 13
+
+
+ 523              		.loc 1 118 2 is_stmt 0 discriminator 1 view .LVU148
+ 524 02aa B442     		cmp	r4, r6
+ 525 02ac DFDB     		blt	.L15
+ 121:Core/Src/FFT_MATH.c **** 	}
+ 122:Core/Src/FFT_MATH.c **** }
+ 526              		.loc 1 122 1 view .LVU149
+ 527 02ae 11B0     		add	sp, sp, #68
+ 528              	.LCFI3:
+ 529              		.cfi_def_cfa_offset 44
+ 530              		@ sp needed
+ 531 02b0 BDEC028B 		vldm	sp!, {d8}
+ 532              	.LCFI4:
+ 533              		.cfi_restore 80
+ 534              		.cfi_restore 81
+ 535              		.cfi_def_cfa_offset 36
+ 536 02b4 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 537              	.LVL72:
+ 538              	.L23:
+ 539              		.loc 1 122 1 view .LVU150
+ 540              		.align	3
+ 541              	.L22:
+ 542 02b8 00000000 		.word	0
+ 543 02bc 00000040 		.word	1073741824
+ 544 02c0 44174154 		.word	1413551940
+ 545 02c4 FB211940 		.word	1075388923
+ 546 02c8 0000E03F 		.word	1071644672
+ 547              		.cfi_endproc
+ 548              	.LFE3:
+ 550              		.text
+ 551              	.Letext0:
+ 552              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\math.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 FFT_MATH.c
+C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s:30     .text.FFT:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s:36     .text.FFT:00000000 FFT
+C:\Users\17832\AppData\Local\Temp\ccO0zcYG.s:542    .text.FFT:000002b8 $d
+
+UNDEFINED SYMBOLS
+__aeabi_i2d
+__aeabi_d2uiz
+__aeabi_dadd
+__aeabi_dcmplt
+__aeabi_d2iz
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_ddiv
+__aeabi_d2f
+__aeabi_dsub
+pow
+cos
+sin
+sqrt

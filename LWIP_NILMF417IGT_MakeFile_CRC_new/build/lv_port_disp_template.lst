@@ -1,0 +1,433 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_port_disp_template.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.disp_flush,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	disp_flush:
+  26              	.LVL0:
+  27              	.LFB328:
+  28              		.file 1 "Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c"
+   1:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**
+   2:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  * @file lv_port_disp_templ.c
+   3:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *
+   4:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  */
+   5:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+   6:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  /*Copy this file as "lv_port_disp.c" and set this value to "1" to enable content*/
+   7:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #if 1
+   8:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+   9:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /*********************
+  10:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *      INCLUDES
+  11:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *********************/
+  12:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #include "lv_port_disp_template.h"
+  13:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #include "../../lvgl.h"
+  14:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #include "lcd.h"
+  15:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #include "lcd_init.h"
+  16:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  17:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /*********************
+  18:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *      DEFINES
+  19:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *********************/
+  20:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #define MY_DISP_HOR_RES 240
+  21:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #define MY_DISP_VER_RES 240
+  22:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** #define LV_VER_RES_MAX 16
+  23:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**********************
+  24:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *      TYPEDEFS
+  25:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  **********************/
+  26:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  27:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**********************
+  28:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *  STATIC PROTOTYPES
+  29:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  **********************/
+  30:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** static void disp_init(void);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 2
+
+
+  31:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  32:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+  33:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** //static void gpu_fill(lv_disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
+  34:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** //        const lv_area_t * fill_area, lv_color_t color);
+  35:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  36:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**********************
+  37:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *  STATIC VARIABLES
+  38:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  **********************/
+  39:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  40:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**********************
+  41:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *      MACROS
+  42:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  **********************/
+  43:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  44:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**********************
+  45:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *   GLOBAL FUNCTIONS
+  46:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  **********************/
+  47:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  48:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** void lv_port_disp_init(void)
+  49:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** {
+  50:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*-------------------------
+  51:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * Initialize your display
+  52:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * -----------------------*/
+  53:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_init();
+  54:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  55:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*-----------------------------
+  56:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * Create a buffer for drawing
+  57:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *----------------------------*/
+  58:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  59:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /**
+  60:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * LVGL requires a buffer where it internally draws the widgets.
+  61:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * Later this buffer will passed to your display driver's `flush_cb` to copy its content to you
+  62:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * The buffer has to be greater than 1 display row
+  63:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *
+  64:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * There are 3 buffering configurations:
+  65:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * 1. Create ONE buffer:
+  66:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      LVGL will draw the display's content here and writes it to your display
+  67:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *
+  68:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * 2. Create TWO buffer:
+  69:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      LVGL will draw the display's content to a buffer and writes it your display.
+  70:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      You should use DMA to write the buffer's content to the display.
+  71:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      It will enable LVGL to draw the next part of the screen to the other buffer while
+  72:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      the data is being sent form the first buffer. It makes rendering and flushing parallel.
+  73:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *
+  74:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * 3. Double buffering
+  75:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      Set 2 screens sized buffers and set disp_drv.full_refresh = 1.
+  76:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      This way LVGL will always provide the whole rendered screen in `flush_cb`
+  77:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *      and you only need to change the frame buffer's address.
+  78:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      */
+  79:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  80:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /* Example for 1) */
+  81:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     static lv_disp_draw_buf_t draw_buf_dsc_1;
+  82:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     static lv_color_t buf_1[MY_DISP_HOR_RES * 60];                          /*A buffer for 10 rows*
+  83:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 60);   /*Initialize the d
+  84:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  85:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // /* Example for 2) */
+  86:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // static lv_disp_draw_buf_t draw_buf_dsc_2;
+  87:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // static lv_color_t buf_2_1[MY_DISP_HOR_RES * 10];                        /*A buffer for 10 ro
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 3
+
+
+  88:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // static lv_color_t buf_2_2[MY_DISP_HOR_RES * 10];                        /*An other buffer fo
+  89:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // lv_disp_draw_buf_init(&draw_buf_dsc_2, buf_2_1, buf_2_2, MY_DISP_HOR_RES * 10);   /*Initiali
+  90:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  91:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // /* Example for 3) also set disp_drv.full_refresh = 1 below*/
+  92:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // static lv_disp_draw_buf_t draw_buf_dsc_3;
+  93:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // static lv_color_t buf_3_1[MY_DISP_HOR_RES * MY_DISP_VER_RES];            /*A screen sized bu
+  94:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // static lv_color_t buf_3_2[MY_DISP_HOR_RES * MY_DISP_VER_RES];            /*Another screen si
+  95:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // lv_disp_draw_buf_init(&draw_buf_dsc_3, buf_3_1, buf_3_2, MY_DISP_VER_RES * LV_VER_RES_MAX); 
+  96:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  97:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*-----------------------------------
+  98:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * Register the display in LVGL
+  99:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *----------------------------------*/
+ 100:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 101:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     static lv_disp_drv_t disp_drv;                         /*Descriptor of a display driver*/
+ 102:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     lv_disp_drv_init(&disp_drv);                    /*Basic initialization*/
+ 103:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 104:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*Set up the functions to access to your display*/
+ 105:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 106:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*Set the resolution of the display*/
+ 107:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_drv.hor_res = LCD_H;
+ 108:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_drv.ver_res = LCD_W;
+ 109:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 110:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*Used to copy the buffer's content to the display*/
+ 111:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_drv.flush_cb = disp_flush;
+ 112:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 113:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*Set a display buffer*/
+ 114:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_drv.draw_buf = &draw_buf_dsc_1;
+ 115:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 116:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*Required for Example 3)*/
+ 117:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //disp_drv.full_refresh = 1
+ 118:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 119:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /* Fill a memory array with a color if you have GPU.
+ 120:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * Note that, in lv_conf.h you can enable GPUs that has built-in support in LVGL.
+ 121:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      * But if you have a different GPU you can use with this callback.*/
+ 122:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //disp_drv.gpu_fill_cb = gpu_fill;
+ 123:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 124:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*Finally register the driver*/
+ 125:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     lv_disp_drv_register(&disp_drv);
+ 126:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** }
+ 127:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 128:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /**********************
+ 129:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *   STATIC FUNCTIONS
+ 130:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  **********************/
+ 131:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 132:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /*Initialize your display and the required peripherals.*/
+ 133:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** static void disp_init(void)
+ 134:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** {
+ 135:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*You code here*/
+ 136:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     LCD_Init();
+ 137:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** }
+ 138:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 139:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** /*Flush the content of the internal buffer the specific area on the display
+ 140:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *You can use DMA or any hardware acceleration to do this operation in the background but
+ 141:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****  *'lv_disp_flush_ready()' has to be called when finished.*/
+ 142:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
+ 143:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** {
+  29              		.loc 1 143 1 view -0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 4
+
+
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 143 1 is_stmt 0 view .LVU1
+  34 0000 10B5     		push	{r4, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 4, -8
+  38              		.cfi_offset 14, -4
+  39 0002 82B0     		sub	sp, sp, #8
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 16
+  42 0004 0446     		mov	r4, r0
+  43 0006 8C46     		mov	ip, r1
+ 144:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*The most simple case (but also the slowest) to put all pixels to the screen one-by-one*/
+ 145:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // int32_t x;
+ 146:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // int32_t y;
+ 147:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // for(y = area->y1; y <= area->y2; y++) {
+ 148:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //     for(x = area->x1; x <= area->x2; x++) {
+ 149:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //         /*Put a pixel to the display. For example:*/
+ 150:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //         /*put_px(x, y, *color_p)*/
+ 151:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //         color_p++;
+ 152:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     //     }
+ 153:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // }
+ 154:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     // LCD_Fill(area->x1,area->y1,area->x2,area->y2,(uint16_t*)color_p);
+ 155:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     LCD_Color_Fill(area->x1,area->y1,area->x2,area->y2,color_p);
+  44              		.loc 1 155 5 is_stmt 1 view .LVU2
+  45 0008 0092     		str	r2, [sp]
+  46 000a 8B89     		ldrh	r3, [r1, #12]
+  47 000c 0A89     		ldrh	r2, [r1, #8]
+  48              	.LVL1:
+  49              		.loc 1 155 5 is_stmt 0 view .LVU3
+  50 000e 8988     		ldrh	r1, [r1, #4]
+  51              	.LVL2:
+  52              		.loc 1 155 5 view .LVU4
+  53 0010 BCF80000 		ldrh	r0, [ip]
+  54              	.LVL3:
+  55              		.loc 1 155 5 view .LVU5
+  56 0014 FFF7FEFF 		bl	LCD_Color_Fill
+  57              	.LVL4:
+ 156:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*IMPORTANT!!!
+ 157:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****      *Inform the graphics library that you are ready with the flushing*/
+ 158:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     lv_disp_flush_ready(disp_drv);
+  58              		.loc 1 158 5 is_stmt 1 view .LVU6
+  59 0018 2046     		mov	r0, r4
+  60 001a FFF7FEFF 		bl	lv_disp_flush_ready
+  61              	.LVL5:
+ 159:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** }
+  62              		.loc 1 159 1 is_stmt 0 view .LVU7
+  63 001e 02B0     		add	sp, sp, #8
+  64              	.LCFI2:
+  65              		.cfi_def_cfa_offset 8
+  66              		@ sp needed
+  67 0020 10BD     		pop	{r4, pc}
+  68              		.loc 1 159 1 view .LVU8
+  69              		.cfi_endproc
+  70              	.LFE328:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 5
+
+
+  72              		.section	.text.disp_init,"ax",%progbits
+  73              		.align	1
+  74              		.syntax unified
+  75              		.thumb
+  76              		.thumb_func
+  78              	disp_init:
+  79              	.LFB327:
+ 134:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*You code here*/
+  80              		.loc 1 134 1 is_stmt 1 view -0
+  81              		.cfi_startproc
+  82              		@ args = 0, pretend = 0, frame = 0
+  83              		@ frame_needed = 0, uses_anonymous_args = 0
+  84 0000 08B5     		push	{r3, lr}
+  85              	.LCFI3:
+  86              		.cfi_def_cfa_offset 8
+  87              		.cfi_offset 3, -8
+  88              		.cfi_offset 14, -4
+ 136:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** }
+  89              		.loc 1 136 5 view .LVU10
+  90 0002 FFF7FEFF 		bl	LCD_Init
+  91              	.LVL6:
+ 137:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+  92              		.loc 1 137 1 is_stmt 0 view .LVU11
+  93 0006 08BD     		pop	{r3, pc}
+  94              		.cfi_endproc
+  95              	.LFE327:
+  97              		.section	.text.lv_port_disp_init,"ax",%progbits
+  98              		.align	1
+  99              		.global	lv_port_disp_init
+ 100              		.syntax unified
+ 101              		.thumb
+ 102              		.thumb_func
+ 104              	lv_port_disp_init:
+ 105              	.LFB326:
+  49:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     /*-------------------------
+ 106              		.loc 1 49 1 is_stmt 1 view -0
+ 107              		.cfi_startproc
+ 108              		@ args = 0, pretend = 0, frame = 0
+ 109              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110 0000 38B5     		push	{r3, r4, r5, lr}
+ 111              	.LCFI4:
+ 112              		.cfi_def_cfa_offset 16
+ 113              		.cfi_offset 3, -16
+ 114              		.cfi_offset 4, -12
+ 115              		.cfi_offset 5, -8
+ 116              		.cfi_offset 14, -4
+  53:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 117              		.loc 1 53 5 view .LVU13
+ 118 0002 FFF7FEFF 		bl	disp_init
+ 119              	.LVL7:
+  81:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     static lv_color_t buf_1[MY_DISP_HOR_RES * 60];                          /*A buffer for 10 rows*
+ 120              		.loc 1 81 5 view .LVU14
+  82:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     lv_disp_draw_buf_init(&draw_buf_dsc_1, buf_1, NULL, MY_DISP_HOR_RES * 60);   /*Initialize the d
+ 121              		.loc 1 82 5 view .LVU15
+  83:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 122              		.loc 1 83 5 view .LVU16
+ 123 0006 0B4D     		ldr	r5, .L7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 6
+
+
+ 124 0008 4FF46153 		mov	r3, #14400
+ 125 000c 0022     		movs	r2, #0
+ 126 000e 0A49     		ldr	r1, .L7+4
+ 127 0010 2846     		mov	r0, r5
+ 128 0012 FFF7FEFF 		bl	lv_disp_draw_buf_init
+ 129              	.LVL8:
+ 101:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     lv_disp_drv_init(&disp_drv);                    /*Basic initialization*/
+ 130              		.loc 1 101 5 view .LVU17
+ 102:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 131              		.loc 1 102 5 view .LVU18
+ 132 0016 094C     		ldr	r4, .L7+8
+ 133 0018 2046     		mov	r0, r4
+ 134 001a FFF7FEFF 		bl	lv_disp_drv_init
+ 135              	.LVL9:
+ 107:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_drv.ver_res = LCD_W;
+ 136              		.loc 1 107 5 view .LVU19
+ 107:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c ****     disp_drv.ver_res = LCD_W;
+ 137              		.loc 1 107 22 is_stmt 0 view .LVU20
+ 138 001e F023     		movs	r3, #240
+ 139 0020 2360     		str	r3, [r4]
+ 108:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 140              		.loc 1 108 5 is_stmt 1 view .LVU21
+ 108:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 141              		.loc 1 108 22 is_stmt 0 view .LVU22
+ 142 0022 6360     		str	r3, [r4, #4]
+ 111:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 143              		.loc 1 111 5 is_stmt 1 view .LVU23
+ 111:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 144              		.loc 1 111 23 is_stmt 0 view .LVU24
+ 145 0024 064B     		ldr	r3, .L7+12
+ 146 0026 2362     		str	r3, [r4, #32]
+ 114:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 147              		.loc 1 114 5 is_stmt 1 view .LVU25
+ 114:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 148              		.loc 1 114 23 is_stmt 0 view .LVU26
+ 149 0028 A561     		str	r5, [r4, #24]
+ 125:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** }
+ 150              		.loc 1 125 5 is_stmt 1 view .LVU27
+ 151 002a 2046     		mov	r0, r4
+ 152 002c FFF7FEFF 		bl	lv_disp_drv_register
+ 153              	.LVL10:
+ 126:Middlewares/LVGL/GUI/lvgl/examples/porting/lv_port_disp_template.c **** 
+ 154              		.loc 1 126 1 is_stmt 0 view .LVU28
+ 155 0030 38BD     		pop	{r3, r4, r5, pc}
+ 156              	.L8:
+ 157 0032 00BF     		.align	2
+ 158              	.L7:
+ 159 0034 00000000 		.word	.LANCHOR0
+ 160 0038 00000000 		.word	buf_1.1
+ 161 003c 00000000 		.word	.LANCHOR1
+ 162 0040 00000000 		.word	disp_flush
+ 163              		.cfi_endproc
+ 164              	.LFE326:
+ 166              		.section	.bss.buf_1.1,"aw",%nobits
+ 167              		.align	2
+ 170              	buf_1.1:
+ 171 0000 00000000 		.space	28800
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 7
+
+
+ 171      00000000 
+ 171      00000000 
+ 171      00000000 
+ 171      00000000 
+ 172              		.section	.bss.disp_drv.0,"aw",%nobits
+ 173              		.align	2
+ 174              		.set	.LANCHOR1,. + 0
+ 177              	disp_drv.0:
+ 178 0000 00000000 		.space	88
+ 178      00000000 
+ 178      00000000 
+ 178      00000000 
+ 178      00000000 
+ 179              		.section	.bss.draw_buf_dsc_1.2,"aw",%nobits
+ 180              		.align	2
+ 181              		.set	.LANCHOR0,. + 0
+ 184              	draw_buf_dsc_1.2:
+ 185 0000 00000000 		.space	28
+ 185      00000000 
+ 185      00000000 
+ 185      00000000 
+ 185      00000000 
+ 186              		.text
+ 187              	.Letext0:
+ 188              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 189              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 190              		.file 4 "Middlewares/LVGl/GUI/lvgl/src/misc/lv_types.h"
+ 191              		.file 5 "c:\\gnu arm embedded toolchain\\10 2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\std
+ 192              		.file 6 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/../misc/../font/../misc/lv_area.h"
+ 193              		.file 7 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/../misc/../font/lv_font.h"
+ 194              		.file 8 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/../misc/lv_color.h"
+ 195              		.file 9 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/../misc/lv_txt.h"
+ 196              		.file 10 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/../misc/lv_bidi.h"
+ 197              		.file 11 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/../misc/lv_style.h"
+ 198              		.file 12 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_img_buf.h"
+ 199              		.file 13 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_draw_rect.h"
+ 200              		.file 14 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_draw_label.h"
+ 201              		.file 15 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_draw_img.h"
+ 202              		.file 16 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_draw_line.h"
+ 203              		.file 17 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_draw_arc.h"
+ 204              		.file 18 "Middlewares/LVGl/GUI/lvgl/src/hal/../draw/lv_draw.h"
+ 205              		.file 19 "Middlewares/LVGl/GUI/lvgl/src/hal/lv_hal_disp.h"
+ 206              		.file 20 "Drivers/LCD/Inc/lcd.h"
+ 207              		.file 21 "Drivers/LCD/Inc/lcd_init.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_port_disp_template.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:20     .text.disp_flush:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:25     .text.disp_flush:00000000 disp_flush
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:73     .text.disp_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:78     .text.disp_init:00000000 disp_init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:98     .text.lv_port_disp_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:104    .text.lv_port_disp_init:00000000 lv_port_disp_init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:159    .text.lv_port_disp_init:00000034 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:170    .bss.buf_1.1:00000000 buf_1.1
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:167    .bss.buf_1.1:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:173    .bss.disp_drv.0:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:177    .bss.disp_drv.0:00000000 disp_drv.0
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:180    .bss.draw_buf_dsc_1.2:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccwGdHBV.s:184    .bss.draw_buf_dsc_1.2:00000000 draw_buf_dsc_1.2
+
+UNDEFINED SYMBOLS
+LCD_Color_Fill
+lv_disp_flush_ready
+LCD_Init
+lv_disp_draw_buf_init
+lv_disp_drv_init
+lv_disp_drv_register

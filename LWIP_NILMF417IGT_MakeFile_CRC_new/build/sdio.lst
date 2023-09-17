@@ -1,0 +1,1206 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"sdio.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.MX_SDIO_SD_Init,"ax",%progbits
+  20              		.align	1
+  21              		.global	MX_SDIO_SD_Init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	MX_SDIO_SD_Init:
+  27              	.LFB130:
+  28              		.file 1 "Core/Src/sdio.c"
+   1:Core/Src/sdio.c **** /* USER CODE BEGIN Header */
+   2:Core/Src/sdio.c **** /**
+   3:Core/Src/sdio.c ****   ******************************************************************************
+   4:Core/Src/sdio.c ****   * @file    sdio.c
+   5:Core/Src/sdio.c ****   * @brief   This file provides code for the configuration
+   6:Core/Src/sdio.c ****   *          of the SDIO instances.
+   7:Core/Src/sdio.c ****   ******************************************************************************
+   8:Core/Src/sdio.c ****   * @attention
+   9:Core/Src/sdio.c ****   *
+  10:Core/Src/sdio.c ****   * Copyright (c) 2023 STMicroelectronics.
+  11:Core/Src/sdio.c ****   * All rights reserved.
+  12:Core/Src/sdio.c ****   *
+  13:Core/Src/sdio.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  14:Core/Src/sdio.c ****   * in the root directory of this software component.
+  15:Core/Src/sdio.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  16:Core/Src/sdio.c ****   *
+  17:Core/Src/sdio.c ****   ******************************************************************************
+  18:Core/Src/sdio.c ****   */
+  19:Core/Src/sdio.c **** /* USER CODE END Header */
+  20:Core/Src/sdio.c **** /* Includes ------------------------------------------------------------------*/
+  21:Core/Src/sdio.c **** #include "sdio.h"
+  22:Core/Src/sdio.c **** 
+  23:Core/Src/sdio.c **** /* USER CODE BEGIN 0 */
+  24:Core/Src/sdio.c **** HAL_SD_CardInfoTypeDef SDCardInfo;
+  25:Core/Src/sdio.c **** /* USER CODE END 0 */
+  26:Core/Src/sdio.c **** 
+  27:Core/Src/sdio.c **** SD_HandleTypeDef hsd;
+  28:Core/Src/sdio.c **** DMA_HandleTypeDef hdma_sdio_rx;
+  29:Core/Src/sdio.c **** DMA_HandleTypeDef hdma_sdio_tx;
+  30:Core/Src/sdio.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 2
+
+
+  31:Core/Src/sdio.c **** /* SDIO init function */
+  32:Core/Src/sdio.c **** 
+  33:Core/Src/sdio.c **** void MX_SDIO_SD_Init(void)
+  34:Core/Src/sdio.c **** {
+  29              		.loc 1 34 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  35:Core/Src/sdio.c **** 
+  36:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_Init 0 */
+  37:Core/Src/sdio.c **** 
+  38:Core/Src/sdio.c ****   /* USER CODE END SDIO_Init 0 */
+  39:Core/Src/sdio.c **** 
+  40:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_Init 1 */
+  41:Core/Src/sdio.c **** 
+  42:Core/Src/sdio.c ****   /* USER CODE END SDIO_Init 1 */
+  43:Core/Src/sdio.c ****   hsd.Instance = SDIO;
+  38              		.loc 1 43 3 view .LVU1
+  39              		.loc 1 43 16 is_stmt 0 view .LVU2
+  40 0002 0D48     		ldr	r0, .L7
+  41 0004 0D4B     		ldr	r3, .L7+4
+  42 0006 0360     		str	r3, [r0]
+  44:Core/Src/sdio.c ****   hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
+  43              		.loc 1 44 3 is_stmt 1 view .LVU3
+  44              		.loc 1 44 22 is_stmt 0 view .LVU4
+  45 0008 0023     		movs	r3, #0
+  46 000a 4360     		str	r3, [r0, #4]
+  45:Core/Src/sdio.c ****   hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
+  47              		.loc 1 45 3 is_stmt 1 view .LVU5
+  48              		.loc 1 45 24 is_stmt 0 view .LVU6
+  49 000c 8360     		str	r3, [r0, #8]
+  46:Core/Src/sdio.c ****   hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
+  50              		.loc 1 46 3 is_stmt 1 view .LVU7
+  51              		.loc 1 46 27 is_stmt 0 view .LVU8
+  52 000e C360     		str	r3, [r0, #12]
+  47:Core/Src/sdio.c ****   hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
+  53              		.loc 1 47 3 is_stmt 1 view .LVU9
+  54              		.loc 1 47 20 is_stmt 0 view .LVU10
+  55 0010 0361     		str	r3, [r0, #16]
+  48:Core/Src/sdio.c ****   hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
+  56              		.loc 1 48 3 is_stmt 1 view .LVU11
+  57              		.loc 1 48 32 is_stmt 0 view .LVU12
+  58 0012 4361     		str	r3, [r0, #20]
+  49:Core/Src/sdio.c ****   hsd.Init.ClockDiv = 2;
+  59              		.loc 1 49 3 is_stmt 1 view .LVU13
+  60              		.loc 1 49 21 is_stmt 0 view .LVU14
+  61 0014 0223     		movs	r3, #2
+  62 0016 8361     		str	r3, [r0, #24]
+  50:Core/Src/sdio.c ****   if (HAL_SD_Init(&hsd) != HAL_OK)
+  63              		.loc 1 50 3 is_stmt 1 view .LVU15
+  64              		.loc 1 50 7 is_stmt 0 view .LVU16
+  65 0018 FFF7FEFF 		bl	HAL_SD_Init
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 3
+
+
+  66              	.LVL0:
+  67              		.loc 1 50 6 view .LVU17
+  68 001c 30B9     		cbnz	r0, .L5
+  69              	.L2:
+  51:Core/Src/sdio.c ****   {
+  52:Core/Src/sdio.c ****     Error_Handler();
+  53:Core/Src/sdio.c ****   }
+  54:Core/Src/sdio.c ****   if (HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B) != HAL_OK)
+  70              		.loc 1 54 3 is_stmt 1 view .LVU18
+  71              		.loc 1 54 7 is_stmt 0 view .LVU19
+  72 001e 4FF40061 		mov	r1, #2048
+  73 0022 0548     		ldr	r0, .L7
+  74 0024 FFF7FEFF 		bl	HAL_SD_ConfigWideBusOperation
+  75              	.LVL1:
+  76              		.loc 1 54 6 view .LVU20
+  77 0028 18B9     		cbnz	r0, .L6
+  78              	.L1:
+  55:Core/Src/sdio.c ****   {
+  56:Core/Src/sdio.c ****     Error_Handler();
+  57:Core/Src/sdio.c ****   }
+  58:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_Init 2 */
+  59:Core/Src/sdio.c **** 
+  60:Core/Src/sdio.c ****   /* USER CODE END SDIO_Init 2 */
+  61:Core/Src/sdio.c **** 
+  62:Core/Src/sdio.c **** }
+  79              		.loc 1 62 1 view .LVU21
+  80 002a 08BD     		pop	{r3, pc}
+  81              	.L5:
+  52:Core/Src/sdio.c ****   }
+  82              		.loc 1 52 5 is_stmt 1 view .LVU22
+  83 002c FFF7FEFF 		bl	Error_Handler
+  84              	.LVL2:
+  85 0030 F5E7     		b	.L2
+  86              	.L6:
+  56:Core/Src/sdio.c ****   }
+  87              		.loc 1 56 5 view .LVU23
+  88 0032 FFF7FEFF 		bl	Error_Handler
+  89              	.LVL3:
+  90              		.loc 1 62 1 is_stmt 0 view .LVU24
+  91 0036 F8E7     		b	.L1
+  92              	.L8:
+  93              		.align	2
+  94              	.L7:
+  95 0038 00000000 		.word	.LANCHOR0
+  96 003c 002C0140 		.word	1073818624
+  97              		.cfi_endproc
+  98              	.LFE130:
+ 100              		.section	.text.HAL_SD_MspInit,"ax",%progbits
+ 101              		.align	1
+ 102              		.global	HAL_SD_MspInit
+ 103              		.syntax unified
+ 104              		.thumb
+ 105              		.thumb_func
+ 107              	HAL_SD_MspInit:
+ 108              	.LVL4:
+ 109              	.LFB131:
+  63:Core/Src/sdio.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 4
+
+
+  64:Core/Src/sdio.c **** void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
+  65:Core/Src/sdio.c **** {
+ 110              		.loc 1 65 1 is_stmt 1 view -0
+ 111              		.cfi_startproc
+ 112              		@ args = 0, pretend = 0, frame = 32
+ 113              		@ frame_needed = 0, uses_anonymous_args = 0
+ 114              		.loc 1 65 1 is_stmt 0 view .LVU26
+ 115 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 116              	.LCFI1:
+ 117              		.cfi_def_cfa_offset 28
+ 118              		.cfi_offset 4, -28
+ 119              		.cfi_offset 5, -24
+ 120              		.cfi_offset 6, -20
+ 121              		.cfi_offset 7, -16
+ 122              		.cfi_offset 8, -12
+ 123              		.cfi_offset 9, -8
+ 124              		.cfi_offset 14, -4
+ 125 0004 89B0     		sub	sp, sp, #36
+ 126              	.LCFI2:
+ 127              		.cfi_def_cfa_offset 64
+  66:Core/Src/sdio.c **** 
+  67:Core/Src/sdio.c ****   GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 128              		.loc 1 67 3 is_stmt 1 view .LVU27
+ 129              		.loc 1 67 20 is_stmt 0 view .LVU28
+ 130 0006 0023     		movs	r3, #0
+ 131 0008 0393     		str	r3, [sp, #12]
+ 132 000a 0493     		str	r3, [sp, #16]
+ 133 000c 0593     		str	r3, [sp, #20]
+ 134 000e 0693     		str	r3, [sp, #24]
+ 135 0010 0793     		str	r3, [sp, #28]
+  68:Core/Src/sdio.c ****   if(sdHandle->Instance==SDIO)
+ 136              		.loc 1 68 3 is_stmt 1 view .LVU29
+ 137              		.loc 1 68 14 is_stmt 0 view .LVU30
+ 138 0012 0268     		ldr	r2, [r0]
+ 139              		.loc 1 68 5 view .LVU31
+ 140 0014 514B     		ldr	r3, .L17
+ 141 0016 9A42     		cmp	r2, r3
+ 142 0018 02D0     		beq	.L14
+ 143              	.LVL5:
+ 144              	.L9:
+  69:Core/Src/sdio.c ****   {
+  70:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_MspInit 0 */
+  71:Core/Src/sdio.c **** 
+  72:Core/Src/sdio.c ****   /* USER CODE END SDIO_MspInit 0 */
+  73:Core/Src/sdio.c ****     /* SDIO clock enable */
+  74:Core/Src/sdio.c ****     __HAL_RCC_SDIO_CLK_ENABLE();
+  75:Core/Src/sdio.c **** 
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOC_CLK_ENABLE();
+  77:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+  78:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+  79:Core/Src/sdio.c ****     PC8     ------> SDIO_D0
+  80:Core/Src/sdio.c ****     PC9     ------> SDIO_D1
+  81:Core/Src/sdio.c ****     PC10     ------> SDIO_D2
+  82:Core/Src/sdio.c ****     PC11     ------> SDIO_D3
+  83:Core/Src/sdio.c ****     PC12     ------> SDIO_CK
+  84:Core/Src/sdio.c ****     PD2     ------> SDIO_CMD
+  85:Core/Src/sdio.c ****     */
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 5
+
+
+  86:Core/Src/sdio.c ****     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
+  87:Core/Src/sdio.c ****                           |GPIO_PIN_12;
+  88:Core/Src/sdio.c ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  89:Core/Src/sdio.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+  90:Core/Src/sdio.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  91:Core/Src/sdio.c ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
+  92:Core/Src/sdio.c ****     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  93:Core/Src/sdio.c **** 
+  94:Core/Src/sdio.c ****     GPIO_InitStruct.Pin = GPIO_PIN_2;
+  95:Core/Src/sdio.c ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  96:Core/Src/sdio.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+  97:Core/Src/sdio.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  98:Core/Src/sdio.c ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
+  99:Core/Src/sdio.c ****     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+ 100:Core/Src/sdio.c **** 
+ 101:Core/Src/sdio.c ****     /* SDIO DMA Init */
+ 102:Core/Src/sdio.c ****     /* SDIO_RX Init */
+ 103:Core/Src/sdio.c ****     hdma_sdio_rx.Instance = DMA2_Stream3;
+ 104:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Channel = DMA_CHANNEL_4;
+ 105:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+ 106:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+ 107:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemInc = DMA_MINC_ENABLE;
+ 108:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+ 109:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+ 110:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Mode = DMA_PFCTRL;
+ 111:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+ 112:Core/Src/sdio.c ****     hdma_sdio_rx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+ 113:Core/Src/sdio.c ****     hdma_sdio_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+ 114:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemBurst = DMA_MBURST_INC4;
+ 115:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphBurst = DMA_PBURST_INC4;
+ 116:Core/Src/sdio.c ****     if (HAL_DMA_Init(&hdma_sdio_rx) != HAL_OK)
+ 117:Core/Src/sdio.c ****     {
+ 118:Core/Src/sdio.c ****       Error_Handler();
+ 119:Core/Src/sdio.c ****     }
+ 120:Core/Src/sdio.c **** 
+ 121:Core/Src/sdio.c ****     __HAL_LINKDMA(sdHandle,hdmarx,hdma_sdio_rx);
+ 122:Core/Src/sdio.c **** 
+ 123:Core/Src/sdio.c ****     /* SDIO_TX Init */
+ 124:Core/Src/sdio.c ****     hdma_sdio_tx.Instance = DMA2_Stream6;
+ 125:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Channel = DMA_CHANNEL_4;
+ 126:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+ 127:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+ 128:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemInc = DMA_MINC_ENABLE;
+ 129:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+ 130:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+ 131:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Mode = DMA_PFCTRL;
+ 132:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+ 133:Core/Src/sdio.c ****     hdma_sdio_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+ 134:Core/Src/sdio.c ****     hdma_sdio_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+ 135:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemBurst = DMA_MBURST_INC4;
+ 136:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphBurst = DMA_PBURST_INC4;
+ 137:Core/Src/sdio.c ****     if (HAL_DMA_Init(&hdma_sdio_tx) != HAL_OK)
+ 138:Core/Src/sdio.c ****     {
+ 139:Core/Src/sdio.c ****       Error_Handler();
+ 140:Core/Src/sdio.c ****     }
+ 141:Core/Src/sdio.c **** 
+ 142:Core/Src/sdio.c ****     __HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio_tx);
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 6
+
+
+ 143:Core/Src/sdio.c **** 
+ 144:Core/Src/sdio.c ****     /* SDIO interrupt Init */
+ 145:Core/Src/sdio.c ****     HAL_NVIC_SetPriority(SDIO_IRQn, 0, 0);
+ 146:Core/Src/sdio.c ****     HAL_NVIC_EnableIRQ(SDIO_IRQn);
+ 147:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_MspInit 1 */
+ 148:Core/Src/sdio.c **** 
+ 149:Core/Src/sdio.c ****   /* USER CODE END SDIO_MspInit 1 */
+ 150:Core/Src/sdio.c ****   }
+ 151:Core/Src/sdio.c **** }
+ 145              		.loc 1 151 1 view .LVU32
+ 146 001a 09B0     		add	sp, sp, #36
+ 147              	.LCFI3:
+ 148              		.cfi_remember_state
+ 149              		.cfi_def_cfa_offset 28
+ 150              		@ sp needed
+ 151 001c BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 152              	.LVL6:
+ 153              	.L14:
+ 154              	.LCFI4:
+ 155              		.cfi_restore_state
+ 156              		.loc 1 151 1 view .LVU33
+ 157 0020 0446     		mov	r4, r0
+  74:Core/Src/sdio.c **** 
+ 158              		.loc 1 74 5 is_stmt 1 view .LVU34
+ 159              	.LBB2:
+  74:Core/Src/sdio.c **** 
+ 160              		.loc 1 74 5 view .LVU35
+ 161 0022 0025     		movs	r5, #0
+ 162 0024 0095     		str	r5, [sp]
+  74:Core/Src/sdio.c **** 
+ 163              		.loc 1 74 5 view .LVU36
+ 164 0026 03F58633 		add	r3, r3, #68608
+ 165 002a 5A6C     		ldr	r2, [r3, #68]
+ 166 002c 42F40062 		orr	r2, r2, #2048
+ 167 0030 5A64     		str	r2, [r3, #68]
+  74:Core/Src/sdio.c **** 
+ 168              		.loc 1 74 5 view .LVU37
+ 169 0032 5A6C     		ldr	r2, [r3, #68]
+ 170 0034 02F40062 		and	r2, r2, #2048
+ 171 0038 0092     		str	r2, [sp]
+  74:Core/Src/sdio.c **** 
+ 172              		.loc 1 74 5 view .LVU38
+ 173 003a 009A     		ldr	r2, [sp]
+ 174              	.LBE2:
+  74:Core/Src/sdio.c **** 
+ 175              		.loc 1 74 5 view .LVU39
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+ 176              		.loc 1 76 5 view .LVU40
+ 177              	.LBB3:
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+ 178              		.loc 1 76 5 view .LVU41
+ 179 003c 0195     		str	r5, [sp, #4]
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+ 180              		.loc 1 76 5 view .LVU42
+ 181 003e 1A6B     		ldr	r2, [r3, #48]
+ 182 0040 42F00402 		orr	r2, r2, #4
+ 183 0044 1A63     		str	r2, [r3, #48]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 7
+
+
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+ 184              		.loc 1 76 5 view .LVU43
+ 185 0046 1A6B     		ldr	r2, [r3, #48]
+ 186 0048 02F00402 		and	r2, r2, #4
+ 187 004c 0192     		str	r2, [sp, #4]
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+ 188              		.loc 1 76 5 view .LVU44
+ 189 004e 019A     		ldr	r2, [sp, #4]
+ 190              	.LBE3:
+  76:Core/Src/sdio.c ****     __HAL_RCC_GPIOD_CLK_ENABLE();
+ 191              		.loc 1 76 5 view .LVU45
+  77:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 192              		.loc 1 77 5 view .LVU46
+ 193              	.LBB4:
+  77:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 194              		.loc 1 77 5 view .LVU47
+ 195 0050 0295     		str	r5, [sp, #8]
+  77:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 196              		.loc 1 77 5 view .LVU48
+ 197 0052 1A6B     		ldr	r2, [r3, #48]
+ 198 0054 42F00802 		orr	r2, r2, #8
+ 199 0058 1A63     		str	r2, [r3, #48]
+  77:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 200              		.loc 1 77 5 view .LVU49
+ 201 005a 1B6B     		ldr	r3, [r3, #48]
+ 202 005c 03F00803 		and	r3, r3, #8
+ 203 0060 0293     		str	r3, [sp, #8]
+  77:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 204              		.loc 1 77 5 view .LVU50
+ 205 0062 029B     		ldr	r3, [sp, #8]
+ 206              	.LBE4:
+  77:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 207              		.loc 1 77 5 view .LVU51
+  86:Core/Src/sdio.c ****                           |GPIO_PIN_12;
+ 208              		.loc 1 86 5 view .LVU52
+  86:Core/Src/sdio.c ****                           |GPIO_PIN_12;
+ 209              		.loc 1 86 25 is_stmt 0 view .LVU53
+ 210 0064 4FF4F853 		mov	r3, #7936
+ 211 0068 0393     		str	r3, [sp, #12]
+  88:Core/Src/sdio.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 212              		.loc 1 88 5 is_stmt 1 view .LVU54
+  88:Core/Src/sdio.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 213              		.loc 1 88 26 is_stmt 0 view .LVU55
+ 214 006a 4FF00209 		mov	r9, #2
+ 215 006e CDF81090 		str	r9, [sp, #16]
+  89:Core/Src/sdio.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 216              		.loc 1 89 5 is_stmt 1 view .LVU56
+  90:Core/Src/sdio.c ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
+ 217              		.loc 1 90 5 view .LVU57
+  90:Core/Src/sdio.c ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
+ 218              		.loc 1 90 27 is_stmt 0 view .LVU58
+ 219 0072 0326     		movs	r6, #3
+ 220 0074 0696     		str	r6, [sp, #24]
+  91:Core/Src/sdio.c ****     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 221              		.loc 1 91 5 is_stmt 1 view .LVU59
+  91:Core/Src/sdio.c ****     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 222              		.loc 1 91 31 is_stmt 0 view .LVU60
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 8
+
+
+ 223 0076 4FF00C08 		mov	r8, #12
+ 224 007a CDF81C80 		str	r8, [sp, #28]
+  92:Core/Src/sdio.c **** 
+ 225              		.loc 1 92 5 is_stmt 1 view .LVU61
+ 226 007e 0DEB0801 		add	r1, sp, r8
+ 227 0082 3748     		ldr	r0, .L17+4
+ 228              	.LVL7:
+  92:Core/Src/sdio.c **** 
+ 229              		.loc 1 92 5 is_stmt 0 view .LVU62
+ 230 0084 FFF7FEFF 		bl	HAL_GPIO_Init
+ 231              	.LVL8:
+  94:Core/Src/sdio.c ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 232              		.loc 1 94 5 is_stmt 1 view .LVU63
+  94:Core/Src/sdio.c ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 233              		.loc 1 94 25 is_stmt 0 view .LVU64
+ 234 0088 0427     		movs	r7, #4
+ 235 008a 0397     		str	r7, [sp, #12]
+  95:Core/Src/sdio.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 236              		.loc 1 95 5 is_stmt 1 view .LVU65
+  95:Core/Src/sdio.c ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 237              		.loc 1 95 26 is_stmt 0 view .LVU66
+ 238 008c CDF81090 		str	r9, [sp, #16]
+  96:Core/Src/sdio.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 239              		.loc 1 96 5 is_stmt 1 view .LVU67
+  96:Core/Src/sdio.c ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 240              		.loc 1 96 26 is_stmt 0 view .LVU68
+ 241 0090 0595     		str	r5, [sp, #20]
+  97:Core/Src/sdio.c ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
+ 242              		.loc 1 97 5 is_stmt 1 view .LVU69
+  97:Core/Src/sdio.c ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
+ 243              		.loc 1 97 27 is_stmt 0 view .LVU70
+ 244 0092 0696     		str	r6, [sp, #24]
+  98:Core/Src/sdio.c ****     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+ 245              		.loc 1 98 5 is_stmt 1 view .LVU71
+  98:Core/Src/sdio.c ****     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+ 246              		.loc 1 98 31 is_stmt 0 view .LVU72
+ 247 0094 CDF81C80 		str	r8, [sp, #28]
+  99:Core/Src/sdio.c **** 
+ 248              		.loc 1 99 5 is_stmt 1 view .LVU73
+ 249 0098 0DEB0801 		add	r1, sp, r8
+ 250 009c 3148     		ldr	r0, .L17+8
+ 251 009e FFF7FEFF 		bl	HAL_GPIO_Init
+ 252              	.LVL9:
+ 103:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Channel = DMA_CHANNEL_4;
+ 253              		.loc 1 103 5 view .LVU74
+ 103:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Channel = DMA_CHANNEL_4;
+ 254              		.loc 1 103 27 is_stmt 0 view .LVU75
+ 255 00a2 3148     		ldr	r0, .L17+12
+ 256 00a4 314B     		ldr	r3, .L17+16
+ 257 00a6 0360     		str	r3, [r0]
+ 104:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+ 258              		.loc 1 104 5 is_stmt 1 view .LVU76
+ 104:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+ 259              		.loc 1 104 31 is_stmt 0 view .LVU77
+ 260 00a8 4FF00063 		mov	r3, #134217728
+ 261 00ac 4360     		str	r3, [r0, #4]
+ 105:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 9
+
+
+ 262              		.loc 1 105 5 is_stmt 1 view .LVU78
+ 105:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+ 263              		.loc 1 105 33 is_stmt 0 view .LVU79
+ 264 00ae 8560     		str	r5, [r0, #8]
+ 106:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemInc = DMA_MINC_ENABLE;
+ 265              		.loc 1 106 5 is_stmt 1 view .LVU80
+ 106:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemInc = DMA_MINC_ENABLE;
+ 266              		.loc 1 106 33 is_stmt 0 view .LVU81
+ 267 00b0 C560     		str	r5, [r0, #12]
+ 107:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+ 268              		.loc 1 107 5 is_stmt 1 view .LVU82
+ 107:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+ 269              		.loc 1 107 30 is_stmt 0 view .LVU83
+ 270 00b2 4FF48063 		mov	r3, #1024
+ 271 00b6 0361     		str	r3, [r0, #16]
+ 108:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+ 272              		.loc 1 108 5 is_stmt 1 view .LVU84
+ 108:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+ 273              		.loc 1 108 43 is_stmt 0 view .LVU85
+ 274 00b8 4FF48053 		mov	r3, #4096
+ 275 00bc 4361     		str	r3, [r0, #20]
+ 109:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Mode = DMA_PFCTRL;
+ 276              		.loc 1 109 5 is_stmt 1 view .LVU86
+ 109:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Mode = DMA_PFCTRL;
+ 277              		.loc 1 109 40 is_stmt 0 view .LVU87
+ 278 00be 4FF48043 		mov	r3, #16384
+ 279 00c2 8361     		str	r3, [r0, #24]
+ 110:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+ 280              		.loc 1 110 5 is_stmt 1 view .LVU88
+ 110:Core/Src/sdio.c ****     hdma_sdio_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+ 281              		.loc 1 110 28 is_stmt 0 view .LVU89
+ 282 00c4 2023     		movs	r3, #32
+ 283 00c6 C361     		str	r3, [r0, #28]
+ 111:Core/Src/sdio.c ****     hdma_sdio_rx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+ 284              		.loc 1 111 5 is_stmt 1 view .LVU90
+ 111:Core/Src/sdio.c ****     hdma_sdio_rx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+ 285              		.loc 1 111 32 is_stmt 0 view .LVU91
+ 286 00c8 4FF44033 		mov	r3, #196608
+ 287 00cc 0362     		str	r3, [r0, #32]
+ 112:Core/Src/sdio.c ****     hdma_sdio_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+ 288              		.loc 1 112 5 is_stmt 1 view .LVU92
+ 112:Core/Src/sdio.c ****     hdma_sdio_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+ 289              		.loc 1 112 32 is_stmt 0 view .LVU93
+ 290 00ce 4762     		str	r7, [r0, #36]
+ 113:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemBurst = DMA_MBURST_INC4;
+ 291              		.loc 1 113 5 is_stmt 1 view .LVU94
+ 113:Core/Src/sdio.c ****     hdma_sdio_rx.Init.MemBurst = DMA_MBURST_INC4;
+ 292              		.loc 1 113 37 is_stmt 0 view .LVU95
+ 293 00d0 8662     		str	r6, [r0, #40]
+ 114:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphBurst = DMA_PBURST_INC4;
+ 294              		.loc 1 114 5 is_stmt 1 view .LVU96
+ 114:Core/Src/sdio.c ****     hdma_sdio_rx.Init.PeriphBurst = DMA_PBURST_INC4;
+ 295              		.loc 1 114 32 is_stmt 0 view .LVU97
+ 296 00d2 4FF40003 		mov	r3, #8388608
+ 297 00d6 C362     		str	r3, [r0, #44]
+ 115:Core/Src/sdio.c ****     if (HAL_DMA_Init(&hdma_sdio_rx) != HAL_OK)
+ 298              		.loc 1 115 5 is_stmt 1 view .LVU98
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 10
+
+
+ 115:Core/Src/sdio.c ****     if (HAL_DMA_Init(&hdma_sdio_rx) != HAL_OK)
+ 299              		.loc 1 115 35 is_stmt 0 view .LVU99
+ 300 00d8 4FF40013 		mov	r3, #2097152
+ 301 00dc 0363     		str	r3, [r0, #48]
+ 116:Core/Src/sdio.c ****     {
+ 302              		.loc 1 116 5 is_stmt 1 view .LVU100
+ 116:Core/Src/sdio.c ****     {
+ 303              		.loc 1 116 9 is_stmt 0 view .LVU101
+ 304 00de FFF7FEFF 		bl	HAL_DMA_Init
+ 305              	.LVL10:
+ 116:Core/Src/sdio.c ****     {
+ 306              		.loc 1 116 8 view .LVU102
+ 307 00e2 0028     		cmp	r0, #0
+ 308 00e4 33D1     		bne	.L15
+ 309              	.L11:
+ 121:Core/Src/sdio.c **** 
+ 310              		.loc 1 121 5 is_stmt 1 view .LVU103
+ 121:Core/Src/sdio.c **** 
+ 311              		.loc 1 121 5 view .LVU104
+ 312 00e6 204B     		ldr	r3, .L17+12
+ 313 00e8 2364     		str	r3, [r4, #64]
+ 121:Core/Src/sdio.c **** 
+ 314              		.loc 1 121 5 view .LVU105
+ 315 00ea 9C63     		str	r4, [r3, #56]
+ 121:Core/Src/sdio.c **** 
+ 316              		.loc 1 121 5 view .LVU106
+ 124:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Channel = DMA_CHANNEL_4;
+ 317              		.loc 1 124 5 view .LVU107
+ 124:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Channel = DMA_CHANNEL_4;
+ 318              		.loc 1 124 27 is_stmt 0 view .LVU108
+ 319 00ec 2048     		ldr	r0, .L17+20
+ 320 00ee 214B     		ldr	r3, .L17+24
+ 321 00f0 0360     		str	r3, [r0]
+ 125:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+ 322              		.loc 1 125 5 is_stmt 1 view .LVU109
+ 125:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+ 323              		.loc 1 125 31 is_stmt 0 view .LVU110
+ 324 00f2 4FF00063 		mov	r3, #134217728
+ 325 00f6 4360     		str	r3, [r0, #4]
+ 126:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+ 326              		.loc 1 126 5 is_stmt 1 view .LVU111
+ 126:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+ 327              		.loc 1 126 33 is_stmt 0 view .LVU112
+ 328 00f8 4023     		movs	r3, #64
+ 329 00fa 8360     		str	r3, [r0, #8]
+ 127:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemInc = DMA_MINC_ENABLE;
+ 330              		.loc 1 127 5 is_stmt 1 view .LVU113
+ 127:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemInc = DMA_MINC_ENABLE;
+ 331              		.loc 1 127 33 is_stmt 0 view .LVU114
+ 332 00fc 0023     		movs	r3, #0
+ 333 00fe C360     		str	r3, [r0, #12]
+ 128:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+ 334              		.loc 1 128 5 is_stmt 1 view .LVU115
+ 128:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+ 335              		.loc 1 128 30 is_stmt 0 view .LVU116
+ 336 0100 4FF48063 		mov	r3, #1024
+ 337 0104 0361     		str	r3, [r0, #16]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 11
+
+
+ 129:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+ 338              		.loc 1 129 5 is_stmt 1 view .LVU117
+ 129:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+ 339              		.loc 1 129 43 is_stmt 0 view .LVU118
+ 340 0106 4FF48053 		mov	r3, #4096
+ 341 010a 4361     		str	r3, [r0, #20]
+ 130:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Mode = DMA_PFCTRL;
+ 342              		.loc 1 130 5 is_stmt 1 view .LVU119
+ 130:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Mode = DMA_PFCTRL;
+ 343              		.loc 1 130 40 is_stmt 0 view .LVU120
+ 344 010c 4FF48043 		mov	r3, #16384
+ 345 0110 8361     		str	r3, [r0, #24]
+ 131:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+ 346              		.loc 1 131 5 is_stmt 1 view .LVU121
+ 131:Core/Src/sdio.c ****     hdma_sdio_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+ 347              		.loc 1 131 28 is_stmt 0 view .LVU122
+ 348 0112 2023     		movs	r3, #32
+ 349 0114 C361     		str	r3, [r0, #28]
+ 132:Core/Src/sdio.c ****     hdma_sdio_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+ 350              		.loc 1 132 5 is_stmt 1 view .LVU123
+ 132:Core/Src/sdio.c ****     hdma_sdio_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+ 351              		.loc 1 132 32 is_stmt 0 view .LVU124
+ 352 0116 4FF44033 		mov	r3, #196608
+ 353 011a 0362     		str	r3, [r0, #32]
+ 133:Core/Src/sdio.c ****     hdma_sdio_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+ 354              		.loc 1 133 5 is_stmt 1 view .LVU125
+ 133:Core/Src/sdio.c ****     hdma_sdio_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+ 355              		.loc 1 133 32 is_stmt 0 view .LVU126
+ 356 011c 0423     		movs	r3, #4
+ 357 011e 4362     		str	r3, [r0, #36]
+ 134:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemBurst = DMA_MBURST_INC4;
+ 358              		.loc 1 134 5 is_stmt 1 view .LVU127
+ 134:Core/Src/sdio.c ****     hdma_sdio_tx.Init.MemBurst = DMA_MBURST_INC4;
+ 359              		.loc 1 134 37 is_stmt 0 view .LVU128
+ 360 0120 0323     		movs	r3, #3
+ 361 0122 8362     		str	r3, [r0, #40]
+ 135:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphBurst = DMA_PBURST_INC4;
+ 362              		.loc 1 135 5 is_stmt 1 view .LVU129
+ 135:Core/Src/sdio.c ****     hdma_sdio_tx.Init.PeriphBurst = DMA_PBURST_INC4;
+ 363              		.loc 1 135 32 is_stmt 0 view .LVU130
+ 364 0124 4FF40003 		mov	r3, #8388608
+ 365 0128 C362     		str	r3, [r0, #44]
+ 136:Core/Src/sdio.c ****     if (HAL_DMA_Init(&hdma_sdio_tx) != HAL_OK)
+ 366              		.loc 1 136 5 is_stmt 1 view .LVU131
+ 136:Core/Src/sdio.c ****     if (HAL_DMA_Init(&hdma_sdio_tx) != HAL_OK)
+ 367              		.loc 1 136 35 is_stmt 0 view .LVU132
+ 368 012a 4FF40013 		mov	r3, #2097152
+ 369 012e 0363     		str	r3, [r0, #48]
+ 137:Core/Src/sdio.c ****     {
+ 370              		.loc 1 137 5 is_stmt 1 view .LVU133
+ 137:Core/Src/sdio.c ****     {
+ 371              		.loc 1 137 9 is_stmt 0 view .LVU134
+ 372 0130 FFF7FEFF 		bl	HAL_DMA_Init
+ 373              	.LVL11:
+ 137:Core/Src/sdio.c ****     {
+ 374              		.loc 1 137 8 view .LVU135
+ 375 0134 70B9     		cbnz	r0, .L16
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 12
+
+
+ 376              	.L12:
+ 142:Core/Src/sdio.c **** 
+ 377              		.loc 1 142 5 is_stmt 1 view .LVU136
+ 142:Core/Src/sdio.c **** 
+ 378              		.loc 1 142 5 view .LVU137
+ 379 0136 0E4B     		ldr	r3, .L17+20
+ 380 0138 E363     		str	r3, [r4, #60]
+ 142:Core/Src/sdio.c **** 
+ 381              		.loc 1 142 5 view .LVU138
+ 382 013a 9C63     		str	r4, [r3, #56]
+ 142:Core/Src/sdio.c **** 
+ 383              		.loc 1 142 5 view .LVU139
+ 145:Core/Src/sdio.c ****     HAL_NVIC_EnableIRQ(SDIO_IRQn);
+ 384              		.loc 1 145 5 view .LVU140
+ 385 013c 0022     		movs	r2, #0
+ 386 013e 1146     		mov	r1, r2
+ 387 0140 3120     		movs	r0, #49
+ 388 0142 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 389              	.LVL12:
+ 146:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_MspInit 1 */
+ 390              		.loc 1 146 5 view .LVU141
+ 391 0146 3120     		movs	r0, #49
+ 392 0148 FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 393              	.LVL13:
+ 394              		.loc 1 151 1 is_stmt 0 view .LVU142
+ 395 014c 65E7     		b	.L9
+ 396              	.L15:
+ 118:Core/Src/sdio.c ****     }
+ 397              		.loc 1 118 7 is_stmt 1 view .LVU143
+ 398 014e FFF7FEFF 		bl	Error_Handler
+ 399              	.LVL14:
+ 400 0152 C8E7     		b	.L11
+ 401              	.L16:
+ 139:Core/Src/sdio.c ****     }
+ 402              		.loc 1 139 7 view .LVU144
+ 403 0154 FFF7FEFF 		bl	Error_Handler
+ 404              	.LVL15:
+ 405 0158 EDE7     		b	.L12
+ 406              	.L18:
+ 407 015a 00BF     		.align	2
+ 408              	.L17:
+ 409 015c 002C0140 		.word	1073818624
+ 410 0160 00080240 		.word	1073874944
+ 411 0164 000C0240 		.word	1073875968
+ 412 0168 00000000 		.word	.LANCHOR1
+ 413 016c 58640240 		.word	1073898584
+ 414 0170 00000000 		.word	.LANCHOR2
+ 415 0174 A0640240 		.word	1073898656
+ 416              		.cfi_endproc
+ 417              	.LFE131:
+ 419              		.section	.text.HAL_SD_MspDeInit,"ax",%progbits
+ 420              		.align	1
+ 421              		.global	HAL_SD_MspDeInit
+ 422              		.syntax unified
+ 423              		.thumb
+ 424              		.thumb_func
+ 426              	HAL_SD_MspDeInit:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 13
+
+
+ 427              	.LVL16:
+ 428              	.LFB132:
+ 152:Core/Src/sdio.c **** 
+ 153:Core/Src/sdio.c **** void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
+ 154:Core/Src/sdio.c **** {
+ 429              		.loc 1 154 1 view -0
+ 430              		.cfi_startproc
+ 431              		@ args = 0, pretend = 0, frame = 0
+ 432              		@ frame_needed = 0, uses_anonymous_args = 0
+ 155:Core/Src/sdio.c **** 
+ 156:Core/Src/sdio.c ****   if(sdHandle->Instance==SDIO)
+ 433              		.loc 1 156 3 view .LVU146
+ 434              		.loc 1 156 14 is_stmt 0 view .LVU147
+ 435 0000 0268     		ldr	r2, [r0]
+ 436              		.loc 1 156 5 view .LVU148
+ 437 0002 0F4B     		ldr	r3, .L26
+ 438 0004 9A42     		cmp	r2, r3
+ 439 0006 00D0     		beq	.L25
+ 440 0008 7047     		bx	lr
+ 441              	.L25:
+ 154:Core/Src/sdio.c **** 
+ 442              		.loc 1 154 1 view .LVU149
+ 443 000a 10B5     		push	{r4, lr}
+ 444              	.LCFI5:
+ 445              		.cfi_def_cfa_offset 8
+ 446              		.cfi_offset 4, -8
+ 447              		.cfi_offset 14, -4
+ 448 000c 0446     		mov	r4, r0
+ 157:Core/Src/sdio.c ****   {
+ 158:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_MspDeInit 0 */
+ 159:Core/Src/sdio.c **** 
+ 160:Core/Src/sdio.c ****   /* USER CODE END SDIO_MspDeInit 0 */
+ 161:Core/Src/sdio.c ****     /* Peripheral clock disable */
+ 162:Core/Src/sdio.c ****     __HAL_RCC_SDIO_CLK_DISABLE();
+ 449              		.loc 1 162 5 is_stmt 1 view .LVU150
+ 450 000e 0D4A     		ldr	r2, .L26+4
+ 451 0010 536C     		ldr	r3, [r2, #68]
+ 452 0012 23F40063 		bic	r3, r3, #2048
+ 453 0016 5364     		str	r3, [r2, #68]
+ 163:Core/Src/sdio.c **** 
+ 164:Core/Src/sdio.c ****     /**SDIO GPIO Configuration
+ 165:Core/Src/sdio.c ****     PC8     ------> SDIO_D0
+ 166:Core/Src/sdio.c ****     PC9     ------> SDIO_D1
+ 167:Core/Src/sdio.c ****     PC10     ------> SDIO_D2
+ 168:Core/Src/sdio.c ****     PC11     ------> SDIO_D3
+ 169:Core/Src/sdio.c ****     PC12     ------> SDIO_CK
+ 170:Core/Src/sdio.c ****     PD2     ------> SDIO_CMD
+ 171:Core/Src/sdio.c ****     */
+ 172:Core/Src/sdio.c ****     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
+ 454              		.loc 1 172 5 view .LVU151
+ 455 0018 4FF4F851 		mov	r1, #7936
+ 456 001c 0A48     		ldr	r0, .L26+8
+ 457              	.LVL17:
+ 458              		.loc 1 172 5 is_stmt 0 view .LVU152
+ 459 001e FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 460              	.LVL18:
+ 173:Core/Src/sdio.c ****                           |GPIO_PIN_12);
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 14
+
+
+ 174:Core/Src/sdio.c **** 
+ 175:Core/Src/sdio.c ****     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
+ 461              		.loc 1 175 5 is_stmt 1 view .LVU153
+ 462 0022 0421     		movs	r1, #4
+ 463 0024 0948     		ldr	r0, .L26+12
+ 464 0026 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 465              	.LVL19:
+ 176:Core/Src/sdio.c **** 
+ 177:Core/Src/sdio.c ****     /* SDIO DMA DeInit */
+ 178:Core/Src/sdio.c ****     HAL_DMA_DeInit(sdHandle->hdmarx);
+ 466              		.loc 1 178 5 view .LVU154
+ 467 002a 206C     		ldr	r0, [r4, #64]
+ 468 002c FFF7FEFF 		bl	HAL_DMA_DeInit
+ 469              	.LVL20:
+ 179:Core/Src/sdio.c ****     HAL_DMA_DeInit(sdHandle->hdmatx);
+ 470              		.loc 1 179 5 view .LVU155
+ 471 0030 E06B     		ldr	r0, [r4, #60]
+ 472 0032 FFF7FEFF 		bl	HAL_DMA_DeInit
+ 473              	.LVL21:
+ 180:Core/Src/sdio.c **** 
+ 181:Core/Src/sdio.c ****     /* SDIO interrupt Deinit */
+ 182:Core/Src/sdio.c ****     HAL_NVIC_DisableIRQ(SDIO_IRQn);
+ 474              		.loc 1 182 5 view .LVU156
+ 475 0036 3120     		movs	r0, #49
+ 476 0038 FFF7FEFF 		bl	HAL_NVIC_DisableIRQ
+ 477              	.LVL22:
+ 183:Core/Src/sdio.c ****   /* USER CODE BEGIN SDIO_MspDeInit 1 */
+ 184:Core/Src/sdio.c **** 
+ 185:Core/Src/sdio.c ****   /* USER CODE END SDIO_MspDeInit 1 */
+ 186:Core/Src/sdio.c ****   }
+ 187:Core/Src/sdio.c **** }
+ 478              		.loc 1 187 1 is_stmt 0 view .LVU157
+ 479 003c 10BD     		pop	{r4, pc}
+ 480              	.LVL23:
+ 481              	.L27:
+ 482              		.loc 1 187 1 view .LVU158
+ 483 003e 00BF     		.align	2
+ 484              	.L26:
+ 485 0040 002C0140 		.word	1073818624
+ 486 0044 00380240 		.word	1073887232
+ 487 0048 00080240 		.word	1073874944
+ 488 004c 000C0240 		.word	1073875968
+ 489              		.cfi_endproc
+ 490              	.LFE132:
+ 492              		.section	.rodata.show_sdcard_info.str1.4,"aMS",%progbits,1
+ 493              		.align	2
+ 494              	.LC0:
+ 495 0000 43617264 		.ascii	"Card Type:SDSC V1.1\015\000"
+ 495      20547970 
+ 495      653A5344 
+ 495      53432056 
+ 495      312E310D 
+ 496 0015 000000   		.align	2
+ 497              	.LC1:
+ 498 0018 43617264 		.ascii	"Card Type:SDSC V2.0\015\000"
+ 498      20547970 
+ 498      653A5344 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 15
+
+
+ 498      53432056 
+ 498      322E300D 
+ 499 002d 000000   		.align	2
+ 500              	.LC2:
+ 501 0030 43617264 		.ascii	"Card Type:SDHC V2.0\015\000"
+ 501      20547970 
+ 501      653A5344 
+ 501      48432056 
+ 501      322E300D 
+ 502 0045 000000   		.align	2
+ 503              	.LC3:
+ 504 0048 43617264 		.ascii	"Card Type:MMC Card\015\000"
+ 504      20547970 
+ 504      653A4D4D 
+ 504      43204361 
+ 504      72640D00 
+ 505              		.align	2
+ 506              	.LC4:
+ 507 005c 43617264 		.ascii	"Card ManufacturerID:%d\015\012\000"
+ 507      204D616E 
+ 507      75666163 
+ 507      74757265 
+ 507      7249443A 
+ 508 0075 000000   		.align	2
+ 509              	.LC5:
+ 510 0078 43617264 		.ascii	"Card RCA:%d\015\012\000"
+ 510      20524341 
+ 510      3A25640D 
+ 510      0A00
+ 511 0086 0000     		.align	2
+ 512              	.LC6:
+ 513 0088 4C6F6742 		.ascii	"LogBlockNbr:%d \015\012\000"
+ 513      6C6F636B 
+ 513      4E62723A 
+ 513      2564200D 
+ 513      0A00
+ 514 009a 0000     		.align	2
+ 515              	.LC7:
+ 516 009c 4C6F6742 		.ascii	"LogBlockSize:%d \015\012\000"
+ 516      6C6F636B 
+ 516      53697A65 
+ 516      3A256420 
+ 516      0D0A00
+ 517 00af 00       		.align	2
+ 518              	.LC8:
+ 519 00b0 43617264 		.ascii	"Card Capacity:%d MB\015\012\000"
+ 519      20436170 
+ 519      61636974 
+ 519      793A2564 
+ 519      204D420D 
+ 520 00c6 0000     		.align	2
+ 521              	.LC9:
+ 522 00c8 43617264 		.ascii	"Card BlockSize:%d\015\012\015\012\000"
+ 522      20426C6F 
+ 522      636B5369 
+ 522      7A653A25 
+ 522      640D0A0D 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 16
+
+
+ 523              		.section	.text.show_sdcard_info,"ax",%progbits
+ 524              		.align	1
+ 525              		.global	show_sdcard_info
+ 526              		.syntax unified
+ 527              		.thumb
+ 528              		.thumb_func
+ 530              	show_sdcard_info:
+ 531              	.LFB133:
+ 188:Core/Src/sdio.c **** 
+ 189:Core/Src/sdio.c **** /* USER CODE BEGIN 1 */
+ 190:Core/Src/sdio.c **** void show_sdcard_info(void)
+ 191:Core/Src/sdio.c **** {
+ 532              		.loc 1 191 1 is_stmt 1 view -0
+ 533              		.cfi_startproc
+ 534              		@ args = 0, pretend = 0, frame = 24
+ 535              		@ frame_needed = 0, uses_anonymous_args = 0
+ 536 0000 70B5     		push	{r4, r5, r6, lr}
+ 537              	.LCFI6:
+ 538              		.cfi_def_cfa_offset 16
+ 539              		.cfi_offset 4, -16
+ 540              		.cfi_offset 5, -12
+ 541              		.cfi_offset 6, -8
+ 542              		.cfi_offset 14, -4
+ 543 0002 86B0     		sub	sp, sp, #24
+ 544              	.LCFI7:
+ 545              		.cfi_def_cfa_offset 40
+ 192:Core/Src/sdio.c **** 	
+ 193:Core/Src/sdio.c **** 	HAL_SD_CardCIDTypeDef SDCard_CID;
+ 546              		.loc 1 193 2 view .LVU160
+ 194:Core/Src/sdio.c **** 	uint64_t CardCap;
+ 547              		.loc 1 194 2 view .LVU161
+ 195:Core/Src/sdio.c **** 	
+ 196:Core/Src/sdio.c **** 	
+ 197:Core/Src/sdio.c **** 	HAL_SD_GetCardInfo(&hsd,&SDCardInfo);
+ 548              		.loc 1 197 2 view .LVU162
+ 549 0004 204C     		ldr	r4, .L36
+ 550 0006 214D     		ldr	r5, .L36+4
+ 551 0008 2146     		mov	r1, r4
+ 552 000a 2846     		mov	r0, r5
+ 553 000c FFF7FEFF 		bl	HAL_SD_GetCardInfo
+ 554              	.LVL24:
+ 198:Core/Src/sdio.c **** 	HAL_SD_GetCardCID(&hsd,&SDCard_CID);
+ 555              		.loc 1 198 2 view .LVU163
+ 556 0010 6946     		mov	r1, sp
+ 557 0012 2846     		mov	r0, r5
+ 558 0014 FFF7FEFF 		bl	HAL_SD_GetCardCID
+ 559              	.LVL25:
+ 199:Core/Src/sdio.c **** 	
+ 200:Core/Src/sdio.c **** 	
+ 201:Core/Src/sdio.c **** 	switch(SDCardInfo.CardType)
+ 560              		.loc 1 201 2 view .LVU164
+ 561              		.loc 1 201 19 is_stmt 0 view .LVU165
+ 562 0018 2368     		ldr	r3, [r4]
+ 563              		.loc 1 201 2 view .LVU166
+ 564 001a 032B     		cmp	r3, #3
+ 565 001c 06D8     		bhi	.L29
+ 566 001e DFE803F0 		tbb	[pc, r3]
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 17
+
+
+ 567              	.L31:
+ 568 0022 02       		.byte	(.L34-.L31)/2
+ 569 0023 27       		.byte	(.L33-.L31)/2
+ 570 0024 2B       		.byte	(.L32-.L31)/2
+ 571 0025 2F       		.byte	(.L30-.L31)/2
+ 572              		.p2align 1
+ 573              	.L34:
+ 574              	.LBB5:
+ 202:Core/Src/sdio.c **** 	{
+ 203:Core/Src/sdio.c **** 		case STD_CAPACITY_SD_CARD_V1_1:printf("Card Type:SDSC V1.1\r\n");break;
+ 575              		.loc 1 203 34 is_stmt 1 view .LVU167
+ 576 0026 1A48     		ldr	r0, .L36+8
+ 577 0028 FFF7FEFF 		bl	puts
+ 578              	.LVL26:
+ 579              		.loc 1 203 68 view .LVU168
+ 580              	.L29:
+ 581              	.LBE5:
+ 204:Core/Src/sdio.c **** 		case STD_CAPACITY_SD_CARD_V2_0:printf("Card Type:SDSC V2.0\r\n");break;
+ 205:Core/Src/sdio.c **** 		case HIGH_CAPACITY_SD_CARD:printf("Card Type:SDHC V2.0\r\n");break;
+ 206:Core/Src/sdio.c **** 		case MULTIMEDIA_CARD:printf("Card Type:MMC Card\r\n");break;
+ 207:Core/Src/sdio.c **** 	}	
+ 208:Core/Src/sdio.c **** 	
+ 209:Core/Src/sdio.c **** 	CardCap = (uint64_t)(SDCardInfo.LogBlockNbr)*(uint64_t)(SDCardInfo.LogBlockSize);
+ 582              		.loc 1 209 2 view .LVU169
+ 583              		.loc 1 209 33 is_stmt 0 view .LVU170
+ 584 002c 164C     		ldr	r4, .L36
+ 585 002e A169     		ldr	r1, [r4, #24]
+ 586              		.loc 1 209 68 view .LVU171
+ 587 0030 E569     		ldr	r5, [r4, #28]
+ 588              		.loc 1 209 10 view .LVU172
+ 589 0032 A1FB0556 		umull	r5, r6, r1, r5
+ 590              	.LVL27:
+ 210:Core/Src/sdio.c **** 	printf("Card ManufacturerID:%d\r\n",SDCard_CID.ManufacturerID);	
+ 591              		.loc 1 210 2 is_stmt 1 view .LVU173
+ 592              		.loc 1 210 48 is_stmt 0 view .LVU174
+ 593 0036 9DF80010 		ldrb	r1, [sp]	@ zero_extendqisi2
+ 594              		.loc 1 210 2 view .LVU175
+ 595 003a 1648     		ldr	r0, .L36+12
+ 596 003c FFF7FEFF 		bl	printf
+ 597              	.LVL28:
+ 211:Core/Src/sdio.c ****  	printf("Card RCA:%d\r\n",SDCardInfo.RelCardAdd);
+ 598              		.loc 1 211 3 is_stmt 1 view .LVU176
+ 599 0040 E168     		ldr	r1, [r4, #12]
+ 600 0042 1548     		ldr	r0, .L36+16
+ 601 0044 FFF7FEFF 		bl	printf
+ 602              	.LVL29:
+ 212:Core/Src/sdio.c **** 	printf("LogBlockNbr:%d \r\n",(uint32_t)(SDCardInfo.LogBlockNbr));
+ 603              		.loc 1 212 2 view .LVU177
+ 604 0048 A169     		ldr	r1, [r4, #24]
+ 605 004a 1448     		ldr	r0, .L36+20
+ 606 004c FFF7FEFF 		bl	printf
+ 607              	.LVL30:
+ 213:Core/Src/sdio.c **** 	printf("LogBlockSize:%d \r\n",(uint32_t)(SDCardInfo.LogBlockSize));	
+ 608              		.loc 1 213 2 view .LVU178
+ 609 0050 E169     		ldr	r1, [r4, #28]
+ 610 0052 1348     		ldr	r0, .L36+24
+ 611 0054 FFF7FEFF 		bl	printf
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 18
+
+
+ 612              	.LVL31:
+ 214:Core/Src/sdio.c **** 	printf("Card Capacity:%d MB\r\n",(uint32_t)(CardCap>>20));
+ 613              		.loc 1 214 2 view .LVU179
+ 614              		.loc 1 214 53 is_stmt 0 view .LVU180
+ 615 0058 290D     		lsrs	r1, r5, #20
+ 616              		.loc 1 214 2 view .LVU181
+ 617 005a 41EA0631 		orr	r1, r1, r6, lsl #12
+ 618 005e 1148     		ldr	r0, .L36+28
+ 619 0060 FFF7FEFF 		bl	printf
+ 620              	.LVL32:
+ 215:Core/Src/sdio.c ****  	printf("Card BlockSize:%d\r\n\r\n",SDCardInfo.BlockSize);
+ 621              		.loc 1 215 3 is_stmt 1 view .LVU182
+ 622 0064 6169     		ldr	r1, [r4, #20]
+ 623 0066 1048     		ldr	r0, .L36+32
+ 624 0068 FFF7FEFF 		bl	printf
+ 625              	.LVL33:
+ 216:Core/Src/sdio.c **** }
+ 626              		.loc 1 216 1 is_stmt 0 view .LVU183
+ 627 006c 06B0     		add	sp, sp, #24
+ 628              	.LCFI8:
+ 629              		.cfi_remember_state
+ 630              		.cfi_def_cfa_offset 16
+ 631              		@ sp needed
+ 632 006e 70BD     		pop	{r4, r5, r6, pc}
+ 633              	.LVL34:
+ 634              	.L33:
+ 635              	.LCFI9:
+ 636              		.cfi_restore_state
+ 637              	.LBB6:
+ 204:Core/Src/sdio.c **** 		case HIGH_CAPACITY_SD_CARD:printf("Card Type:SDHC V2.0\r\n");break;
+ 638              		.loc 1 204 34 is_stmt 1 view .LVU184
+ 639 0070 0E48     		ldr	r0, .L36+36
+ 640 0072 FFF7FEFF 		bl	puts
+ 641              	.LVL35:
+ 204:Core/Src/sdio.c **** 		case HIGH_CAPACITY_SD_CARD:printf("Card Type:SDHC V2.0\r\n");break;
+ 642              		.loc 1 204 68 view .LVU185
+ 204:Core/Src/sdio.c **** 		case HIGH_CAPACITY_SD_CARD:printf("Card Type:SDHC V2.0\r\n");break;
+ 643              		.loc 1 204 3 is_stmt 0 view .LVU186
+ 644 0076 D9E7     		b	.L29
+ 645              	.L32:
+ 205:Core/Src/sdio.c **** 		case MULTIMEDIA_CARD:printf("Card Type:MMC Card\r\n");break;
+ 646              		.loc 1 205 30 is_stmt 1 view .LVU187
+ 647 0078 0D48     		ldr	r0, .L36+40
+ 648 007a FFF7FEFF 		bl	puts
+ 649              	.LVL36:
+ 205:Core/Src/sdio.c **** 		case MULTIMEDIA_CARD:printf("Card Type:MMC Card\r\n");break;
+ 650              		.loc 1 205 64 view .LVU188
+ 205:Core/Src/sdio.c **** 		case MULTIMEDIA_CARD:printf("Card Type:MMC Card\r\n");break;
+ 651              		.loc 1 205 3 is_stmt 0 view .LVU189
+ 652 007e D5E7     		b	.L29
+ 653              	.L30:
+ 206:Core/Src/sdio.c **** 	}	
+ 654              		.loc 1 206 24 is_stmt 1 view .LVU190
+ 655 0080 0C48     		ldr	r0, .L36+44
+ 656 0082 FFF7FEFF 		bl	puts
+ 657              	.LVL37:
+ 206:Core/Src/sdio.c **** 	}	
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 19
+
+
+ 658              		.loc 1 206 57 view .LVU191
+ 206:Core/Src/sdio.c **** 	}	
+ 659              		.loc 1 206 3 is_stmt 0 view .LVU192
+ 660 0086 D1E7     		b	.L29
+ 661              	.L37:
+ 662              		.align	2
+ 663              	.L36:
+ 664 0088 00000000 		.word	.LANCHOR3
+ 665 008c 00000000 		.word	.LANCHOR0
+ 666 0090 00000000 		.word	.LC0
+ 667 0094 5C000000 		.word	.LC4
+ 668 0098 78000000 		.word	.LC5
+ 669 009c 88000000 		.word	.LC6
+ 670 00a0 9C000000 		.word	.LC7
+ 671 00a4 B0000000 		.word	.LC8
+ 672 00a8 C8000000 		.word	.LC9
+ 673 00ac 18000000 		.word	.LC1
+ 674 00b0 30000000 		.word	.LC2
+ 675 00b4 48000000 		.word	.LC3
+ 676              	.LBE6:
+ 677              		.cfi_endproc
+ 678              	.LFE133:
+ 680              		.global	hdma_sdio_tx
+ 681              		.global	hdma_sdio_rx
+ 682              		.global	hsd
+ 683              		.global	SDCardInfo
+ 684              		.section	.bss.SDCardInfo,"aw",%nobits
+ 685              		.align	2
+ 686              		.set	.LANCHOR3,. + 0
+ 689              	SDCardInfo:
+ 690 0000 00000000 		.space	32
+ 690      00000000 
+ 690      00000000 
+ 690      00000000 
+ 690      00000000 
+ 691              		.section	.bss.hdma_sdio_rx,"aw",%nobits
+ 692              		.align	2
+ 693              		.set	.LANCHOR1,. + 0
+ 696              	hdma_sdio_rx:
+ 697 0000 00000000 		.space	96
+ 697      00000000 
+ 697      00000000 
+ 697      00000000 
+ 697      00000000 
+ 698              		.section	.bss.hdma_sdio_tx,"aw",%nobits
+ 699              		.align	2
+ 700              		.set	.LANCHOR2,. + 0
+ 703              	hdma_sdio_tx:
+ 704 0000 00000000 		.space	96
+ 704      00000000 
+ 704      00000000 
+ 704      00000000 
+ 704      00000000 
+ 705              		.section	.bss.hsd,"aw",%nobits
+ 706              		.align	2
+ 707              		.set	.LANCHOR0,. + 0
+ 710              	hsd:
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 20
+
+
+ 711 0000 00000000 		.space	132
+ 711      00000000 
+ 711      00000000 
+ 711      00000000 
+ 711      00000000 
+ 712              		.text
+ 713              	.Letext0:
+ 714              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 715              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 716              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h"
+ 717              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 718              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 719              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 720              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h"
+ 721              		.file 9 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h"
+ 722              		.file 10 "Core/Inc/sdio.h"
+ 723              		.file 11 "<built-in>"
+ 724              		.file 12 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h"
+ 725              		.file 13 "Core/Inc/main.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s 			page 21
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sdio.c
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:20     .text.MX_SDIO_SD_Init:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:26     .text.MX_SDIO_SD_Init:00000000 MX_SDIO_SD_Init
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:95     .text.MX_SDIO_SD_Init:00000038 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:101    .text.HAL_SD_MspInit:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:107    .text.HAL_SD_MspInit:00000000 HAL_SD_MspInit
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:409    .text.HAL_SD_MspInit:0000015c $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:420    .text.HAL_SD_MspDeInit:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:426    .text.HAL_SD_MspDeInit:00000000 HAL_SD_MspDeInit
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:485    .text.HAL_SD_MspDeInit:00000040 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:493    .rodata.show_sdcard_info.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:524    .text.show_sdcard_info:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:530    .text.show_sdcard_info:00000000 show_sdcard_info
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:568    .text.show_sdcard_info:00000022 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:572    .text.show_sdcard_info:00000026 $t
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:664    .text.show_sdcard_info:00000088 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:703    .bss.hdma_sdio_tx:00000000 hdma_sdio_tx
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:696    .bss.hdma_sdio_rx:00000000 hdma_sdio_rx
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:710    .bss.hsd:00000000 hsd
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:689    .bss.SDCardInfo:00000000 SDCardInfo
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:685    .bss.SDCardInfo:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:692    .bss.hdma_sdio_rx:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:699    .bss.hdma_sdio_tx:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccYHQzRA.s:706    .bss.hsd:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_SD_Init
+HAL_SD_ConfigWideBusOperation
+Error_Handler
+HAL_GPIO_Init
+HAL_DMA_Init
+HAL_NVIC_SetPriority
+HAL_NVIC_EnableIRQ
+HAL_GPIO_DeInit
+HAL_DMA_DeInit
+HAL_NVIC_DisableIRQ
+HAL_SD_GetCardInfo
+HAL_SD_GetCardCID
+puts
+printf

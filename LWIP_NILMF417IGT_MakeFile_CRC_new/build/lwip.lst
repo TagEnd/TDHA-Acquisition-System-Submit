@@ -1,0 +1,1205 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lwip.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata.tcp_client_connected.str1.4,"aMS",%progbits,1
+  20              		.align	2
+  21              	.LC0:
+  22 0000 636F6E6E 		.ascii	"connected ok!\000"
+  22      65637465 
+  22      64206F6B 
+  22      2100
+  23              		.section	.text.tcp_client_connected,"ax",%progbits
+  24              		.align	1
+  25              		.syntax unified
+  26              		.thumb
+  27              		.thumb_func
+  29              	tcp_client_connected:
+  30              	.LVL0:
+  31              	.LFB161:
+  32              		.file 1 "LWIP/App/lwip.c"
+   1:LWIP/App/lwip.c **** /* USER CODE BEGIN Header */
+   2:LWIP/App/lwip.c **** /**
+   3:LWIP/App/lwip.c ****  ******************************************************************************
+   4:LWIP/App/lwip.c ****  * File Name          : LWIP.c
+   5:LWIP/App/lwip.c ****  * Description        : This file provides initialization code for LWIP
+   6:LWIP/App/lwip.c ****  *                      middleWare.
+   7:LWIP/App/lwip.c ****  ******************************************************************************
+   8:LWIP/App/lwip.c ****  * @attention
+   9:LWIP/App/lwip.c ****  *
+  10:LWIP/App/lwip.c ****  * Copyright (c) 2023 STMicroelectronics.
+  11:LWIP/App/lwip.c ****  * All rights reserved.
+  12:LWIP/App/lwip.c ****  *
+  13:LWIP/App/lwip.c ****  * This software is licensed under terms that can be found in the LICENSE file
+  14:LWIP/App/lwip.c ****  * in the root directory of this software component.
+  15:LWIP/App/lwip.c ****  * If no LICENSE file comes with this software, it is provided AS-IS.
+  16:LWIP/App/lwip.c ****  *
+  17:LWIP/App/lwip.c ****  ******************************************************************************
+  18:LWIP/App/lwip.c ****  */
+  19:LWIP/App/lwip.c **** /* USER CODE END Header */
+  20:LWIP/App/lwip.c **** 
+  21:LWIP/App/lwip.c **** /* Includes ------------------------------------------------------------------*/
+  22:LWIP/App/lwip.c **** #include "lwip.h"
+  23:LWIP/App/lwip.c **** #include "lwip/init.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 2
+
+
+  24:LWIP/App/lwip.c **** #include "lwip/netif.h"
+  25:LWIP/App/lwip.c **** #if defined(__CC_ARM) /* MDK ARM Compiler */
+  26:LWIP/App/lwip.c **** #include "lwip/sio.h"
+  27:LWIP/App/lwip.c **** #endif /* MDK ARM Compiler */
+  28:LWIP/App/lwip.c **** #include "ethernetif.h"
+  29:LWIP/App/lwip.c **** 
+  30:LWIP/App/lwip.c **** /* USER CODE BEGIN 0 */
+  31:LWIP/App/lwip.c **** #include "tcp.h"
+  32:LWIP/App/lwip.c **** #include "ad7606.h"
+  33:LWIP/App/lwip.c **** /* USER CODE END 0 */
+  34:LWIP/App/lwip.c **** /* Private function prototypes -----------------------------------------------*/
+  35:LWIP/App/lwip.c **** /* ETH Variables initialization ----------------------------------------------*/
+  36:LWIP/App/lwip.c **** void Error_Handler(void);
+  37:LWIP/App/lwip.c **** 
+  38:LWIP/App/lwip.c **** /* USER CODE BEGIN 1 */
+  39:LWIP/App/lwip.c **** struct dhcp *dhcp;
+  40:LWIP/App/lwip.c **** __lwip_dev lwipdev; // lwip控制结构�?????????????????????
+  41:LWIP/App/lwip.c **** 
+  42:LWIP/App/lwip.c **** static struct tcp_pcb *client_pcb = NULL;
+  43:LWIP/App/lwip.c **** 
+  44:LWIP/App/lwip.c **** /* USER CODE END 1 */
+  45:LWIP/App/lwip.c **** 
+  46:LWIP/App/lwip.c **** /* Variables Initialization */
+  47:LWIP/App/lwip.c **** struct netif gnetif;
+  48:LWIP/App/lwip.c **** ip4_addr_t ipaddr;
+  49:LWIP/App/lwip.c **** ip4_addr_t netmask;
+  50:LWIP/App/lwip.c **** ip4_addr_t gw;
+  51:LWIP/App/lwip.c **** uint8_t IP_ADDRESS[4];
+  52:LWIP/App/lwip.c **** uint8_t NETMASK_ADDRESS[4];
+  53:LWIP/App/lwip.c **** uint8_t GATEWAY_ADDRESS[4];
+  54:LWIP/App/lwip.c **** 
+  55:LWIP/App/lwip.c **** /* USER CODE BEGIN 2 */
+  56:LWIP/App/lwip.c **** void TCP_Client_Init(void)
+  57:LWIP/App/lwip.c **** {
+  58:LWIP/App/lwip.c ****   // dhcp = netif_dhcp_data(&gnetif);
+  59:LWIP/App/lwip.c ****   // printf("DHCP IP address: %s\r\n", ip4addr_ntoa(&dhcp->offered_ip_addr));
+  60:LWIP/App/lwip.c ****   // printf("DHCP Subnet mask: %s\r\n", ip4addr_ntoa(&dhcp->offered_sn_mask));
+  61:LWIP/App/lwip.c ****   // printf("DHCP Default gateway: %s\r\n", ip4addr_ntoa(&dhcp->offered_gw_addr));
+  62:LWIP/App/lwip.c ****   // 43.138.40.137
+  63:LWIP/App/lwip.c ****   // lwipdev.remoteip[0] = 43;
+  64:LWIP/App/lwip.c ****   // lwipdev.remoteip[1] = 138;
+  65:LWIP/App/lwip.c ****   // lwipdev.remoteip[2] = 40;
+  66:LWIP/App/lwip.c ****   // lwipdev.remoteip[3] = 137;
+  67:LWIP/App/lwip.c ****   // 有线
+  68:LWIP/App/lwip.c ****   lwipdev.remoteip[0] = 192;
+  69:LWIP/App/lwip.c ****   lwipdev.remoteip[1] = 168;
+  70:LWIP/App/lwip.c ****   lwipdev.remoteip[2] = 8;
+  71:LWIP/App/lwip.c ****   lwipdev.remoteip[3] = 4;
+  72:LWIP/App/lwip.c **** 
+  73:LWIP/App/lwip.c ****   // 无线
+  74:LWIP/App/lwip.c ****   // lwipdev.remoteip[0] = 192;
+  75:LWIP/App/lwip.c ****   // lwipdev.remoteip[1] = 168;
+  76:LWIP/App/lwip.c ****   // lwipdev.remoteip[2] = 8;
+  77:LWIP/App/lwip.c ****   // lwipdev.remoteip[3] = 5;
+  78:LWIP/App/lwip.c **** 
+  79:LWIP/App/lwip.c ****   ip4_addr_t server_ip;
+  80:LWIP/App/lwip.c ****   client_pcb = tcp_new();
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 3
+
+
+  81:LWIP/App/lwip.c ****   IP4_ADDR(&server_ip, lwipdev.remoteip[0], lwipdev.remoteip[1], lwipdev.remoteip[2], lwipdev.remot
+  82:LWIP/App/lwip.c ****   printf("client start connect!\n");
+  83:LWIP/App/lwip.c ****   err_t err = tcp_connect(client_pcb, &server_ip, TCP_CLIENT_PORT, tcp_client_connected);
+  84:LWIP/App/lwip.c ****   printf("tcp_connect!! = %d\r\n", err);
+  85:LWIP/App/lwip.c ****   tcp_err(client_pcb, tcp_client_error);
+  86:LWIP/App/lwip.c **** }
+  87:LWIP/App/lwip.c **** 
+  88:LWIP/App/lwip.c **** err_t LWIP_Send_data(void *array, uint16_t len, uint8_t Channel)
+  89:LWIP/App/lwip.c **** {
+  90:LWIP/App/lwip.c ****   int i;
+  91:LWIP/App/lwip.c ****   err_t err_status;
+  92:LWIP/App/lwip.c **** 
+  93:LWIP/App/lwip.c ****   err_status = tcp_write(client_pcb, array, len, 1);
+  94:LWIP/App/lwip.c ****   // tcp_sndbuf();
+  95:LWIP/App/lwip.c ****   tcp_output(client_pcb);
+  96:LWIP/App/lwip.c **** 
+  97:LWIP/App/lwip.c ****   return err_status;
+  98:LWIP/App/lwip.c **** }
+  99:LWIP/App/lwip.c **** 
+ 100:LWIP/App/lwip.c **** static void tcp_client_error(void *arg, err_t err)
+ 101:LWIP/App/lwip.c **** {
+ 102:LWIP/App/lwip.c ****   printf("connect error!! = %d\r\n", err);
+ 103:LWIP/App/lwip.c ****   printf("restart connect!!\r\n");
+ 104:LWIP/App/lwip.c **** 
+ 105:LWIP/App/lwip.c ****   // 连接失败的时候释放TCP控制块的内存
+ 106:LWIP/App/lwip.c ****   printf("close connect\r\n");
+ 107:LWIP/App/lwip.c ****   tcp_close(client_pcb);
+ 108:LWIP/App/lwip.c **** 
+ 109:LWIP/App/lwip.c ****   // 重新连接
+ 110:LWIP/App/lwip.c ****   printf("restart Init\r\n");
+ 111:LWIP/App/lwip.c **** 
+ 112:LWIP/App/lwip.c ****   TCP_Client_Init();
+ 113:LWIP/App/lwip.c **** }
+ 114:LWIP/App/lwip.c **** 
+ 115:LWIP/App/lwip.c **** static err_t tcp_client_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+ 116:LWIP/App/lwip.c **** {
+ 117:LWIP/App/lwip.c ****   if (p != NULL)
+ 118:LWIP/App/lwip.c ****   {
+ 119:LWIP/App/lwip.c ****     uint8_t RecvBuff[20];
+ 120:LWIP/App/lwip.c ****     tcp_recved(tpcb, p->tot_len);
+ 121:LWIP/App/lwip.c **** 
+ 122:LWIP/App/lwip.c ****     MEMCPY(RecvBuff, p->payload, p->tot_len);
+ 123:LWIP/App/lwip.c ****     uint8_t index;
+ 124:LWIP/App/lwip.c ****     if (RecvBuff[1] == 0xff && RecvBuff[2] == 0xfafa)
+ 125:LWIP/App/lwip.c ****     {
+ 126:LWIP/App/lwip.c ****       index = RecvBuff[4];
+ 127:LWIP/App/lwip.c **** 
+ 128:LWIP/App/lwip.c ****       for (int i = 0; i < 30; i++)
+ 129:LWIP/App/lwip.c ****       {
+ 130:LWIP/App/lwip.c ****         if (SendDataBuff[i][12] == index)
+ 131:LWIP/App/lwip.c ****         {
+ 132:LWIP/App/lwip.c ****           uint16_t len = SendBufLen;
+ 133:LWIP/App/lwip.c ****           uint8_t res;
+ 134:LWIP/App/lwip.c ****           res = LWIP_Send_data(SendDataBuff[i], len, 1);
+ 135:LWIP/App/lwip.c **** 
+ 136:LWIP/App/lwip.c ****           break;
+ 137:LWIP/App/lwip.c ****         }
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 4
+
+
+ 138:LWIP/App/lwip.c ****       }
+ 139:LWIP/App/lwip.c ****     }
+ 140:LWIP/App/lwip.c **** 
+ 141:LWIP/App/lwip.c ****     memset(p->payload, 0, p->tot_len);
+ 142:LWIP/App/lwip.c ****     pbuf_free(p);
+ 143:LWIP/App/lwip.c ****   }
+ 144:LWIP/App/lwip.c ****   else if (err == ERR_OK)
+ 145:LWIP/App/lwip.c ****   {
+ 146:LWIP/App/lwip.c ****     printf("server has been disconnected!\n");
+ 147:LWIP/App/lwip.c ****     tcp_close(tpcb);
+ 148:LWIP/App/lwip.c ****     TCP_Client_Init();
+ 149:LWIP/App/lwip.c ****   }
+ 150:LWIP/App/lwip.c ****   return ERR_OK;
+ 151:LWIP/App/lwip.c **** }
+ 152:LWIP/App/lwip.c **** 
+ 153:LWIP/App/lwip.c **** static err_t tcp_client_send(void *arg, struct tcp_pcb *tpcb)
+ 154:LWIP/App/lwip.c **** {
+ 155:LWIP/App/lwip.c ****   uint8_t send_buf[] = "This is a TCP Client test...\n";
+ 156:LWIP/App/lwip.c **** 
+ 157:LWIP/App/lwip.c ****   tcp_write(tpcb, send_buf, sizeof(send_buf), 1);
+ 158:LWIP/App/lwip.c ****   return ERR_OK;
+ 159:LWIP/App/lwip.c **** }
+ 160:LWIP/App/lwip.c **** 
+ 161:LWIP/App/lwip.c **** // lwIP TCP连接建立后调用回调函
+ 162:LWIP/App/lwip.c **** static err_t tcp_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
+ 163:LWIP/App/lwip.c **** {
+  33              		.loc 1 163 1 view -0
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 0
+  36              		@ frame_needed = 0, uses_anonymous_args = 0
+  37              		.loc 1 163 1 is_stmt 0 view .LVU1
+  38 0000 10B5     		push	{r4, lr}
+  39              	.LCFI0:
+  40              		.cfi_def_cfa_offset 8
+  41              		.cfi_offset 4, -8
+  42              		.cfi_offset 14, -4
+  43 0002 0C46     		mov	r4, r1
+ 164:LWIP/App/lwip.c ****   printf("connected ok!\n");
+  44              		.loc 1 164 3 is_stmt 1 view .LVU2
+  45 0004 0448     		ldr	r0, .L3
+  46              	.LVL1:
+  47              		.loc 1 164 3 is_stmt 0 view .LVU3
+  48 0006 FFF7FEFF 		bl	puts
+  49              	.LVL2:
+ 165:LWIP/App/lwip.c **** 
+ 166:LWIP/App/lwip.c ****   // tcp_poll(tpcb, tcp_client_send, 2);
+ 167:LWIP/App/lwip.c **** 
+ 168:LWIP/App/lwip.c ****   tcp_recv(tpcb, tcp_client_recv);
+  50              		.loc 1 168 3 is_stmt 1 view .LVU4
+  51 000a 0449     		ldr	r1, .L3+4
+  52 000c 2046     		mov	r0, r4
+  53 000e FFF7FEFF 		bl	tcp_recv
+  54              	.LVL3:
+ 169:LWIP/App/lwip.c ****   return ERR_OK;
+  55              		.loc 1 169 3 view .LVU5
+ 170:LWIP/App/lwip.c **** }
+  56              		.loc 1 170 1 is_stmt 0 view .LVU6
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 5
+
+
+  57 0012 0020     		movs	r0, #0
+  58 0014 10BD     		pop	{r4, pc}
+  59              	.LVL4:
+  60              	.L4:
+  61              		.loc 1 170 1 view .LVU7
+  62 0016 00BF     		.align	2
+  63              	.L3:
+  64 0018 00000000 		.word	.LC0
+  65 001c 00000000 		.word	tcp_client_recv
+  66              		.cfi_endproc
+  67              	.LFE161:
+  69              		.section	.rodata.TCP_Client_Init.str1.4,"aMS",%progbits,1
+  70              		.align	2
+  71              	.LC1:
+  72 0000 636C6965 		.ascii	"client start connect!\000"
+  72      6E742073 
+  72      74617274 
+  72      20636F6E 
+  72      6E656374 
+  73 0016 0000     		.align	2
+  74              	.LC2:
+  75 0018 7463705F 		.ascii	"tcp_connect!! = %d\015\012\000"
+  75      636F6E6E 
+  75      65637421 
+  75      21203D20 
+  75      25640D0A 
+  76              		.section	.text.TCP_Client_Init,"ax",%progbits
+  77              		.align	1
+  78              		.global	TCP_Client_Init
+  79              		.syntax unified
+  80              		.thumb
+  81              		.thumb_func
+  83              	TCP_Client_Init:
+  84              	.LFB156:
+  57:LWIP/App/lwip.c ****   // dhcp = netif_dhcp_data(&gnetif);
+  85              		.loc 1 57 1 is_stmt 1 view -0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 8
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89 0000 30B5     		push	{r4, r5, lr}
+  90              	.LCFI1:
+  91              		.cfi_def_cfa_offset 12
+  92              		.cfi_offset 4, -12
+  93              		.cfi_offset 5, -8
+  94              		.cfi_offset 14, -4
+  95 0002 83B0     		sub	sp, sp, #12
+  96              	.LCFI2:
+  97              		.cfi_def_cfa_offset 24
+  68:LWIP/App/lwip.c ****   lwipdev.remoteip[1] = 168;
+  98              		.loc 1 68 3 view .LVU9
+  68:LWIP/App/lwip.c ****   lwipdev.remoteip[1] = 168;
+  99              		.loc 1 68 23 is_stmt 0 view .LVU10
+ 100 0004 1B4D     		ldr	r5, .L7
+ 101 0006 C023     		movs	r3, #192
+ 102 0008 AB71     		strb	r3, [r5, #6]
+  69:LWIP/App/lwip.c ****   lwipdev.remoteip[2] = 8;
+ 103              		.loc 1 69 3 is_stmt 1 view .LVU11
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 6
+
+
+  69:LWIP/App/lwip.c ****   lwipdev.remoteip[2] = 8;
+ 104              		.loc 1 69 23 is_stmt 0 view .LVU12
+ 105 000a A823     		movs	r3, #168
+ 106 000c EB71     		strb	r3, [r5, #7]
+  70:LWIP/App/lwip.c ****   lwipdev.remoteip[3] = 4;
+ 107              		.loc 1 70 3 is_stmt 1 view .LVU13
+  70:LWIP/App/lwip.c ****   lwipdev.remoteip[3] = 4;
+ 108              		.loc 1 70 23 is_stmt 0 view .LVU14
+ 109 000e 0823     		movs	r3, #8
+ 110 0010 2B72     		strb	r3, [r5, #8]
+  71:LWIP/App/lwip.c **** 
+ 111              		.loc 1 71 3 is_stmt 1 view .LVU15
+  71:LWIP/App/lwip.c **** 
+ 112              		.loc 1 71 23 is_stmt 0 view .LVU16
+ 113 0012 0423     		movs	r3, #4
+ 114 0014 6B72     		strb	r3, [r5, #9]
+  79:LWIP/App/lwip.c ****   client_pcb = tcp_new();
+ 115              		.loc 1 79 3 is_stmt 1 view .LVU17
+  80:LWIP/App/lwip.c ****   IP4_ADDR(&server_ip, lwipdev.remoteip[0], lwipdev.remoteip[1], lwipdev.remoteip[2], lwipdev.remot
+ 116              		.loc 1 80 3 view .LVU18
+  80:LWIP/App/lwip.c ****   IP4_ADDR(&server_ip, lwipdev.remoteip[0], lwipdev.remoteip[1], lwipdev.remoteip[2], lwipdev.remot
+ 117              		.loc 1 80 16 is_stmt 0 view .LVU19
+ 118 0016 FFF7FEFF 		bl	tcp_new
+ 119              	.LVL5:
+  80:LWIP/App/lwip.c ****   IP4_ADDR(&server_ip, lwipdev.remoteip[0], lwipdev.remoteip[1], lwipdev.remoteip[2], lwipdev.remot
+ 120              		.loc 1 80 14 view .LVU20
+ 121 001a 174C     		ldr	r4, .L7+4
+ 122 001c 2060     		str	r0, [r4]
+  81:LWIP/App/lwip.c ****   printf("client start connect!\n");
+ 123              		.loc 1 81 3 is_stmt 1 view .LVU21
+ 124 001e AA79     		ldrb	r2, [r5, #6]	@ zero_extendqisi2
+ 125 0020 EB79     		ldrb	r3, [r5, #7]	@ zero_extendqisi2
+ 126 0022 1B04     		lsls	r3, r3, #16
+ 127 0024 43EA0263 		orr	r3, r3, r2, lsl #24
+ 128 0028 2A7A     		ldrb	r2, [r5, #8]	@ zero_extendqisi2
+ 129 002a 43EA0223 		orr	r3, r3, r2, lsl #8
+ 130 002e 697A     		ldrb	r1, [r5, #9]	@ zero_extendqisi2
+ 131 0030 0B43     		orrs	r3, r3, r1
+ 132 0032 1A02     		lsls	r2, r3, #8
+ 133 0034 02F47F02 		and	r2, r2, #16711680
+ 134 0038 42EA0162 		orr	r2, r2, r1, lsl #24
+ 135 003c 190A     		lsrs	r1, r3, #8
+ 136 003e 01F47F41 		and	r1, r1, #65280
+ 137 0042 0A43     		orrs	r2, r2, r1
+ 138 0044 42EA1363 		orr	r3, r2, r3, lsr #24
+ 139 0048 0193     		str	r3, [sp, #4]
+  82:LWIP/App/lwip.c ****   err_t err = tcp_connect(client_pcb, &server_ip, TCP_CLIENT_PORT, tcp_client_connected);
+ 140              		.loc 1 82 3 view .LVU22
+ 141 004a 0C48     		ldr	r0, .L7+8
+ 142 004c FFF7FEFF 		bl	puts
+ 143              	.LVL6:
+  83:LWIP/App/lwip.c ****   printf("tcp_connect!! = %d\r\n", err);
+ 144              		.loc 1 83 3 view .LVU23
+  83:LWIP/App/lwip.c ****   printf("tcp_connect!! = %d\r\n", err);
+ 145              		.loc 1 83 15 is_stmt 0 view .LVU24
+ 146 0050 0B4B     		ldr	r3, .L7+12
+ 147 0052 41F69572 		movw	r2, #8085
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 7
+
+
+ 148 0056 01A9     		add	r1, sp, #4
+ 149 0058 2068     		ldr	r0, [r4]
+ 150 005a FFF7FEFF 		bl	tcp_connect
+ 151              	.LVL7:
+ 152 005e 0146     		mov	r1, r0
+ 153              	.LVL8:
+  84:LWIP/App/lwip.c ****   tcp_err(client_pcb, tcp_client_error);
+ 154              		.loc 1 84 3 is_stmt 1 view .LVU25
+ 155 0060 0848     		ldr	r0, .L7+16
+ 156 0062 FFF7FEFF 		bl	printf
+ 157              	.LVL9:
+  85:LWIP/App/lwip.c **** }
+ 158              		.loc 1 85 3 view .LVU26
+ 159 0066 0849     		ldr	r1, .L7+20
+ 160 0068 2068     		ldr	r0, [r4]
+ 161 006a FFF7FEFF 		bl	tcp_err
+ 162              	.LVL10:
+  86:LWIP/App/lwip.c **** 
+ 163              		.loc 1 86 1 is_stmt 0 view .LVU27
+ 164 006e 03B0     		add	sp, sp, #12
+ 165              	.LCFI3:
+ 166              		.cfi_def_cfa_offset 12
+ 167              		@ sp needed
+ 168 0070 30BD     		pop	{r4, r5, pc}
+ 169              	.L8:
+ 170 0072 00BF     		.align	2
+ 171              	.L7:
+ 172 0074 00000000 		.word	.LANCHOR0
+ 173 0078 00000000 		.word	.LANCHOR1
+ 174 007c 00000000 		.word	.LC1
+ 175 0080 00000000 		.word	tcp_client_connected
+ 176 0084 18000000 		.word	.LC2
+ 177 0088 00000000 		.word	tcp_client_error
+ 178              		.cfi_endproc
+ 179              	.LFE156:
+ 181              		.section	.rodata.tcp_client_error.str1.4,"aMS",%progbits,1
+ 182              		.align	2
+ 183              	.LC3:
+ 184 0000 636F6E6E 		.ascii	"connect error!! = %d\015\012\000"
+ 184      65637420 
+ 184      6572726F 
+ 184      72212120 
+ 184      3D202564 
+ 185 0017 00       		.align	2
+ 186              	.LC4:
+ 187 0018 72657374 		.ascii	"restart connect!!\015\000"
+ 187      61727420 
+ 187      636F6E6E 
+ 187      65637421 
+ 187      210D00
+ 188 002b 00       		.align	2
+ 189              	.LC5:
+ 190 002c 636C6F73 		.ascii	"close connect\015\000"
+ 190      6520636F 
+ 190      6E6E6563 
+ 190      740D00
+ 191 003b 00       		.align	2
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 8
+
+
+ 192              	.LC6:
+ 193 003c 72657374 		.ascii	"restart Init\015\000"
+ 193      61727420 
+ 193      496E6974 
+ 193      0D00
+ 194              		.section	.text.tcp_client_error,"ax",%progbits
+ 195              		.align	1
+ 196              		.syntax unified
+ 197              		.thumb
+ 198              		.thumb_func
+ 200              	tcp_client_error:
+ 201              	.LVL11:
+ 202              	.LFB158:
+ 101:LWIP/App/lwip.c ****   printf("connect error!! = %d\r\n", err);
+ 203              		.loc 1 101 1 is_stmt 1 view -0
+ 204              		.cfi_startproc
+ 205              		@ args = 0, pretend = 0, frame = 0
+ 206              		@ frame_needed = 0, uses_anonymous_args = 0
+ 101:LWIP/App/lwip.c ****   printf("connect error!! = %d\r\n", err);
+ 207              		.loc 1 101 1 is_stmt 0 view .LVU29
+ 208 0000 08B5     		push	{r3, lr}
+ 209              	.LCFI4:
+ 210              		.cfi_def_cfa_offset 8
+ 211              		.cfi_offset 3, -8
+ 212              		.cfi_offset 14, -4
+ 102:LWIP/App/lwip.c ****   printf("restart connect!!\r\n");
+ 213              		.loc 1 102 3 is_stmt 1 view .LVU30
+ 214 0002 0948     		ldr	r0, .L11
+ 215              	.LVL12:
+ 102:LWIP/App/lwip.c ****   printf("restart connect!!\r\n");
+ 216              		.loc 1 102 3 is_stmt 0 view .LVU31
+ 217 0004 FFF7FEFF 		bl	printf
+ 218              	.LVL13:
+ 103:LWIP/App/lwip.c **** 
+ 219              		.loc 1 103 3 is_stmt 1 view .LVU32
+ 220 0008 0848     		ldr	r0, .L11+4
+ 221 000a FFF7FEFF 		bl	puts
+ 222              	.LVL14:
+ 106:LWIP/App/lwip.c ****   tcp_close(client_pcb);
+ 223              		.loc 1 106 3 view .LVU33
+ 224 000e 0848     		ldr	r0, .L11+8
+ 225 0010 FFF7FEFF 		bl	puts
+ 226              	.LVL15:
+ 107:LWIP/App/lwip.c **** 
+ 227              		.loc 1 107 3 view .LVU34
+ 228 0014 074B     		ldr	r3, .L11+12
+ 229 0016 1868     		ldr	r0, [r3]
+ 230 0018 FFF7FEFF 		bl	tcp_close
+ 231              	.LVL16:
+ 110:LWIP/App/lwip.c **** 
+ 232              		.loc 1 110 3 view .LVU35
+ 233 001c 0648     		ldr	r0, .L11+16
+ 234 001e FFF7FEFF 		bl	puts
+ 235              	.LVL17:
+ 112:LWIP/App/lwip.c **** }
+ 236              		.loc 1 112 3 view .LVU36
+ 237 0022 FFF7FEFF 		bl	TCP_Client_Init
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 9
+
+
+ 238              	.LVL18:
+ 113:LWIP/App/lwip.c **** 
+ 239              		.loc 1 113 1 is_stmt 0 view .LVU37
+ 240 0026 08BD     		pop	{r3, pc}
+ 241              	.L12:
+ 242              		.align	2
+ 243              	.L11:
+ 244 0028 00000000 		.word	.LC3
+ 245 002c 18000000 		.word	.LC4
+ 246 0030 2C000000 		.word	.LC5
+ 247 0034 00000000 		.word	.LANCHOR1
+ 248 0038 3C000000 		.word	.LC6
+ 249              		.cfi_endproc
+ 250              	.LFE158:
+ 252              		.section	.rodata.tcp_client_recv.str1.4,"aMS",%progbits,1
+ 253              		.align	2
+ 254              	.LC7:
+ 255 0000 73657276 		.ascii	"server has been disconnected!\000"
+ 255      65722068 
+ 255      61732062 
+ 255      65656E20 
+ 255      64697363 
+ 256              		.section	.text.tcp_client_recv,"ax",%progbits
+ 257              		.align	1
+ 258              		.syntax unified
+ 259              		.thumb
+ 260              		.thumb_func
+ 262              	tcp_client_recv:
+ 263              	.LVL19:
+ 264              	.LFB159:
+ 116:LWIP/App/lwip.c ****   if (p != NULL)
+ 265              		.loc 1 116 1 is_stmt 1 view -0
+ 266              		.cfi_startproc
+ 267              		@ args = 0, pretend = 0, frame = 24
+ 268              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116:LWIP/App/lwip.c ****   if (p != NULL)
+ 269              		.loc 1 116 1 is_stmt 0 view .LVU39
+ 270 0000 30B5     		push	{r4, r5, lr}
+ 271              	.LCFI5:
+ 272              		.cfi_def_cfa_offset 12
+ 273              		.cfi_offset 4, -12
+ 274              		.cfi_offset 5, -8
+ 275              		.cfi_offset 14, -4
+ 276 0002 87B0     		sub	sp, sp, #28
+ 277              	.LCFI6:
+ 278              		.cfi_def_cfa_offset 40
+ 279 0004 0D46     		mov	r5, r1
+ 117:LWIP/App/lwip.c ****   {
+ 280              		.loc 1 117 3 is_stmt 1 view .LVU40
+ 117:LWIP/App/lwip.c ****   {
+ 281              		.loc 1 117 6 is_stmt 0 view .LVU41
+ 282 0006 A2B1     		cbz	r2, .L14
+ 283 0008 1446     		mov	r4, r2
+ 284              	.LBB2:
+ 119:LWIP/App/lwip.c ****     tcp_recved(tpcb, p->tot_len);
+ 285              		.loc 1 119 5 is_stmt 1 view .LVU42
+ 120:LWIP/App/lwip.c **** 
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 10
+
+
+ 286              		.loc 1 120 5 view .LVU43
+ 287 000a 1189     		ldrh	r1, [r2, #8]
+ 288              	.LVL20:
+ 120:LWIP/App/lwip.c **** 
+ 289              		.loc 1 120 5 is_stmt 0 view .LVU44
+ 290 000c 2846     		mov	r0, r5
+ 291              	.LVL21:
+ 120:LWIP/App/lwip.c **** 
+ 292              		.loc 1 120 5 view .LVU45
+ 293 000e FFF7FEFF 		bl	tcp_recved
+ 294              	.LVL22:
+ 122:LWIP/App/lwip.c ****     uint8_t index;
+ 295              		.loc 1 122 5 is_stmt 1 view .LVU46
+ 296 0012 2289     		ldrh	r2, [r4, #8]
+ 297 0014 6168     		ldr	r1, [r4, #4]
+ 298 0016 01A8     		add	r0, sp, #4
+ 299 0018 FFF7FEFF 		bl	memcpy
+ 300              	.LVL23:
+ 123:LWIP/App/lwip.c ****     if (RecvBuff[1] == 0xff && RecvBuff[2] == 0xfafa)
+ 301              		.loc 1 123 5 view .LVU47
+ 124:LWIP/App/lwip.c ****     {
+ 302              		.loc 1 124 5 view .LVU48
+ 141:LWIP/App/lwip.c ****     pbuf_free(p);
+ 303              		.loc 1 141 5 view .LVU49
+ 304 001c 2289     		ldrh	r2, [r4, #8]
+ 305 001e 0021     		movs	r1, #0
+ 306 0020 6068     		ldr	r0, [r4, #4]
+ 307 0022 FFF7FEFF 		bl	memset
+ 308              	.LVL24:
+ 142:LWIP/App/lwip.c ****   }
+ 309              		.loc 1 142 5 view .LVU50
+ 310 0026 2046     		mov	r0, r4
+ 311 0028 FFF7FEFF 		bl	pbuf_free
+ 312              	.LVL25:
+ 313              	.L15:
+ 142:LWIP/App/lwip.c ****   }
+ 314              		.loc 1 142 5 is_stmt 0 view .LVU51
+ 315              	.LBE2:
+ 150:LWIP/App/lwip.c **** }
+ 316              		.loc 1 150 3 is_stmt 1 view .LVU52
+ 151:LWIP/App/lwip.c **** 
+ 317              		.loc 1 151 1 is_stmt 0 view .LVU53
+ 318 002c 0020     		movs	r0, #0
+ 319 002e 07B0     		add	sp, sp, #28
+ 320              	.LCFI7:
+ 321              		.cfi_remember_state
+ 322              		.cfi_def_cfa_offset 12
+ 323              		@ sp needed
+ 324 0030 30BD     		pop	{r4, r5, pc}
+ 325              	.LVL26:
+ 326              	.L14:
+ 327              	.LCFI8:
+ 328              		.cfi_restore_state
+ 144:LWIP/App/lwip.c ****   {
+ 329              		.loc 1 144 8 is_stmt 1 view .LVU54
+ 144:LWIP/App/lwip.c ****   {
+ 330              		.loc 1 144 11 is_stmt 0 view .LVU55
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 11
+
+
+ 331 0032 002B     		cmp	r3, #0
+ 332 0034 FAD1     		bne	.L15
+ 146:LWIP/App/lwip.c ****     tcp_close(tpcb);
+ 333              		.loc 1 146 5 is_stmt 1 view .LVU56
+ 334 0036 0448     		ldr	r0, .L17
+ 335              	.LVL27:
+ 146:LWIP/App/lwip.c ****     tcp_close(tpcb);
+ 336              		.loc 1 146 5 is_stmt 0 view .LVU57
+ 337 0038 FFF7FEFF 		bl	puts
+ 338              	.LVL28:
+ 147:LWIP/App/lwip.c ****     TCP_Client_Init();
+ 339              		.loc 1 147 5 is_stmt 1 view .LVU58
+ 340 003c 2846     		mov	r0, r5
+ 341 003e FFF7FEFF 		bl	tcp_close
+ 342              	.LVL29:
+ 148:LWIP/App/lwip.c ****   }
+ 343              		.loc 1 148 5 view .LVU59
+ 344 0042 FFF7FEFF 		bl	TCP_Client_Init
+ 345              	.LVL30:
+ 346 0046 F1E7     		b	.L15
+ 347              	.L18:
+ 348              		.align	2
+ 349              	.L17:
+ 350 0048 00000000 		.word	.LC7
+ 351              		.cfi_endproc
+ 352              	.LFE159:
+ 354              		.section	.text.LWIP_Send_data,"ax",%progbits
+ 355              		.align	1
+ 356              		.global	LWIP_Send_data
+ 357              		.syntax unified
+ 358              		.thumb
+ 359              		.thumb_func
+ 361              	LWIP_Send_data:
+ 362              	.LVL31:
+ 363              	.LFB157:
+  89:LWIP/App/lwip.c ****   int i;
+ 364              		.loc 1 89 1 view -0
+ 365              		.cfi_startproc
+ 366              		@ args = 0, pretend = 0, frame = 0
+ 367              		@ frame_needed = 0, uses_anonymous_args = 0
+  89:LWIP/App/lwip.c ****   int i;
+ 368              		.loc 1 89 1 is_stmt 0 view .LVU61
+ 369 0000 38B5     		push	{r3, r4, r5, lr}
+ 370              	.LCFI9:
+ 371              		.cfi_def_cfa_offset 16
+ 372              		.cfi_offset 3, -16
+ 373              		.cfi_offset 4, -12
+ 374              		.cfi_offset 5, -8
+ 375              		.cfi_offset 14, -4
+ 376 0002 0A46     		mov	r2, r1
+ 377              	.LVL32:
+  90:LWIP/App/lwip.c ****   err_t err_status;
+ 378              		.loc 1 90 3 is_stmt 1 view .LVU62
+  91:LWIP/App/lwip.c **** 
+ 379              		.loc 1 91 3 view .LVU63
+  93:LWIP/App/lwip.c ****   // tcp_sndbuf();
+ 380              		.loc 1 93 3 view .LVU64
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 12
+
+
+  93:LWIP/App/lwip.c ****   // tcp_sndbuf();
+ 381              		.loc 1 93 16 is_stmt 0 view .LVU65
+ 382 0004 054D     		ldr	r5, .L21
+ 383 0006 0123     		movs	r3, #1
+ 384 0008 0146     		mov	r1, r0
+ 385              	.LVL33:
+  93:LWIP/App/lwip.c ****   // tcp_sndbuf();
+ 386              		.loc 1 93 16 view .LVU66
+ 387 000a 2868     		ldr	r0, [r5]
+ 388              	.LVL34:
+  93:LWIP/App/lwip.c ****   // tcp_sndbuf();
+ 389              		.loc 1 93 16 view .LVU67
+ 390 000c FFF7FEFF 		bl	tcp_write
+ 391              	.LVL35:
+  93:LWIP/App/lwip.c ****   // tcp_sndbuf();
+ 392              		.loc 1 93 16 view .LVU68
+ 393 0010 0446     		mov	r4, r0
+ 394              	.LVL36:
+  95:LWIP/App/lwip.c **** 
+ 395              		.loc 1 95 3 is_stmt 1 view .LVU69
+ 396 0012 2868     		ldr	r0, [r5]
+ 397 0014 FFF7FEFF 		bl	tcp_output
+ 398              	.LVL37:
+  97:LWIP/App/lwip.c **** }
+ 399              		.loc 1 97 3 view .LVU70
+  98:LWIP/App/lwip.c **** 
+ 400              		.loc 1 98 1 is_stmt 0 view .LVU71
+ 401 0018 2046     		mov	r0, r4
+ 402 001a 38BD     		pop	{r3, r4, r5, pc}
+ 403              	.LVL38:
+ 404              	.L22:
+  98:LWIP/App/lwip.c **** 
+ 405              		.loc 1 98 1 view .LVU72
+ 406              		.align	2
+ 407              	.L21:
+ 408 001c 00000000 		.word	.LANCHOR1
+ 409              		.cfi_endproc
+ 410              	.LFE157:
+ 412              		.section	.text.MX_LWIP_Init,"ax",%progbits
+ 413              		.align	1
+ 414              		.global	MX_LWIP_Init
+ 415              		.syntax unified
+ 416              		.thumb
+ 417              		.thumb_func
+ 419              	MX_LWIP_Init:
+ 420              	.LFB162:
+ 171:LWIP/App/lwip.c **** 
+ 172:LWIP/App/lwip.c **** /* USER CODE END 2 */
+ 173:LWIP/App/lwip.c **** 
+ 174:LWIP/App/lwip.c **** /**
+ 175:LWIP/App/lwip.c ****  * LwIP initialization function
+ 176:LWIP/App/lwip.c ****  */
+ 177:LWIP/App/lwip.c **** void MX_LWIP_Init(void)
+ 178:LWIP/App/lwip.c **** {
+ 421              		.loc 1 178 1 is_stmt 1 view -0
+ 422              		.cfi_startproc
+ 423              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 13
+
+
+ 424              		@ frame_needed = 0, uses_anonymous_args = 0
+ 425 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 426              	.LCFI10:
+ 427              		.cfi_def_cfa_offset 20
+ 428              		.cfi_offset 4, -20
+ 429              		.cfi_offset 5, -16
+ 430              		.cfi_offset 6, -12
+ 431              		.cfi_offset 7, -8
+ 432              		.cfi_offset 14, -4
+ 433 0002 85B0     		sub	sp, sp, #20
+ 434              	.LCFI11:
+ 435              		.cfi_def_cfa_offset 40
+ 179:LWIP/App/lwip.c ****   /* IP addresses initialization */
+ 180:LWIP/App/lwip.c ****   IP_ADDRESS[0] = 192;
+ 436              		.loc 1 180 3 view .LVU74
+ 437              		.loc 1 180 17 is_stmt 0 view .LVU75
+ 438 0004 3D4F     		ldr	r7, .L27
+ 439 0006 C020     		movs	r0, #192
+ 440 0008 3870     		strb	r0, [r7]
+ 181:LWIP/App/lwip.c ****   IP_ADDRESS[1] = 168;
+ 441              		.loc 1 181 3 is_stmt 1 view .LVU76
+ 442              		.loc 1 181 17 is_stmt 0 view .LVU77
+ 443 000a A821     		movs	r1, #168
+ 444 000c 7970     		strb	r1, [r7, #1]
+ 182:LWIP/App/lwip.c ****   IP_ADDRESS[2] = 8;
+ 445              		.loc 1 182 3 is_stmt 1 view .LVU78
+ 446              		.loc 1 182 17 is_stmt 0 view .LVU79
+ 447 000e 0822     		movs	r2, #8
+ 448 0010 BA70     		strb	r2, [r7, #2]
+ 183:LWIP/App/lwip.c ****   IP_ADDRESS[3] = 156;
+ 449              		.loc 1 183 3 is_stmt 1 view .LVU80
+ 450              		.loc 1 183 17 is_stmt 0 view .LVU81
+ 451 0012 9C23     		movs	r3, #156
+ 452 0014 FB70     		strb	r3, [r7, #3]
+ 184:LWIP/App/lwip.c ****   NETMASK_ADDRESS[0] = 255;
+ 453              		.loc 1 184 3 is_stmt 1 view .LVU82
+ 454              		.loc 1 184 22 is_stmt 0 view .LVU83
+ 455 0016 3A4E     		ldr	r6, .L27+4
+ 456 0018 FF23     		movs	r3, #255
+ 457 001a 3370     		strb	r3, [r6]
+ 185:LWIP/App/lwip.c ****   NETMASK_ADDRESS[1] = 255;
+ 458              		.loc 1 185 3 is_stmt 1 view .LVU84
+ 459              		.loc 1 185 22 is_stmt 0 view .LVU85
+ 460 001c 7370     		strb	r3, [r6, #1]
+ 186:LWIP/App/lwip.c ****   NETMASK_ADDRESS[2] = 255;
+ 461              		.loc 1 186 3 is_stmt 1 view .LVU86
+ 462              		.loc 1 186 22 is_stmt 0 view .LVU87
+ 463 001e B370     		strb	r3, [r6, #2]
+ 187:LWIP/App/lwip.c ****   NETMASK_ADDRESS[3] = 0;
+ 464              		.loc 1 187 3 is_stmt 1 view .LVU88
+ 465              		.loc 1 187 22 is_stmt 0 view .LVU89
+ 466 0020 0024     		movs	r4, #0
+ 467 0022 F470     		strb	r4, [r6, #3]
+ 188:LWIP/App/lwip.c ****   GATEWAY_ADDRESS[0] = 192;
+ 468              		.loc 1 188 3 is_stmt 1 view .LVU90
+ 469              		.loc 1 188 22 is_stmt 0 view .LVU91
+ 470 0024 374D     		ldr	r5, .L27+8
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 14
+
+
+ 471 0026 2870     		strb	r0, [r5]
+ 189:LWIP/App/lwip.c ****   GATEWAY_ADDRESS[1] = 168;
+ 472              		.loc 1 189 3 is_stmt 1 view .LVU92
+ 473              		.loc 1 189 22 is_stmt 0 view .LVU93
+ 474 0028 6970     		strb	r1, [r5, #1]
+ 190:LWIP/App/lwip.c ****   GATEWAY_ADDRESS[2] = 8;
+ 475              		.loc 1 190 3 is_stmt 1 view .LVU94
+ 476              		.loc 1 190 22 is_stmt 0 view .LVU95
+ 477 002a AA70     		strb	r2, [r5, #2]
+ 191:LWIP/App/lwip.c ****   GATEWAY_ADDRESS[3] = 1;
+ 478              		.loc 1 191 3 is_stmt 1 view .LVU96
+ 479              		.loc 1 191 22 is_stmt 0 view .LVU97
+ 480 002c 0123     		movs	r3, #1
+ 481 002e EB70     		strb	r3, [r5, #3]
+ 192:LWIP/App/lwip.c **** 
+ 193:LWIP/App/lwip.c ****   /* USER CODE BEGIN IP_ADDRESSES */
+ 194:LWIP/App/lwip.c ****   /* USER CODE END IP_ADDRESSES */
+ 195:LWIP/App/lwip.c **** 
+ 196:LWIP/App/lwip.c ****   /* Initilialize the LwIP stack without RTOS */
+ 197:LWIP/App/lwip.c ****   lwip_init();
+ 482              		.loc 1 197 3 is_stmt 1 view .LVU98
+ 483 0030 FFF7FEFF 		bl	lwip_init
+ 484              	.LVL39:
+ 198:LWIP/App/lwip.c **** 
+ 199:LWIP/App/lwip.c ****   /* IP addresses initialization without DHCP (IPv4) */
+ 200:LWIP/App/lwip.c ****   IP4_ADDR(&ipaddr, IP_ADDRESS[0], IP_ADDRESS[1], IP_ADDRESS[2], IP_ADDRESS[3]);
+ 485              		.loc 1 200 3 view .LVU99
+ 486 0034 3A78     		ldrb	r2, [r7]	@ zero_extendqisi2
+ 487 0036 7B78     		ldrb	r3, [r7, #1]	@ zero_extendqisi2
+ 488 0038 1B04     		lsls	r3, r3, #16
+ 489 003a 43EA0263 		orr	r3, r3, r2, lsl #24
+ 490 003e BA78     		ldrb	r2, [r7, #2]	@ zero_extendqisi2
+ 491 0040 43EA0223 		orr	r3, r3, r2, lsl #8
+ 492 0044 F978     		ldrb	r1, [r7, #3]	@ zero_extendqisi2
+ 493 0046 0B43     		orrs	r3, r3, r1
+ 494 0048 1A02     		lsls	r2, r3, #8
+ 495 004a 02F47F02 		and	r2, r2, #16711680
+ 496 004e 42EA0162 		orr	r2, r2, r1, lsl #24
+ 497 0052 190A     		lsrs	r1, r3, #8
+ 498 0054 01F47F41 		and	r1, r1, #65280
+ 499 0058 0A43     		orrs	r2, r2, r1
+ 500 005a 42EA1363 		orr	r3, r2, r3, lsr #24
+ 501 005e 2A49     		ldr	r1, .L27+12
+ 502 0060 0B60     		str	r3, [r1]
+ 201:LWIP/App/lwip.c ****   IP4_ADDR(&netmask, NETMASK_ADDRESS[0], NETMASK_ADDRESS[1], NETMASK_ADDRESS[2], NETMASK_ADDRESS[3]
+ 503              		.loc 1 201 3 view .LVU100
+ 504 0062 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
+ 505 0064 7378     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 506 0066 1B04     		lsls	r3, r3, #16
+ 507 0068 43EA0263 		orr	r3, r3, r2, lsl #24
+ 508 006c B278     		ldrb	r2, [r6, #2]	@ zero_extendqisi2
+ 509 006e 43EA0223 		orr	r3, r3, r2, lsl #8
+ 510 0072 F078     		ldrb	r0, [r6, #3]	@ zero_extendqisi2
+ 511 0074 0343     		orrs	r3, r3, r0
+ 512 0076 1A02     		lsls	r2, r3, #8
+ 513 0078 02F47F02 		and	r2, r2, #16711680
+ 514 007c 42EA0062 		orr	r2, r2, r0, lsl #24
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 15
+
+
+ 515 0080 180A     		lsrs	r0, r3, #8
+ 516 0082 00F47F40 		and	r0, r0, #65280
+ 517 0086 0243     		orrs	r2, r2, r0
+ 518 0088 42EA1363 		orr	r3, r2, r3, lsr #24
+ 519 008c 1F4A     		ldr	r2, .L27+16
+ 520 008e 1360     		str	r3, [r2]
+ 202:LWIP/App/lwip.c ****   IP4_ADDR(&gw, GATEWAY_ADDRESS[0], GATEWAY_ADDRESS[1], GATEWAY_ADDRESS[2], GATEWAY_ADDRESS[3]);
+ 521              		.loc 1 202 3 view .LVU101
+ 522 0090 2878     		ldrb	r0, [r5]	@ zero_extendqisi2
+ 523 0092 6B78     		ldrb	r3, [r5, #1]	@ zero_extendqisi2
+ 524 0094 1B04     		lsls	r3, r3, #16
+ 525 0096 43EA0063 		orr	r3, r3, r0, lsl #24
+ 526 009a A878     		ldrb	r0, [r5, #2]	@ zero_extendqisi2
+ 527 009c 43EA0023 		orr	r3, r3, r0, lsl #8
+ 528 00a0 ED78     		ldrb	r5, [r5, #3]	@ zero_extendqisi2
+ 529 00a2 2B43     		orrs	r3, r3, r5
+ 530 00a4 1802     		lsls	r0, r3, #8
+ 531 00a6 00F47F00 		and	r0, r0, #16711680
+ 532 00aa 40EA0560 		orr	r0, r0, r5, lsl #24
+ 533 00ae 1D0A     		lsrs	r5, r3, #8
+ 534 00b0 05F47F45 		and	r5, r5, #65280
+ 535 00b4 2843     		orrs	r0, r0, r5
+ 536 00b6 40EA1360 		orr	r0, r0, r3, lsr #24
+ 537 00ba 154B     		ldr	r3, .L27+20
+ 538 00bc 1860     		str	r0, [r3]
+ 203:LWIP/App/lwip.c **** 
+ 204:LWIP/App/lwip.c ****   /* add the network interface (IPv4/IPv6) without RTOS */
+ 205:LWIP/App/lwip.c ****   netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
+ 539              		.loc 1 205 3 view .LVU102
+ 540 00be 154D     		ldr	r5, .L27+24
+ 541 00c0 1548     		ldr	r0, .L27+28
+ 542 00c2 0290     		str	r0, [sp, #8]
+ 543 00c4 1548     		ldr	r0, .L27+32
+ 544 00c6 0190     		str	r0, [sp, #4]
+ 545 00c8 0094     		str	r4, [sp]
+ 546 00ca 2846     		mov	r0, r5
+ 547 00cc FFF7FEFF 		bl	netif_add
+ 548              	.LVL40:
+ 206:LWIP/App/lwip.c **** 
+ 207:LWIP/App/lwip.c ****   /* Registers the default network interface */
+ 208:LWIP/App/lwip.c ****   netif_set_default(&gnetif);
+ 549              		.loc 1 208 3 view .LVU103
+ 550 00d0 2846     		mov	r0, r5
+ 551 00d2 FFF7FEFF 		bl	netif_set_default
+ 552              	.LVL41:
+ 209:LWIP/App/lwip.c **** 
+ 210:LWIP/App/lwip.c ****   if (netif_is_link_up(&gnetif))
+ 553              		.loc 1 210 3 view .LVU104
+ 554              		.loc 1 210 7 is_stmt 0 view .LVU105
+ 555 00d6 95F82D30 		ldrb	r3, [r5, #45]	@ zero_extendqisi2
+ 556              		.loc 1 210 6 view .LVU106
+ 557 00da 13F0040F 		tst	r3, #4
+ 558 00de 08D0     		beq	.L24
+ 211:LWIP/App/lwip.c ****   {
+ 212:LWIP/App/lwip.c ****     /* When the netif is fully configured this function must be called */
+ 213:LWIP/App/lwip.c ****     netif_set_up(&gnetif);
+ 559              		.loc 1 213 5 is_stmt 1 view .LVU107
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 16
+
+
+ 560 00e0 2846     		mov	r0, r5
+ 561 00e2 FFF7FEFF 		bl	netif_set_up
+ 562              	.LVL42:
+ 563              	.L25:
+ 214:LWIP/App/lwip.c ****   }
+ 215:LWIP/App/lwip.c ****   else
+ 216:LWIP/App/lwip.c ****   {
+ 217:LWIP/App/lwip.c ****     /* When the netif link is down this function must be called */
+ 218:LWIP/App/lwip.c ****     netif_set_down(&gnetif);
+ 219:LWIP/App/lwip.c ****   }
+ 220:LWIP/App/lwip.c **** 
+ 221:LWIP/App/lwip.c ****   /* Set the link callback function, this function is called on change of link status*/
+ 222:LWIP/App/lwip.c ****   netif_set_link_callback(&gnetif, ethernetif_update_config);
+ 564              		.loc 1 222 3 view .LVU108
+ 565 00e6 0E49     		ldr	r1, .L27+36
+ 566 00e8 0A48     		ldr	r0, .L27+24
+ 567 00ea FFF7FEFF 		bl	netif_set_link_callback
+ 568              	.LVL43:
+ 223:LWIP/App/lwip.c **** 
+ 224:LWIP/App/lwip.c ****   /* Create the Ethernet link handler thread */
+ 225:LWIP/App/lwip.c **** 
+ 226:LWIP/App/lwip.c ****   /* USER CODE BEGIN 3 */
+ 227:LWIP/App/lwip.c **** 
+ 228:LWIP/App/lwip.c ****   /* USER CODE END 3 */
+ 229:LWIP/App/lwip.c **** }
+ 569              		.loc 1 229 1 is_stmt 0 view .LVU109
+ 570 00ee 05B0     		add	sp, sp, #20
+ 571              	.LCFI12:
+ 572              		.cfi_remember_state
+ 573              		.cfi_def_cfa_offset 20
+ 574              		@ sp needed
+ 575 00f0 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 576              	.L24:
+ 577              	.LCFI13:
+ 578              		.cfi_restore_state
+ 218:LWIP/App/lwip.c ****   }
+ 579              		.loc 1 218 5 is_stmt 1 view .LVU110
+ 580 00f2 0848     		ldr	r0, .L27+24
+ 581 00f4 FFF7FEFF 		bl	netif_set_down
+ 582              	.LVL44:
+ 583 00f8 F5E7     		b	.L25
+ 584              	.L28:
+ 585 00fa 00BF     		.align	2
+ 586              	.L27:
+ 587 00fc 00000000 		.word	.LANCHOR2
+ 588 0100 00000000 		.word	.LANCHOR3
+ 589 0104 00000000 		.word	.LANCHOR4
+ 590 0108 00000000 		.word	.LANCHOR5
+ 591 010c 00000000 		.word	.LANCHOR6
+ 592 0110 00000000 		.word	.LANCHOR7
+ 593 0114 00000000 		.word	.LANCHOR8
+ 594 0118 00000000 		.word	ethernet_input
+ 595 011c 00000000 		.word	ethernetif_init
+ 596 0120 00000000 		.word	ethernetif_update_config
+ 597              		.cfi_endproc
+ 598              	.LFE162:
+ 600              		.section	.text.MX_LWIP_Process,"ax",%progbits
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 17
+
+
+ 601              		.align	1
+ 602              		.global	MX_LWIP_Process
+ 603              		.syntax unified
+ 604              		.thumb
+ 605              		.thumb_func
+ 607              	MX_LWIP_Process:
+ 608              	.LFB163:
+ 230:LWIP/App/lwip.c **** 
+ 231:LWIP/App/lwip.c **** #ifdef USE_OBSOLETE_USER_CODE_SECTION_4
+ 232:LWIP/App/lwip.c **** /* Kept to help code migration. (See new 4_1, 4_2... sections) */
+ 233:LWIP/App/lwip.c **** /* Avoid to use this user section which will become obsolete. */
+ 234:LWIP/App/lwip.c **** /* USER CODE BEGIN 4 */
+ 235:LWIP/App/lwip.c **** /* USER CODE END 4 */
+ 236:LWIP/App/lwip.c **** #endif
+ 237:LWIP/App/lwip.c **** 
+ 238:LWIP/App/lwip.c **** /**
+ 239:LWIP/App/lwip.c ****  * ----------------------------------------------------------------------
+ 240:LWIP/App/lwip.c ****  * Function given to help user to continue LwIP Initialization
+ 241:LWIP/App/lwip.c ****  * Up to user to complete or change this function ...
+ 242:LWIP/App/lwip.c ****  * Up to user to call this function in main.c in while (1) of main(void)
+ 243:LWIP/App/lwip.c ****  *-----------------------------------------------------------------------
+ 244:LWIP/App/lwip.c ****  * Read a received packet from the Ethernet buffers
+ 245:LWIP/App/lwip.c ****  * Send it to the lwIP stack for handling
+ 246:LWIP/App/lwip.c ****  * Handle timeouts if LWIP_TIMERS is set and without RTOS
+ 247:LWIP/App/lwip.c ****  * Handle the llink status if LWIP_NETIF_LINK_CALLBACK is set and without RTOS
+ 248:LWIP/App/lwip.c ****  */
+ 249:LWIP/App/lwip.c **** void MX_LWIP_Process(void)
+ 250:LWIP/App/lwip.c **** {
+ 609              		.loc 1 250 1 view -0
+ 610              		.cfi_startproc
+ 611              		@ args = 0, pretend = 0, frame = 0
+ 612              		@ frame_needed = 0, uses_anonymous_args = 0
+ 613 0000 10B5     		push	{r4, lr}
+ 614              	.LCFI14:
+ 615              		.cfi_def_cfa_offset 8
+ 616              		.cfi_offset 4, -8
+ 617              		.cfi_offset 14, -4
+ 251:LWIP/App/lwip.c ****   /* USER CODE BEGIN 4_1 */
+ 252:LWIP/App/lwip.c ****   ethernetif_set_link(&gnetif);
+ 618              		.loc 1 252 3 view .LVU112
+ 619 0002 054C     		ldr	r4, .L31
+ 620 0004 2046     		mov	r0, r4
+ 621 0006 FFF7FEFF 		bl	ethernetif_set_link
+ 622              	.LVL45:
+ 253:LWIP/App/lwip.c ****   /* USER CODE END 4_1 */
+ 254:LWIP/App/lwip.c ****   ethernetif_input(&gnetif);
+ 623              		.loc 1 254 3 view .LVU113
+ 624 000a 2046     		mov	r0, r4
+ 625 000c FFF7FEFF 		bl	ethernetif_input
+ 626              	.LVL46:
+ 255:LWIP/App/lwip.c **** 
+ 256:LWIP/App/lwip.c ****   /* USER CODE BEGIN 4_2 */
+ 257:LWIP/App/lwip.c ****   /* USER CODE END 4_2 */
+ 258:LWIP/App/lwip.c ****   /* Handle timeouts */
+ 259:LWIP/App/lwip.c ****   sys_check_timeouts();
+ 627              		.loc 1 259 3 view .LVU114
+ 628 0010 FFF7FEFF 		bl	sys_check_timeouts
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 18
+
+
+ 629              	.LVL47:
+ 260:LWIP/App/lwip.c **** 
+ 261:LWIP/App/lwip.c ****   /* USER CODE BEGIN 4_3 */
+ 262:LWIP/App/lwip.c ****   // ethernetif_set_link(&gnetif);
+ 263:LWIP/App/lwip.c ****   /* USER CODE END 4_3 */
+ 264:LWIP/App/lwip.c **** }
+ 630              		.loc 1 264 1 is_stmt 0 view .LVU115
+ 631 0014 10BD     		pop	{r4, pc}
+ 632              	.L32:
+ 633 0016 00BF     		.align	2
+ 634              	.L31:
+ 635 0018 00000000 		.word	.LANCHOR8
+ 636              		.cfi_endproc
+ 637              	.LFE163:
+ 639              		.global	GATEWAY_ADDRESS
+ 640              		.global	NETMASK_ADDRESS
+ 641              		.global	IP_ADDRESS
+ 642              		.global	gw
+ 643              		.global	netmask
+ 644              		.global	ipaddr
+ 645              		.global	gnetif
+ 646              		.global	lwipdev
+ 647              		.global	dhcp
+ 648              		.section	.bss.GATEWAY_ADDRESS,"aw",%nobits
+ 649              		.align	2
+ 650              		.set	.LANCHOR4,. + 0
+ 653              	GATEWAY_ADDRESS:
+ 654 0000 00000000 		.space	4
+ 655              		.section	.bss.IP_ADDRESS,"aw",%nobits
+ 656              		.align	2
+ 657              		.set	.LANCHOR2,. + 0
+ 660              	IP_ADDRESS:
+ 661 0000 00000000 		.space	4
+ 662              		.section	.bss.NETMASK_ADDRESS,"aw",%nobits
+ 663              		.align	2
+ 664              		.set	.LANCHOR3,. + 0
+ 667              	NETMASK_ADDRESS:
+ 668 0000 00000000 		.space	4
+ 669              		.section	.bss.client_pcb,"aw",%nobits
+ 670              		.align	2
+ 671              		.set	.LANCHOR1,. + 0
+ 674              	client_pcb:
+ 675 0000 00000000 		.space	4
+ 676              		.section	.bss.dhcp,"aw",%nobits
+ 677              		.align	2
+ 680              	dhcp:
+ 681 0000 00000000 		.space	4
+ 682              		.section	.bss.gnetif,"aw",%nobits
+ 683              		.align	2
+ 684              		.set	.LANCHOR8,. + 0
+ 687              	gnetif:
+ 688 0000 00000000 		.space	52
+ 688      00000000 
+ 688      00000000 
+ 688      00000000 
+ 688      00000000 
+ 689              		.section	.bss.gw,"aw",%nobits
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 19
+
+
+ 690              		.align	2
+ 691              		.set	.LANCHOR7,. + 0
+ 694              	gw:
+ 695 0000 00000000 		.space	4
+ 696              		.section	.bss.ipaddr,"aw",%nobits
+ 697              		.align	2
+ 698              		.set	.LANCHOR5,. + 0
+ 701              	ipaddr:
+ 702 0000 00000000 		.space	4
+ 703              		.section	.bss.lwipdev,"aw",%nobits
+ 704              		.align	2
+ 705              		.set	.LANCHOR0,. + 0
+ 708              	lwipdev:
+ 709 0000 00000000 		.space	23
+ 709      00000000 
+ 709      00000000 
+ 709      00000000 
+ 709      00000000 
+ 710              		.section	.bss.netmask,"aw",%nobits
+ 711              		.align	2
+ 712              		.set	.LANCHOR6,. + 0
+ 715              	netmask:
+ 716 0000 00000000 		.space	4
+ 717              		.text
+ 718              	.Letext0:
+ 719              		.file 2 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ 720              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 721              		.file 4 "Middlewares/Third_Party/LwIP/src/include/lwip/arch.h"
+ 722              		.file 5 "Middlewares/Third_Party/LwIP/src/include/lwip/err.h"
+ 723              		.file 6 "Middlewares/Third_Party/LwIP/src/include/lwip/pbuf.h"
+ 724              		.file 7 "Middlewares/Third_Party/LwIP/src/include/lwip/ip4_addr.h"
+ 725              		.file 8 "Middlewares/Third_Party/LwIP/src/include/lwip/ip_addr.h"
+ 726              		.file 9 "Middlewares/Third_Party/LwIP/src/include/lwip/netif.h"
+ 727              		.file 10 "Middlewares/Third_Party/LwIP/src/include/lwip/tcp.h"
+ 728              		.file 11 "LWIP/App/lwip.h"
+ 729              		.file 12 "Middlewares/Third_Party/LwIP/src/include/lwip/tcpbase.h"
+ 730              		.file 13 "Core/Inc/ad7606.h"
+ 731              		.file 14 "<built-in>"
+ 732              		.file 15 "LWIP/Target/ethernetif.h"
+ 733              		.file 16 "Middlewares/Third_Party/LwIP/src/include/lwip/timeouts.h"
+ 734              		.file 17 "Middlewares/Third_Party/LwIP/src/include/lwip/init.h"
+ 735              		.file 18 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\stdio.h"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 20
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lwip.c
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:20     .rodata.tcp_client_connected.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:24     .text.tcp_client_connected:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:29     .text.tcp_client_connected:00000000 tcp_client_connected
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:64     .text.tcp_client_connected:00000018 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:262    .text.tcp_client_recv:00000000 tcp_client_recv
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:70     .rodata.TCP_Client_Init.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:77     .text.TCP_Client_Init:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:83     .text.TCP_Client_Init:00000000 TCP_Client_Init
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:172    .text.TCP_Client_Init:00000074 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:200    .text.tcp_client_error:00000000 tcp_client_error
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:182    .rodata.tcp_client_error.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:195    .text.tcp_client_error:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:244    .text.tcp_client_error:00000028 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:253    .rodata.tcp_client_recv.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:257    .text.tcp_client_recv:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:350    .text.tcp_client_recv:00000048 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:355    .text.LWIP_Send_data:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:361    .text.LWIP_Send_data:00000000 LWIP_Send_data
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:408    .text.LWIP_Send_data:0000001c $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:413    .text.MX_LWIP_Init:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:419    .text.MX_LWIP_Init:00000000 MX_LWIP_Init
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:587    .text.MX_LWIP_Init:000000fc $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:601    .text.MX_LWIP_Process:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:607    .text.MX_LWIP_Process:00000000 MX_LWIP_Process
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:635    .text.MX_LWIP_Process:00000018 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:653    .bss.GATEWAY_ADDRESS:00000000 GATEWAY_ADDRESS
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:667    .bss.NETMASK_ADDRESS:00000000 NETMASK_ADDRESS
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:660    .bss.IP_ADDRESS:00000000 IP_ADDRESS
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:694    .bss.gw:00000000 gw
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:715    .bss.netmask:00000000 netmask
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:701    .bss.ipaddr:00000000 ipaddr
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:687    .bss.gnetif:00000000 gnetif
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:708    .bss.lwipdev:00000000 lwipdev
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:680    .bss.dhcp:00000000 dhcp
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:649    .bss.GATEWAY_ADDRESS:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:656    .bss.IP_ADDRESS:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:663    .bss.NETMASK_ADDRESS:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:670    .bss.client_pcb:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:674    .bss.client_pcb:00000000 client_pcb
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:677    .bss.dhcp:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:683    .bss.gnetif:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:690    .bss.gw:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:697    .bss.ipaddr:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:704    .bss.lwipdev:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s:711    .bss.netmask:00000000 $d
+
+UNDEFINED SYMBOLS
+puts
+tcp_recv
+tcp_new
+tcp_connect
+printf
+tcp_err
+tcp_close
+tcp_recved
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccDaM0JK.s 			page 21
+
+
+memcpy
+memset
+pbuf_free
+tcp_write
+tcp_output
+lwip_init
+netif_add
+netif_set_default
+netif_set_up
+netif_set_link_callback
+netif_set_down
+ethernet_input
+ethernetif_init
+ethernetif_update_config
+ethernetif_set_link
+ethernetif_input
+sys_check_timeouts

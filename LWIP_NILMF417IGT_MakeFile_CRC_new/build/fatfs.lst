@@ -1,0 +1,412 @@
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"fatfs.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.MX_FATFS_Init,"ax",%progbits
+  20              		.align	1
+  21              		.global	MX_FATFS_Init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	MX_FATFS_Init:
+  27              	.LFB133:
+  28              		.file 1 "FATFS/App/fatfs.c"
+   1:FATFS/App/fatfs.c **** /* USER CODE BEGIN Header */
+   2:FATFS/App/fatfs.c **** /**
+   3:FATFS/App/fatfs.c ****  ******************************************************************************
+   4:FATFS/App/fatfs.c ****  * @file   fatfs.c
+   5:FATFS/App/fatfs.c ****  * @brief  Code for fatfs applications
+   6:FATFS/App/fatfs.c ****  ******************************************************************************
+   7:FATFS/App/fatfs.c ****  * @attention
+   8:FATFS/App/fatfs.c ****  *
+   9:FATFS/App/fatfs.c ****  * Copyright (c) 2023 STMicroelectronics.
+  10:FATFS/App/fatfs.c ****  * All rights reserved.
+  11:FATFS/App/fatfs.c ****  *
+  12:FATFS/App/fatfs.c ****  * This software is licensed under terms that can be found in the LICENSE file
+  13:FATFS/App/fatfs.c ****  * in the root directory of this software component.
+  14:FATFS/App/fatfs.c ****  * If no LICENSE file comes with this software, it is provided AS-IS.
+  15:FATFS/App/fatfs.c ****  *
+  16:FATFS/App/fatfs.c ****  ******************************************************************************
+  17:FATFS/App/fatfs.c ****  */
+  18:FATFS/App/fatfs.c **** /* USER CODE END Header */
+  19:FATFS/App/fatfs.c **** #include "fatfs.h"
+  20:FATFS/App/fatfs.c **** 
+  21:FATFS/App/fatfs.c **** uint8_t retSD;    /* Return value for SD */
+  22:FATFS/App/fatfs.c **** char SDPath[4];   /* SD logical drive path */
+  23:FATFS/App/fatfs.c **** FATFS SDFatFS;    /* File system object for SD logical drive */
+  24:FATFS/App/fatfs.c **** FIL SDFile;       /* File object for SD */
+  25:FATFS/App/fatfs.c **** 
+  26:FATFS/App/fatfs.c **** /* USER CODE BEGIN Variables */
+  27:FATFS/App/fatfs.c **** FRESULT FATFS_RES;
+  28:FATFS/App/fatfs.c **** UINT fnum;
+  29:FATFS/App/fatfs.c **** 
+  30:FATFS/App/fatfs.c **** DWORD  TOT_SIZE;
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 2
+
+
+  31:FATFS/App/fatfs.c **** DWORD  FRE_SIZE;
+  32:FATFS/App/fatfs.c **** 
+  33:FATFS/App/fatfs.c **** /* USER CODE END Variables */
+  34:FATFS/App/fatfs.c **** 
+  35:FATFS/App/fatfs.c **** void MX_FATFS_Init(void)
+  36:FATFS/App/fatfs.c **** {
+  29              		.loc 1 36 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  37:FATFS/App/fatfs.c ****   /*## FatFS: Link the SD driver ###########################*/
+  38:FATFS/App/fatfs.c ****   retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
+  38              		.loc 1 38 3 view .LVU1
+  39              		.loc 1 38 11 is_stmt 0 view .LVU2
+  40 0002 0349     		ldr	r1, .L3
+  41 0004 0348     		ldr	r0, .L3+4
+  42 0006 FFF7FEFF 		bl	FATFS_LinkDriver
+  43              	.LVL0:
+  44              		.loc 1 38 9 view .LVU3
+  45 000a 034B     		ldr	r3, .L3+8
+  46 000c 1870     		strb	r0, [r3]
+  39:FATFS/App/fatfs.c **** 
+  40:FATFS/App/fatfs.c ****   /* USER CODE BEGIN Init */
+  41:FATFS/App/fatfs.c ****   /* additional user code for init */
+  42:FATFS/App/fatfs.c ****   /* USER CODE END Init */
+  43:FATFS/App/fatfs.c **** }
+  47              		.loc 1 43 1 view .LVU4
+  48 000e 08BD     		pop	{r3, pc}
+  49              	.L4:
+  50              		.align	2
+  51              	.L3:
+  52 0010 00000000 		.word	.LANCHOR0
+  53 0014 00000000 		.word	SD_Driver
+  54 0018 00000000 		.word	.LANCHOR1
+  55              		.cfi_endproc
+  56              	.LFE133:
+  58              		.section	.text.get_fattime,"ax",%progbits
+  59              		.align	1
+  60              		.global	get_fattime
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	get_fattime:
+  66              	.LFB134:
+  44:FATFS/App/fatfs.c **** 
+  45:FATFS/App/fatfs.c **** /**
+  46:FATFS/App/fatfs.c ****   * @brief  Gets Time from RTC
+  47:FATFS/App/fatfs.c ****   * @param  None
+  48:FATFS/App/fatfs.c ****   * @retval Time in DWORD
+  49:FATFS/App/fatfs.c ****   */
+  50:FATFS/App/fatfs.c **** DWORD get_fattime(void)
+  51:FATFS/App/fatfs.c **** {
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 3
+
+
+  67              		.loc 1 51 1 is_stmt 1 view -0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 0
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71              		@ link register save eliminated.
+  52:FATFS/App/fatfs.c ****   /* USER CODE BEGIN get_fattime */
+  53:FATFS/App/fatfs.c ****   return 0;
+  72              		.loc 1 53 3 view .LVU6
+  54:FATFS/App/fatfs.c ****   /* USER CODE END get_fattime */
+  55:FATFS/App/fatfs.c **** }
+  73              		.loc 1 55 1 is_stmt 0 view .LVU7
+  74 0000 0020     		movs	r0, #0
+  75 0002 7047     		bx	lr
+  76              		.cfi_endproc
+  77              	.LFE134:
+  79              		.section	.rodata.Init_FATFS.str1.4,"aMS",%progbits,1
+  80              		.align	2
+  81              	.LC0:
+  82 0000 303A00   		.ascii	"0:\000"
+  83 0003 00       		.align	2
+  84              	.LC1:
+  85 0004 7265733A 		.ascii	"res: %d\000"
+  85      20256400 
+  86              		.section	.text.Init_FATFS,"ax",%progbits
+  87              		.align	1
+  88              		.global	Init_FATFS
+  89              		.syntax unified
+  90              		.thumb
+  91              		.thumb_func
+  93              	Init_FATFS:
+  94              	.LFB135:
+  56:FATFS/App/fatfs.c **** 
+  57:FATFS/App/fatfs.c **** /* USER CODE BEGIN Application */
+  58:FATFS/App/fatfs.c **** void Init_FATFS(void)
+  59:FATFS/App/fatfs.c **** {
+  95              		.loc 1 59 1 is_stmt 1 view -0
+  96              		.cfi_startproc
+  97              		@ args = 0, pretend = 0, frame = 0
+  98              		@ frame_needed = 0, uses_anonymous_args = 0
+  99 0000 08B5     		push	{r3, lr}
+ 100              	.LCFI1:
+ 101              		.cfi_def_cfa_offset 8
+ 102              		.cfi_offset 3, -8
+ 103              		.cfi_offset 14, -4
+  60:FATFS/App/fatfs.c ****   FATFS_RES = f_mount(&SDFatFS, "0:", 1);
+ 104              		.loc 1 60 3 view .LVU9
+ 105              		.loc 1 60 15 is_stmt 0 view .LVU10
+ 106 0002 0122     		movs	r2, #1
+ 107 0004 0549     		ldr	r1, .L8
+ 108 0006 0648     		ldr	r0, .L8+4
+ 109 0008 FFF7FEFF 		bl	f_mount
+ 110              	.LVL1:
+ 111 000c 0146     		mov	r1, r0
+ 112              		.loc 1 60 13 view .LVU11
+ 113 000e 054B     		ldr	r3, .L8+8
+ 114 0010 1870     		strb	r0, [r3]
+  61:FATFS/App/fatfs.c ****   printf("res: %d", FATFS_RES);
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 4
+
+
+ 115              		.loc 1 61 3 is_stmt 1 view .LVU12
+ 116 0012 0548     		ldr	r0, .L8+12
+ 117 0014 FFF7FEFF 		bl	printf
+ 118              	.LVL2:
+  62:FATFS/App/fatfs.c **** 
+  63:FATFS/App/fatfs.c **** }
+ 119              		.loc 1 63 1 is_stmt 0 view .LVU13
+ 120 0018 08BD     		pop	{r3, pc}
+ 121              	.L9:
+ 122 001a 00BF     		.align	2
+ 123              	.L8:
+ 124 001c 00000000 		.word	.LC0
+ 125 0020 00000000 		.word	.LANCHOR2
+ 126 0024 00000000 		.word	.LANCHOR3
+ 127 0028 04000000 		.word	.LC1
+ 128              		.cfi_endproc
+ 129              	.LFE135:
+ 131              		.section	.text.f_printf_0,"ax",%progbits
+ 132              		.align	1
+ 133              		.global	f_printf_0
+ 134              		.syntax unified
+ 135              		.thumb
+ 136              		.thumb_func
+ 138              	f_printf_0:
+ 139              	.LVL3:
+ 140              	.LFB136:
+  64:FATFS/App/fatfs.c **** 
+  65:FATFS/App/fatfs.c **** // add by user named lux
+  66:FATFS/App/fatfs.c **** int f_printf_0(/* Put a formatted string to the file */
+  67:FATFS/App/fatfs.c ****                FIL *fil,
+  68:FATFS/App/fatfs.c ****                const TCHAR *str,
+  69:FATFS/App/fatfs.c ****                ...)
+  70:FATFS/App/fatfs.c **** {
+ 141              		.loc 1 70 1 is_stmt 1 view -0
+ 142              		.cfi_startproc
+ 143              		@ args = 4, pretend = 12, frame = 136
+ 144              		@ frame_needed = 0, uses_anonymous_args = 1
+ 145              		.loc 1 70 1 is_stmt 0 view .LVU15
+ 146 0000 0EB4     		push	{r1, r2, r3}
+ 147              	.LCFI2:
+ 148              		.cfi_def_cfa_offset 12
+ 149              		.cfi_offset 1, -12
+ 150              		.cfi_offset 2, -8
+ 151              		.cfi_offset 3, -4
+ 152 0002 10B5     		push	{r4, lr}
+ 153              	.LCFI3:
+ 154              		.cfi_def_cfa_offset 20
+ 155              		.cfi_offset 4, -20
+ 156              		.cfi_offset 14, -16
+ 157 0004 A3B0     		sub	sp, sp, #140
+ 158              	.LCFI4:
+ 159              		.cfi_def_cfa_offset 160
+ 160 0006 0446     		mov	r4, r0
+ 161 0008 25AB     		add	r3, sp, #148
+ 162 000a 53F8042B 		ldr	r2, [r3], #4
+  71:FATFS/App/fatfs.c ****   INT len;
+ 163              		.loc 1 71 3 is_stmt 1 view .LVU16
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 5
+
+
+  72:FATFS/App/fatfs.c ****   char buff[128];  
+ 164              		.loc 1 72 3 view .LVU17
+  73:FATFS/App/fatfs.c ****   
+  74:FATFS/App/fatfs.c ****   va_list args;
+ 165              		.loc 1 74 3 view .LVU18
+  75:FATFS/App/fatfs.c ****   va_start(args,str);
+ 166              		.loc 1 75 3 view .LVU19
+ 167 000e 0193     		str	r3, [sp, #4]
+  76:FATFS/App/fatfs.c ****   len = vsnprintf(buff,128,str,args);
+ 168              		.loc 1 76 3 view .LVU20
+ 169              		.loc 1 76 9 is_stmt 0 view .LVU21
+ 170 0010 8021     		movs	r1, #128
+ 171 0012 02A8     		add	r0, sp, #8
+ 172 0014 FFF7FEFF 		bl	vsnprintf
+ 173              	.LVL4:
+  77:FATFS/App/fatfs.c ****   if (len < 0)
+ 174              		.loc 1 77 3 is_stmt 1 view .LVU22
+ 175              		.loc 1 77 6 is_stmt 0 view .LVU23
+ 176 0018 0028     		cmp	r0, #0
+ 177              		.loc 1 77 6 view .LVU24
+ 178 001a 03DB     		blt	.L10
+  78:FATFS/App/fatfs.c ****   {
+  79:FATFS/App/fatfs.c ****     va_end(args);
+  80:FATFS/App/fatfs.c ****     return len;
+  81:FATFS/App/fatfs.c ****   }
+  82:FATFS/App/fatfs.c ****   len = f_puts((TCHAR *)buff, fil);
+ 179              		.loc 1 82 3 is_stmt 1 view .LVU25
+ 180              		.loc 1 82 9 is_stmt 0 view .LVU26
+ 181 001c 2146     		mov	r1, r4
+ 182 001e 02A8     		add	r0, sp, #8
+ 183 0020 FFF7FEFF 		bl	f_puts
+ 184              	.LVL5:
+  83:FATFS/App/fatfs.c ****   va_end(args);
+ 185              		.loc 1 83 3 is_stmt 1 view .LVU27
+  84:FATFS/App/fatfs.c **** 
+  85:FATFS/App/fatfs.c ****   return len;
+ 186              		.loc 1 85 3 view .LVU28
+ 187              	.L10:
+  86:FATFS/App/fatfs.c **** }
+ 188              		.loc 1 86 1 is_stmt 0 view .LVU29
+ 189 0024 23B0     		add	sp, sp, #140
+ 190              	.LCFI5:
+ 191              		.cfi_def_cfa_offset 20
+ 192              		@ sp needed
+ 193 0026 BDE81040 		pop	{r4, lr}
+ 194              	.LCFI6:
+ 195              		.cfi_restore 14
+ 196              		.cfi_restore 4
+ 197              		.cfi_def_cfa_offset 12
+ 198              	.LVL6:
+ 199              		.loc 1 86 1 view .LVU30
+ 200 002a 03B0     		add	sp, sp, #12
+ 201              	.LCFI7:
+ 202              		.cfi_restore 3
+ 203              		.cfi_restore 2
+ 204              		.cfi_restore 1
+ 205              		.cfi_def_cfa_offset 0
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 6
+
+
+ 206 002c 7047     		bx	lr
+ 207              		.cfi_endproc
+ 208              	.LFE136:
+ 210              		.global	FRE_SIZE
+ 211              		.global	TOT_SIZE
+ 212              		.global	fnum
+ 213              		.global	FATFS_RES
+ 214              		.global	SDFile
+ 215              		.global	SDFatFS
+ 216              		.global	SDPath
+ 217              		.global	retSD
+ 218              		.section	.bss.FATFS_RES,"aw",%nobits
+ 219              		.set	.LANCHOR3,. + 0
+ 222              	FATFS_RES:
+ 223 0000 00       		.space	1
+ 224              		.section	.bss.FRE_SIZE,"aw",%nobits
+ 225              		.align	2
+ 228              	FRE_SIZE:
+ 229 0000 00000000 		.space	4
+ 230              		.section	.bss.SDFatFS,"aw",%nobits
+ 231              		.align	2
+ 232              		.set	.LANCHOR2,. + 0
+ 235              	SDFatFS:
+ 236 0000 00000000 		.space	564
+ 236      00000000 
+ 236      00000000 
+ 236      00000000 
+ 236      00000000 
+ 237              		.section	.bss.SDFile,"aw",%nobits
+ 238              		.align	2
+ 241              	SDFile:
+ 242 0000 00000000 		.space	560
+ 242      00000000 
+ 242      00000000 
+ 242      00000000 
+ 242      00000000 
+ 243              		.section	.bss.SDPath,"aw",%nobits
+ 244              		.align	2
+ 245              		.set	.LANCHOR0,. + 0
+ 248              	SDPath:
+ 249 0000 00000000 		.space	4
+ 250              		.section	.bss.TOT_SIZE,"aw",%nobits
+ 251              		.align	2
+ 254              	TOT_SIZE:
+ 255 0000 00000000 		.space	4
+ 256              		.section	.bss.fnum,"aw",%nobits
+ 257              		.align	2
+ 260              	fnum:
+ 261 0000 00000000 		.space	4
+ 262              		.section	.bss.retSD,"aw",%nobits
+ 263              		.set	.LANCHOR1,. + 0
+ 266              	retSD:
+ 267 0000 00       		.space	1
+ 268              		.text
+ 269              	.Letext0:
+ 270              		.file 2 "Middlewares/Third_Party/FatFs/src/integer.h"
+ 271              		.file 3 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\machine\\_default_typ
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 7
+
+
+ 272              		.file 4 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 273              		.file 5 "Middlewares/Third_Party/FatFs/src/ff.h"
+ 274              		.file 6 "Middlewares/Third_Party/FatFs/src/diskio.h"
+ 275              		.file 7 "Middlewares/Third_Party/FatFs/src/ff_gen_drv.h"
+ 276              		.file 8 "d:\\gnu arm embedded toolchain\\10 2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\std
+ 277              		.file 9 "d:\\gnu arm embedded toolchain\\10 2021.10\\arm-none-eabi\\include\\stdio.h"
+ 278              		.file 10 "FATFS/Target/sd_diskio.h"
+ 279              		.file 11 "FATFS/App/fatfs.h"
+ 280              		.file 12 "<built-in>"
+ARM GAS  C:\Users\17832\AppData\Local\Temp\ccljCbpr.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 fatfs.c
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:20     .text.MX_FATFS_Init:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:26     .text.MX_FATFS_Init:00000000 MX_FATFS_Init
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:52     .text.MX_FATFS_Init:00000010 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:59     .text.get_fattime:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:65     .text.get_fattime:00000000 get_fattime
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:80     .rodata.Init_FATFS.str1.4:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:87     .text.Init_FATFS:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:93     .text.Init_FATFS:00000000 Init_FATFS
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:124    .text.Init_FATFS:0000001c $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:132    .text.f_printf_0:00000000 $t
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:138    .text.f_printf_0:00000000 f_printf_0
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:228    .bss.FRE_SIZE:00000000 FRE_SIZE
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:254    .bss.TOT_SIZE:00000000 TOT_SIZE
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:260    .bss.fnum:00000000 fnum
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:222    .bss.FATFS_RES:00000000 FATFS_RES
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:241    .bss.SDFile:00000000 SDFile
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:235    .bss.SDFatFS:00000000 SDFatFS
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:248    .bss.SDPath:00000000 SDPath
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:266    .bss.retSD:00000000 retSD
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:223    .bss.FATFS_RES:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:225    .bss.FRE_SIZE:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:231    .bss.SDFatFS:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:238    .bss.SDFile:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:244    .bss.SDPath:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:251    .bss.TOT_SIZE:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:257    .bss.fnum:00000000 $d
+C:\Users\17832\AppData\Local\Temp\ccljCbpr.s:267    .bss.retSD:00000000 $d
+
+UNDEFINED SYMBOLS
+FATFS_LinkDriver
+SD_Driver
+f_mount
+printf
+vsnprintf
+f_puts
