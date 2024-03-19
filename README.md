@@ -20,7 +20,7 @@ The dataset file format is shown below:
 
 ​				Displayer_sign_N.csv (N = {1,2...7}): A labeled file that records the switching time of the displayer.
 
-![TDHA2](C:/Users/17832/Desktop/Submit/%E4%BF%AE%E6%94%B9/TDHA2.svg)
+![TDHA2](https://github.com/TagEnd/TDHA-Acquisition-System-Submit/blob/master/TDHA2.svg)
 
 # File data structure
 
